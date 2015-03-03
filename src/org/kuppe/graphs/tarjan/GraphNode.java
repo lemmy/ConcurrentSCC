@@ -1,6 +1,31 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Microsoft Research. All rights reserved. 
+ *
+ * The MIT License (MIT)
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy 
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software. 
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *   Markus Alexander Kuppe - initial API and implementation
+ ******************************************************************************/
+
 package org.kuppe.graphs.tarjan;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,10 +65,6 @@ public class GraphNode implements Comparable<GraphNode> {
 		aGraphNode.predecessors.add(this);
 	}
 
-//	public ListIterator<GraphNode> iterator() {
-//		return successors.listIterator();
-//	}
-
 	/**
 	 * The contraction of a pair of vertices v_i and v_j of a graph produces a
 	 * graph in which the two nodes v_1 and v_2 are replaced with a single node
@@ -66,11 +87,6 @@ public class GraphNode implements Comparable<GraphNode> {
 		// Union of all successors
 		aNode.successors.remove(this);
 		this.successors.addAll(aNode.successors);
-//		for (GraphNode succ : aNode.successors) {
-//			if (!successors.contains(succ)) {
-//				iterator.add(succ);
-//			}
-//		}
 		
 		// Remove aNode from all its predecessors which basically causes it to
 		// disappear from the graph
@@ -100,28 +116,9 @@ public class GraphNode implements Comparable<GraphNode> {
 	public String toString() {
 		return "GraphNode [anId=" + id + ", visited=" + visited + "]";
 	}
-//
-//	public int succSize() {
-//		return this.successors.size();
-//	}
 	
-	public GraphNode getUnvisitedSuccessor(final Set<GraphNode> explored) {
-		return getUnvisitedSuccessorD(explored);
-	}
-
-	// Non-deterministically (Change this.successors to HashSet too)
-//	private GraphNode getUnvisitedSuccessorND(final Set<GraphNode> explored) {
-//		final Set<GraphNode> temp = new HashSet<GraphNode>(this.successors);
-//		temp.removeAll(explored);
-//		if (temp.isEmpty()) {
-//			return null;
-//		} else {
-//			return temp.toArray(new GraphNode[temp.size()])[0];
-//		}
-//	}
-
 	// Deterministically
-	private GraphNode getUnvisitedSuccessorD(final Set<GraphNode> explored) {
+	public GraphNode getUnvisitedSuccessor(final Set<GraphNode> explored) {
 		final Set<GraphNode> temp = new TreeSet<GraphNode>(this.successors);
 		temp.removeAll(explored);
 		if (temp.isEmpty()) {

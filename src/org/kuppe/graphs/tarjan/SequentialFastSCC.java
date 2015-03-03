@@ -37,33 +37,6 @@ import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class SequentialFastSCC {
 
-//	public static void main(String[] args) {
-//		final List<GraphNode> roots = new ArrayList<GraphNode>();
-//
-//		final GraphNode one = new GraphNode("1");
-//		roots.add(one);
-//		final GraphNode two = new GraphNode("2");
-//		roots.add(two);
-//		final GraphNode three = new GraphNode("3");
-//		roots.add(three);
-//		final GraphNode four = new GraphNode("4");
-//		roots.add(four);
-//
-//		one.addSuccessor(two);
-//		one.addSuccessor(one);
-//
-//		two.addSuccessor(one);
-//		two.addSuccessor(three);
-//
-//		three.addSuccessor(four);
-//
-//		four.addSuccessor(three);
-//
-//		final SequentialFastSCC sequentialFastSCC = new SequentialFastSCC();
-//		sequentialFastSCC.searchSCCs(roots);
-//	}
-
-	// private final LinkedList<GraphNode> path = new LinkedList<GraphNode>();
 	private final Stack<GraphNode> path = new Stack<GraphNode>();
 
 	public Set<Set<GraphNode>> searchSCCs(final List<GraphNode> roots) {
@@ -74,11 +47,6 @@ public class SequentialFastSCC {
 				path.push(next);
 				dfs(0, roots);
 			}
-		}
-
-		// At this point all elements in roots are post-visited
-		for (GraphNode graphNode : roots) {
-			assert graphNode.getVisited() == Visited.POST;
 		}
 		
 		// Print nodes with contracted graph nodes.
@@ -95,27 +63,20 @@ public class SequentialFastSCC {
 
 	private void dfs(final int level, final List<GraphNode> graph) {
 		if (path.isEmpty()) {
-//			System.out.println("Ending dfs due to empty path");
 			return;
 		}
 		final GraphNode node = path.peek();
 		// Do not search a POST-visited node
 		if (node.getVisited() == Visited.POST) {
-//			System.out.println(String.format("Ending dfs due to post-visited node %s", node));
 			return;
 		}
 
-		System.out.println(String.format("dfs(%s) on %s and path %s", level, node, path));
-
 		// The general step is to traverse the next arc out of the last vertex
 		// on the path:
-		// final ListIterator<GraphNode> iterator = node.iterator();
 		final Set<GraphNode> exploredArcs = new HashSet<GraphNode>();
 		GraphNode successor;
 		while ((successor = node.getUnvisitedSuccessor(exploredArcs)) != null) {
 			exploredArcs.add(successor);
-			// final GraphNode successor = iterator.next();
-//			System.out.println(String.format("Successor of %s is %s", node, successor));
 			// If this arc leads to a new vertex:
 			if (successor.getVisited() == Visited.UN) {
 				// The path is extended by one vertex
@@ -124,8 +85,8 @@ public class SequentialFastSCC {
 				successor.setVisited(Visited.PRE);
 				// The search continues from the new vertex.
 				dfs(level + 1, graph);
-				// If the arc leads to a "previsited" vertex (a vertex on the
-				// search path):
+			// If the arc leads to a "previsited" vertex (a vertex on the
+			// search path):
 			} else if (successor.getVisited() == Visited.PRE && !path.isEmpty()) {
 				// A cycle has been found: This cycle is contracted into the
 				// last vertex on the search path (forming a strongly connected
@@ -139,11 +100,10 @@ public class SequentialFastSCC {
 				// Contract both GraphNodes on the path into last
 				contractPath(last, successor);
 
-//				System.out.println(String.format("Contracting %s into %s", successor, last));
-				// If the arc leads to a "postvisited" vertex:
+			// If the arc leads to a "postvisited" vertex:
 //			} else if (successor.getVisited() == Visited.POST) {
 //				// Each postvisited vertex is a complete strong component.
-//				System.err.println(String.format("SCC found: %s", successor));
+//				System.out.println(String.format("SCC found: %s", successor));
 //				// The search moves on to the next arc out of the current
 //				// vertex.
 			}
@@ -154,13 +114,6 @@ public class SequentialFastSCC {
 		// The current vertex becomes postvisited (it is a finished component)
 		node.setVisited(Visited.POST);
 
-		// The previous vertex on the search path becomes the current vertex.
-		// final int idx = path.lastIndexOf(node);
-		// if (idx > 0) {
-		// final GraphNode predecessor = path.get(idx - 1);
-		// if (!path.isEmpty()) {
-		// dfs(path.pop());
-		// }
 		dfs(level + 1, graph);
 	}
 
