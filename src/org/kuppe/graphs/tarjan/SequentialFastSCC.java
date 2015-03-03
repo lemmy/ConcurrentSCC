@@ -63,7 +63,7 @@ public class SequentialFastSCC {
 		return result;
 	}
 
-	private void dfs(Stack<GraphNode> path) {
+	private void dfs(final Stack<GraphNode> path) {
 		final GraphNode node = path.peek();
 
 		// The general step is to traverse the next arc out of the last vertex
