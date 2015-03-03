@@ -61,9 +61,6 @@ public class SequentialFastSCC {
 	}
 
 	private void dfs(final List<GraphNode> graph) {
-		if (path.isEmpty()) {
-			return;
-		}
 		final GraphNode node = path.peek();
 		// Do not search a POST-visited node
 		if (node.getVisited() == Visited.POST) {
@@ -86,7 +83,7 @@ public class SequentialFastSCC {
 				dfs(graph);
 			// If the arc leads to a "previsited" vertex (a vertex on the
 			// search path):
-			} else if (successor.getVisited() == Visited.PRE && !path.isEmpty()) {
+			} else if (successor.getVisited() == Visited.PRE) {
 				// A cycle has been found: This cycle is contracted into the
 				// last vertex on the search path (forming a strongly connected
 				// subgraph but not necessarily a maximal one) and the search
