@@ -45,7 +45,7 @@ public class SequentialFastSCC {
 			final GraphNode next = itr.next();
 			if (next.getVisited() != Visited.POST) {
 				path.push(next);
-				dfs(roots);
+				dfs();
 			}
 		}
 		
@@ -60,7 +60,7 @@ public class SequentialFastSCC {
 		return result;
 	}
 
-	private void dfs(final List<GraphNode> graph) {
+	private void dfs() {
 		final GraphNode node = path.peek();
 		// Do not search a POST-visited node
 		if (node.getVisited() == Visited.POST) {
@@ -80,7 +80,7 @@ public class SequentialFastSCC {
 				// The new vertex becomes previsited
 				successor.setVisited(Visited.PRE);
 				// The search continues from the new vertex.
-				dfs(graph);
+				dfs();
 			// If the arc leads to a "previsited" vertex (a vertex on the
 			// search path):
 			} else if (successor.getVisited() == Visited.PRE) {
@@ -91,7 +91,7 @@ public class SequentialFastSCC {
 				final GraphNode last = path.peek();
 
 				// Contract both GraphNodes into last GraphNode instance
-				last.contract(successor, graph);
+				last.contract(successor);
 
 				// Contract both GraphNodes on the path into last
 				contractPath(last, successor);
@@ -110,7 +110,7 @@ public class SequentialFastSCC {
 		// The current vertex becomes postvisited (it is a finished component)
 		node.setVisited(Visited.POST);
 
-		dfs(graph);
+		dfs();
 	}
 
 	private void contractPath(final GraphNode last, final GraphNode successor) {

@@ -314,9 +314,9 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
+		anSCC.add(three);
 		anSCC.add(two);
 		anSCC.add(one);
-		anSCC.add(three);
 		anSCC.add(four);
 		anSCC.add(five);
 		anSCC.add(six);

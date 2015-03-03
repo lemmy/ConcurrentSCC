@@ -26,7 +26,6 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -38,6 +37,7 @@ public class GraphNode implements Comparable<GraphNode> {
 	};
 
 	private final Set<GraphNode> successors = new TreeSet<GraphNode>();
+	private final Set<GraphNode> predecessors = new TreeSet<GraphNode>();
 	private final Stack<GraphNode> contracted = new Stack<GraphNode>();
 	private final String id;
 
@@ -46,7 +46,7 @@ public class GraphNode implements Comparable<GraphNode> {
 	public GraphNode(final String anId) {
 		this.id = anId;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -59,8 +59,9 @@ public class GraphNode implements Comparable<GraphNode> {
 		this.visited = visited;
 	}
 
-	public void addSuccessor(GraphNode aGraphNode) {
+	public void addSuccessor(final GraphNode aGraphNode) {
 		successors.add(aGraphNode);
+		aGraphNode.predecessors.add(this);
 	}
 
 	/**
@@ -71,36 +72,39 @@ public class GraphNode implements Comparable<GraphNode> {
 	 * 
 	 * @param aNode
 	 */
-	public void contract(final GraphNode aNode, final List<GraphNode> graph) {
-		// Do not contract the node if it's the same instance. Otherwise we
-		// destroy the node logically.
+	public void contract(final GraphNode aNode) {
+		// A node cannot be contracted with itself.
 		if (this == aNode) {
 			return;
 		}
+		// No need to contract the same two nodes twice.
+		if (contracted.contains(aNode)) {
+			return;
+		}
 		
-		// Instead of creating a new GraphNode, this becomes technically the new
-		// node. aNode is removed from the graph and will eventually be garbage
-		// collected.
+		// Replace aNode with this in aNode's predecessors. But only if aNode's predecessor
+		// indeed has aNode as a successor. aNode is *not* successor, if the predecessor
+		// itself has already been contracted.
+		for (final GraphNode aPredecessor : aNode.predecessors) {
+			if (aPredecessor.successors.remove(aNode)) {
+				aPredecessor.successors.add(this);
+			}
+		}
+		aNode.predecessors.clear();
 		
 		// Union of all successors
 		aNode.successors.remove(this);
 		this.successors.addAll(aNode.successors);
-		
-		// aNode is now no longer connected in the graph. To allow garbage
-		// collection to do its job, also clear successors.
 		aNode.successors.clear();
-		
-		contracted.addAll(aNode.contracted);
-		aNode.contracted.clear();
-		contracted.add(aNode);
-		
-		// Replace all occurrences of aNode with this
-		//TODO This is obviously terrible
-		for (GraphNode graphNode : graph) {
-			if(graphNode.successors.remove(aNode)) {
-				graphNode.successors.add(this);
+
+		// Union of contracted but don't add duplicates
+		for (GraphNode graphNode : aNode.contracted) {
+			if (!contracted.contains(graphNode)) {
+				contracted.add(graphNode);
 			}
 		}
+		contracted.add(aNode);
+		aNode.contracted.clear();
 	}
 
 	@Override
