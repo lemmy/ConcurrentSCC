@@ -62,10 +62,6 @@ public class SequentialFastSCC {
 
 	private void dfs() {
 		final GraphNode node = path.peek();
-		// Do not search a POST-visited node
-		if (node.getVisited() == Visited.POST) {
-			return;
-		}
 
 		// The general step is to traverse the next arc out of the last vertex
 		// on the path:
@@ -106,7 +102,10 @@ public class SequentialFastSCC {
 		// The current vertex becomes postvisited (it is a finished component)
 		node.setVisited(Visited.POST);
 
-		dfs();
+		// Only recurse if next node on path isn't post-visited
+		if (path.peek().getVisited() != Visited.POST) {
+			dfs();
+		}
 	}
 
 	private void contract(final GraphNode a, final GraphNode b) {
