@@ -55,7 +55,7 @@ public class GraphNode implements Comparable<GraphNode> {
 		this.visited = visited;
 	}
 
-	public void addSuccessor(final GraphNode aGraphNode) {
+	public void addEdge(final GraphNode aGraphNode) {
 		successors.add(aGraphNode);
 		aGraphNode.predecessors.add(this);
 	}

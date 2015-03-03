@@ -53,7 +53,7 @@ public class SequentialFastSCCTest {
 		// single vertex with arc to self
 		final GraphNode one = new GraphNode("1");
 		roots.add(one);
-		one.addSuccessor(one);
+		one.addEdge(one);
 
 		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
@@ -73,15 +73,15 @@ public class SequentialFastSCCTest {
 		final GraphNode four = new GraphNode("4");
 		roots.add(four);
 
-		one.addSuccessor(two);
-		one.addSuccessor(one);
+		one.addEdge(two);
+		one.addEdge(one);
 
-		two.addSuccessor(one);
-		two.addSuccessor(three);
+		two.addEdge(one);
+		two.addEdge(three);
 
-		three.addSuccessor(four);
+		three.addEdge(four);
 
-		four.addSuccessor(three);
+		four.addEdge(three);
 
 		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
@@ -113,17 +113,17 @@ public class SequentialFastSCCTest {
 		final GraphNode three = new GraphNode("3");
 		roots.add(three);
 
-		one.addSuccessor(one);
-		one.addSuccessor(two);
-		one.addSuccessor(three);
+		one.addEdge(one);
+		one.addEdge(two);
+		one.addEdge(three);
 
-		two.addSuccessor(one);
-		two.addSuccessor(two);
-		two.addSuccessor(three);
+		two.addEdge(one);
+		two.addEdge(two);
+		two.addEdge(three);
 
-		three.addSuccessor(one);
-		three.addSuccessor(two);
-		three.addSuccessor(three);
+		three.addEdge(one);
+		three.addEdge(two);
+		three.addEdge(three);
 
 		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
@@ -156,16 +156,16 @@ public class SequentialFastSCCTest {
 		final GraphNode five = new GraphNode("5");
 		roots.add(five);
 
-		one.addSuccessor(three);
+		one.addEdge(three);
 
-		two.addSuccessor(three);
+		two.addEdge(three);
 
-		three.addSuccessor(four);
-		three.addSuccessor(five);
+		three.addEdge(four);
+		three.addEdge(five);
 
-		four.addSuccessor(one);
+		four.addEdge(one);
 		
-		five.addSuccessor(two);
+		five.addEdge(two);
 		
 		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
@@ -198,13 +198,13 @@ public class SequentialFastSCCTest {
 		final GraphNode four = new GraphNode("4");
 		roots.add(four);
 
-		one.addSuccessor(two);
+		one.addEdge(two);
 
-		two.addSuccessor(one);
+		two.addEdge(one);
 
-		three.addSuccessor(four);
+		three.addEdge(four);
 
-		four.addSuccessor(three);
+		four.addEdge(three);
 		
 		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
@@ -243,17 +243,17 @@ public class SequentialFastSCCTest {
 		final GraphNode six = new GraphNode("6");
 		roots.add(six);
 
-		one.addSuccessor(two);
+		one.addEdge(two);
 
-		two.addSuccessor(three);
+		two.addEdge(three);
 
-		three.addSuccessor(four);
+		three.addEdge(four);
 
-		four.addSuccessor(five);
+		four.addEdge(five);
 
-		five.addSuccessor(six);
+		five.addEdge(six);
 		
-		six.addSuccessor(one);
+		six.addEdge(one);
 
 		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
@@ -292,23 +292,23 @@ public class SequentialFastSCCTest {
 		final GraphNode six = new GraphNode("6");
 		roots.add(six);
 
-		one.addSuccessor(two);
-		one.addSuccessor(six);
+		one.addEdge(two);
+		one.addEdge(six);
 
-		two.addSuccessor(three);
-		two.addSuccessor(one);
+		two.addEdge(three);
+		two.addEdge(one);
 		
-		three.addSuccessor(four);
-		three.addSuccessor(two);
+		three.addEdge(four);
+		three.addEdge(two);
 		
-		four.addSuccessor(five);
-		four.addSuccessor(three);
+		four.addEdge(five);
+		four.addEdge(three);
 		
-		five.addSuccessor(six);
-		five.addSuccessor(four);
+		five.addEdge(six);
+		five.addEdge(four);
 		
-		six.addSuccessor(one);
-		six.addSuccessor(five);
+		six.addEdge(one);
+		six.addEdge(five);
 
 		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
