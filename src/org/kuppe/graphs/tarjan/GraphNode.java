@@ -38,7 +38,6 @@ public class GraphNode implements Comparable<GraphNode> {
 	};
 
 	private final Set<GraphNode> successors = new TreeSet<GraphNode>();
-	private final Set<GraphNode> predecessors = new HashSet<GraphNode>();
 	private final Set<GraphNode> contracted = new HashSet<GraphNode>();
 	private final String id;
 
@@ -62,7 +61,6 @@ public class GraphNode implements Comparable<GraphNode> {
 
 	public void addSuccessor(GraphNode aGraphNode) {
 		successors.add(aGraphNode);
-		aGraphNode.predecessors.add(this);
 	}
 
 	/**
@@ -88,10 +86,6 @@ public class GraphNode implements Comparable<GraphNode> {
 		aNode.successors.remove(this);
 		this.successors.addAll(aNode.successors);
 		
-		// Remove aNode from all its predecessors which basically causes it to
-		// disappear from the graph
-		aNode.predecessors.clear();
-		
 		// aNode is now no longer connected in the graph. To allow garbage
 		// collection to do its job, also clear successors.
 		aNode.successors.clear();
@@ -105,9 +99,6 @@ public class GraphNode implements Comparable<GraphNode> {
 		for (GraphNode graphNode : graph) {
 			if(graphNode.successors.remove(aNode)) {
 				graphNode.successors.add(this);
-			}
-			if (graphNode.predecessors.remove(aNode)) {
-				graphNode.predecessors.add(this);
 			}
 		}
 	}
