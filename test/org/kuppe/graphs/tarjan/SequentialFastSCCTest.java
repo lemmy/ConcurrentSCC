@@ -51,7 +51,7 @@ public class SequentialFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 		
 		// single vertex with arc to self
-		final GraphNode one = new GraphNode("1");
+		final GraphNode one = new GraphNode(1);
 		roots.add(one);
 		one.addEdge(one);
 
@@ -64,13 +64,13 @@ public class SequentialFastSCCTest {
 	public void testA() {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
-		final GraphNode one = new GraphNode("1");
+		final GraphNode one = new GraphNode(1);
 		roots.add(one);
-		final GraphNode two = new GraphNode("2");
+		final GraphNode two = new GraphNode(2);
 		roots.add(two);
-		final GraphNode three = new GraphNode("3");
+		final GraphNode three = new GraphNode(3);
 		roots.add(three);
-		final GraphNode four = new GraphNode("4");
+		final GraphNode four = new GraphNode(4);
 		roots.add(four);
 
 		one.addEdge(two);
@@ -106,11 +106,11 @@ public class SequentialFastSCCTest {
 	public void testB() {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
-		final GraphNode one = new GraphNode("1");
+		final GraphNode one = new GraphNode(1);
 		roots.add(one);
-		final GraphNode two = new GraphNode("2");
+		final GraphNode two = new GraphNode(2);
 		roots.add(two);
-		final GraphNode three = new GraphNode("3");
+		final GraphNode three = new GraphNode(3);
 		roots.add(three);
 
 		one.addEdge(one);
@@ -145,15 +145,15 @@ public class SequentialFastSCCTest {
 	public void testC() {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
-		final GraphNode one = new GraphNode("1");
+		final GraphNode one = new GraphNode(1);
 		roots.add(one);
-		final GraphNode two = new GraphNode("2");
+		final GraphNode two = new GraphNode(2);
 		roots.add(two);
-		final GraphNode three = new GraphNode("3");
+		final GraphNode three = new GraphNode(3);
 		roots.add(three);
-		final GraphNode four = new GraphNode("4");
+		final GraphNode four = new GraphNode(4);
 		roots.add(four);
-		final GraphNode five = new GraphNode("5");
+		final GraphNode five = new GraphNode(5);
 		roots.add(five);
 
 		one.addEdge(three);
@@ -189,13 +189,13 @@ public class SequentialFastSCCTest {
 	public void testD() {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
-		final GraphNode one = new GraphNode("1");
+		final GraphNode one = new GraphNode(1);
 		roots.add(one);
-		final GraphNode two = new GraphNode("2");
+		final GraphNode two = new GraphNode(2);
 		roots.add(two);
-		final GraphNode three = new GraphNode("3");
+		final GraphNode three = new GraphNode(3);
 		roots.add(three);
-		final GraphNode four = new GraphNode("4");
+		final GraphNode four = new GraphNode(4);
 		roots.add(four);
 
 		one.addEdge(two);
@@ -230,17 +230,17 @@ public class SequentialFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
 		// a ring
-		final GraphNode one = new GraphNode("1");
+		final GraphNode one = new GraphNode(1);
 		roots.add(one);
-		final GraphNode two = new GraphNode("2");
+		final GraphNode two = new GraphNode(2);
 		roots.add(two);
-		final GraphNode three = new GraphNode("3");
+		final GraphNode three = new GraphNode(3);
 		roots.add(three);
-		final GraphNode four = new GraphNode("4");
+		final GraphNode four = new GraphNode(4);
 		roots.add(four);
-		final GraphNode five = new GraphNode("5");
+		final GraphNode five = new GraphNode(5);
 		roots.add(five);
-		final GraphNode six = new GraphNode("6");
+		final GraphNode six = new GraphNode(6);
 		roots.add(six);
 
 		one.addEdge(two);
@@ -279,17 +279,17 @@ public class SequentialFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
 		// a ring with bi-directional edges
-		final GraphNode one = new GraphNode("1");
+		final GraphNode one = new GraphNode(1);
 		roots.add(one);
-		final GraphNode two = new GraphNode("2");
+		final GraphNode two = new GraphNode(2);
 		roots.add(two);
-		final GraphNode three = new GraphNode("3");
+		final GraphNode three = new GraphNode(3);
 		roots.add(three);
-		final GraphNode four = new GraphNode("4");
+		final GraphNode four = new GraphNode(4);
 		roots.add(four);
-		final GraphNode five = new GraphNode("5");
+		final GraphNode five = new GraphNode(5);
 		roots.add(five);
-		final GraphNode six = new GraphNode("6");
+		final GraphNode six = new GraphNode(6);
 		roots.add(six);
 
 		one.addEdge(two);

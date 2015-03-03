@@ -38,13 +38,14 @@ public class GraphNode implements Comparable<GraphNode> {
 
 	private final Set<GraphNode> successors = new TreeSet<GraphNode>();
 	private final Set<GraphNode> predecessors = new TreeSet<GraphNode>();
-	private final String id;
+	private final int id;
 	
 	private Stack<GraphNode> contracted;
 
 	private Visited visited = Visited.UN;
 
-	public GraphNode(final String anId) {
+	public GraphNode(final int anId) {
+		assert anId >= 0;
 		this.id = anId;
 	}
 
@@ -132,7 +133,7 @@ public class GraphNode implements Comparable<GraphNode> {
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(GraphNode o) {
-		return id.compareTo(o.id);
+	public int compareTo(final GraphNode o) {
+		return id - o.id;
 	}
 }
