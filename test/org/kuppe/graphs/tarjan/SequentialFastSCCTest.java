@@ -37,12 +37,14 @@ import org.junit.Test;
 
 public class SequentialFastSCCTest {
 	
+	private final SequentialFastSCC seqFastScc = new SequentialFastSCC();
+
 	@Test
 	public void testEmpty() {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 		
 		// No vertices at all
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		Assert.assertEquals(0, sccs.size());
 	}
 
@@ -55,7 +57,7 @@ public class SequentialFastSCCTest {
 		roots.add(one);
 		one.addEdge(one);
 
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		
 		Assert.assertEquals(0, sccs.size());
 	}
@@ -83,7 +85,7 @@ public class SequentialFastSCCTest {
 
 		four.addEdge(three);
 
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
@@ -125,7 +127,7 @@ public class SequentialFastSCCTest {
 		three.addEdge(two);
 		three.addEdge(three);
 
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
@@ -167,7 +169,7 @@ public class SequentialFastSCCTest {
 		
 		five.addEdge(two);
 		
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
@@ -206,7 +208,7 @@ public class SequentialFastSCCTest {
 
 		four.addEdge(three);
 		
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
@@ -255,7 +257,7 @@ public class SequentialFastSCCTest {
 		
 		six.addEdge(one);
 
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
@@ -310,7 +312,7 @@ public class SequentialFastSCCTest {
 		six.addEdge(one);
 		six.addEdge(five);
 
-		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();

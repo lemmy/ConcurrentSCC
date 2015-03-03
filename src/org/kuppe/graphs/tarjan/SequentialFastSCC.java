@@ -38,16 +38,16 @@ import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class SequentialFastSCC {
 
-	private final Stack<GraphNode> path = new Stack<GraphNode>();
-
 	public Set<Stack<GraphNode>> searchSCCs(final List<GraphNode> roots) {
+		final Stack<GraphNode> path = new Stack<GraphNode>();
+		
 		// For all non-post-visited roots, do dfs...
 		final Iterator<GraphNode> itr = roots.iterator();
 		while (itr.hasNext()) {
 			final GraphNode next = itr.next();
 			if (next.getVisited() != Visited.POST) {
 				path.push(next);
-				dfs();
+				dfs(path);
 			}
 		}
 		
@@ -63,7 +63,7 @@ public class SequentialFastSCC {
 		return result;
 	}
 
-	private void dfs() {
+	private void dfs(Stack<GraphNode> path) {
 		final GraphNode node = path.peek();
 
 		// The general step is to traverse the next arc out of the last vertex
@@ -80,7 +80,7 @@ public class SequentialFastSCC {
 				// The new vertex becomes previsited
 				successor.setVisited(Visited.PRE);
 				// The search continues from the new vertex.
-				dfs();
+				dfs(path);
 			// If the arc leads to a "previsited" vertex (a vertex on the
 			// search path):
 			} else if (successor.getVisited() == Visited.PRE) {
@@ -90,7 +90,7 @@ public class SequentialFastSCC {
 				// continues.
 				
 				// Contract both nodes into one
-				contract(path.peek(), successor);
+				contract(path,path.peek(), successor);
 
 			// If the arc leads to a "postvisited" vertex:
 //			} else if (successor.getVisited() == Visited.POST) {
@@ -108,11 +108,11 @@ public class SequentialFastSCC {
 
 		// Only recurse if next node on path isn't post-visited
 		if (path.peek().getVisited() != Visited.POST) {
-			dfs();
+			dfs(path);
 		}
 	}
 
-	private void contract(final GraphNode a, final GraphNode b) {
+	private void contract(final Stack<GraphNode> path, final GraphNode a, final GraphNode b) {
 		// Contract the two nodes in the graph
 		a.contract(b);
 		
