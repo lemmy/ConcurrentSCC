@@ -88,13 +88,9 @@ public class SequentialFastSCC {
 				// last vertex on the search path (forming a strongly connected
 				// subgraph but not necessarily a maximal one) and the search
 				// continues.
-				final GraphNode last = path.peek();
-
-				// Contract both GraphNodes into last GraphNode instance
-				last.contract(successor);
-
-				// Contract both GraphNodes on the path into last
-				contractPath(last, successor);
+				
+				// Contract both nodes into one
+				contract(path.peek(), successor);
 
 			// If the arc leads to a "postvisited" vertex:
 //			} else if (successor.getVisited() == Visited.POST) {
@@ -113,18 +109,20 @@ public class SequentialFastSCC {
 		dfs();
 	}
 
-	private void contractPath(final GraphNode last, final GraphNode successor) {
-		// Contract (combine) two to n identical elements
+	private void contract(final GraphNode a, final GraphNode b) {
+		a.contract(b);
+		
+		// Contract (combine) two to n identical elements on the path
 		final ListIterator<GraphNode> itr = path.listIterator();
 		GraphNode pre = null;
 		while (itr.hasNext()) {
 			final GraphNode n = itr.next();
-			if (n == successor) {
+			if (n == b) {
 				if (pre == n) {
 					itr.remove();
 				} else {
 					itr.remove();
-					itr.add(last);
+					itr.add(a);
 				}
 			}
 			pre = n;
