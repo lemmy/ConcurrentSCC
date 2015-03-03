@@ -119,14 +119,10 @@ public class GraphNode implements Comparable<GraphNode> {
 	}
 	
 	// Deterministically
-	public GraphNode getUnvisitedSuccessor(final Set<GraphNode> explored) {
+	public TreeSet<GraphNode> getUnvisitedSuccessor(final Set<GraphNode> explored) {
 		final TreeSet<GraphNode> temp = new TreeSet<GraphNode>(this.successors);
 		temp.removeAll(explored);
-		if (temp.isEmpty()) {
-			return null;
-		} else {
-			return temp.first();
-		}
+		return temp;
 	}
 
 	public Stack<GraphNode> getContracted() {

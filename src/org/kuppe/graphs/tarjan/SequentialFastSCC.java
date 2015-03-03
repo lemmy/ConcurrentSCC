@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -68,8 +69,9 @@ public class SequentialFastSCC {
 		// The general step is to traverse the next arc out of the last vertex
 		// on the path:
 		final Set<GraphNode> exploredArcs = new HashSet<GraphNode>();
-		GraphNode successor;
-		while ((successor = node.getUnvisitedSuccessor(exploredArcs)) != null) {
+		TreeSet<GraphNode> successors;
+		while (!(successors = node.getUnvisitedSuccessor(exploredArcs)).isEmpty()) {
+			final GraphNode successor = successors.first();
 			exploredArcs.add(successor);
 			// If this arc leads to a new vertex:
 			if (successor.getVisited() == Visited.UN) {
