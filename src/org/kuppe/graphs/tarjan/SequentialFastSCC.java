@@ -40,6 +40,7 @@ public class SequentialFastSCC {
 	private final Stack<GraphNode> path = new Stack<GraphNode>();
 
 	public Set<Stack<GraphNode>> searchSCCs(final List<GraphNode> roots) {
+		// For all non-post-visited roots, do dfs...
 		final Iterator<GraphNode> itr = roots.iterator();
 		while (itr.hasNext()) {
 			final GraphNode next = itr.next();
@@ -49,7 +50,8 @@ public class SequentialFastSCC {
 			}
 		}
 		
-		// Print nodes with contracted graph nodes!
+		// Create sets of contracted SCCs!
+		// (It's not part of the SCC algorithm)
 		final Set<Stack<GraphNode>> result = new HashSet<Stack<GraphNode>>();
 		for (GraphNode graphNode : roots) {
 			final Stack<GraphNode> scc = graphNode.getContracted();
@@ -109,6 +111,7 @@ public class SequentialFastSCC {
 	}
 
 	private void contract(final GraphNode a, final GraphNode b) {
+		// Contract the two nodes in the graph
 		a.contract(b);
 		
 		// Contract (combine) two to n identical elements on the path
