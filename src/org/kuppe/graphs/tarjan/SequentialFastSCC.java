@@ -55,7 +55,7 @@ public class SequentialFastSCC {
 		final Set<Stack<GraphNode>> result = new HashSet<Stack<GraphNode>>();
 		for (GraphNode graphNode : roots) {
 			final Stack<GraphNode> scc = graphNode.getContracted();
-			if (!scc.isEmpty()) {
+			if (scc != null) {
 				result.add(scc);
 			}
 		}

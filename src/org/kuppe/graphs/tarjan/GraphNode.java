@@ -38,8 +38,9 @@ public class GraphNode implements Comparable<GraphNode> {
 
 	private final Set<GraphNode> successors = new TreeSet<GraphNode>();
 	private final Set<GraphNode> predecessors = new TreeSet<GraphNode>();
-	private final Stack<GraphNode> contracted = new Stack<GraphNode>();
 	private final String id;
+	
+	private Stack<GraphNode> contracted;
 
 	private Visited visited = Visited.UN;
 
@@ -73,8 +74,11 @@ public class GraphNode implements Comparable<GraphNode> {
 		if (this == aNode) {
 			return;
 		}
-		// No need to contract the same two nodes twice.
-		if (contracted.contains(aNode)) {
+		if (this.contracted == null) {
+			this.contracted = new Stack<GraphNode>();
+			this.contracted.add(this);
+		} else if (this.contracted.contains(aNode)) {
+			// No need to contract the same two nodes twice.
 			return;
 		}
 		
@@ -93,14 +97,20 @@ public class GraphNode implements Comparable<GraphNode> {
 		this.successors.addAll(aNode.successors);
 		aNode.successors.clear();
 
-		// Union of contracted but don't add duplicates
-		for (GraphNode graphNode : aNode.contracted) {
-			if (!contracted.contains(graphNode)) {
-				contracted.add(graphNode);
+		// Contracted
+		if (aNode.contracted != null) {
+			// Union of contracted but don't add duplicates
+			for (GraphNode graphNode : aNode.contracted) {
+				if (!this.contracted.contains(graphNode)) {
+					this.contracted.add(graphNode);
+				}
 			}
+			aNode.contracted.clear();
+			aNode.contracted = null;
 		}
-		contracted.add(aNode);
-		aNode.contracted.clear();
+		if (!this.contracted.contains(aNode)) {
+			this.contracted.add(aNode);
+		}
 	}
 
 	@Override
@@ -120,11 +130,6 @@ public class GraphNode implements Comparable<GraphNode> {
 	}
 
 	public Stack<GraphNode> getContracted() {
-		if (contracted.isEmpty()) {
-			// The current vertex has *not* been contracted
-			return contracted;
-		}
-		contracted.add(this);
 		return contracted;
 	}
 

@@ -87,12 +87,12 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
-		anSCC.add(one);
 		anSCC.add(two);
+		anSCC.add(one);
 		expected.add(anSCC);
 		anSCC = new Stack<GraphNode>();
-		anSCC.add(three);
 		anSCC.add(four);
+		anSCC.add(three);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
@@ -129,9 +129,9 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
-		anSCC.add(one);
-		anSCC.add(two);
 		anSCC.add(three);
+		anSCC.add(two);
+		anSCC.add(one);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
@@ -171,11 +171,11 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
+		anSCC.add(two);
+		anSCC.add(one);
 		anSCC.add(three);
 		anSCC.add(four);
-		anSCC.add(one);
 		anSCC.add(five);
-		anSCC.add(two);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 
@@ -210,12 +210,12 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
-		anSCC.add(two);
 		anSCC.add(one);
+		anSCC.add(two);
 		expected.add(anSCC);
 		anSCC = new Stack<GraphNode>();
-		anSCC.add(four);
 		anSCC.add(three);
+		anSCC.add(four);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
@@ -259,12 +259,12 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
+		anSCC.add(one);
 		anSCC.add(two);
 		anSCC.add(three);
 		anSCC.add(four);
 		anSCC.add(five);
 		anSCC.add(six);
-		anSCC.add(one);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
@@ -314,12 +314,12 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
-		anSCC.add(three);
-		anSCC.add(two);
-		anSCC.add(one);
-		anSCC.add(four);
-		anSCC.add(five);
 		anSCC.add(six);
+		anSCC.add(three);
+		anSCC.add(five);
+		anSCC.add(four);
+		anSCC.add(one);
+		anSCC.add(two);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
