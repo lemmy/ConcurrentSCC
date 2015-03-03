@@ -47,10 +47,6 @@ public class GraphNode implements Comparable<GraphNode> {
 		this.id = anId;
 	}
 
-	public String getId() {
-		return id;
-	}
-
 	public Visited getVisited() {
 		return visited;
 	}
