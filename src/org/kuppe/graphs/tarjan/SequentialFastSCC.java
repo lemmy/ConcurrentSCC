@@ -26,10 +26,10 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.Stack;
 
@@ -114,15 +114,18 @@ public class SequentialFastSCC {
 	}
 
 	private void contractPath(final GraphNode last, final GraphNode successor) {
-		// Replace all occurrences of successor in path with last
-		Collections.replaceAll(path, successor, last);
 		// Contract (combine) two to n identical elements
-		final Iterator<GraphNode> itr = path.iterator();
+		final ListIterator<GraphNode> itr = path.listIterator();
 		GraphNode pre = null;
 		while (itr.hasNext()) {
 			final GraphNode n = itr.next();
-			if (pre == n) {
-				itr.remove();
+			if (n == successor) {
+				if (pre == n) {
+					itr.remove();
+				} else {
+					itr.remove();
+					itr.add(last);
+				}
 			}
 			pre = n;
 		}
