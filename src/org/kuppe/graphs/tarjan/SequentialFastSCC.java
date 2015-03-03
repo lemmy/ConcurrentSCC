@@ -39,7 +39,7 @@ public class SequentialFastSCC {
 
 	private final Stack<GraphNode> path = new Stack<GraphNode>();
 
-	public Set<Set<GraphNode>> searchSCCs(final List<GraphNode> roots) {
+	public Set<Stack<GraphNode>> searchSCCs(final List<GraphNode> roots) {
 		final Iterator<GraphNode> itr = roots.iterator();
 		while (itr.hasNext()) {
 			final GraphNode next = itr.next();
@@ -49,11 +49,10 @@ public class SequentialFastSCC {
 			}
 		}
 		
-		// Print nodes with contracted graph nodes.
-		// These are the strongly connected components?!
-		final Set<Set<GraphNode>> result = new HashSet<Set<GraphNode>>();
+		// Print nodes with contracted graph nodes!
+		final Set<Stack<GraphNode>> result = new HashSet<Stack<GraphNode>>();
 		for (GraphNode graphNode : roots) {
-			final Set<GraphNode> scc = graphNode.getContracted();
+			final Stack<GraphNode> scc = graphNode.getContracted();
 			if (!scc.isEmpty()) {
 				result.add(scc);
 			}

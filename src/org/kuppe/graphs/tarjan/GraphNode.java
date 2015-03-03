@@ -26,9 +26,9 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 public class GraphNode implements Comparable<GraphNode> {
@@ -38,7 +38,7 @@ public class GraphNode implements Comparable<GraphNode> {
 	};
 
 	private final Set<GraphNode> successors = new TreeSet<GraphNode>();
-	private final Set<GraphNode> contracted = new HashSet<GraphNode>();
+	private final Stack<GraphNode> contracted = new Stack<GraphNode>();
 	private final String id;
 
 	private Visited visited = Visited.UN;
@@ -119,7 +119,7 @@ public class GraphNode implements Comparable<GraphNode> {
 		}
 	}
 
-	public Set<GraphNode> getContracted() {
+	public Stack<GraphNode> getContracted() {
 		if (contracted.isEmpty()) {
 			// The current vertex has *not* been contracted
 			return contracted;

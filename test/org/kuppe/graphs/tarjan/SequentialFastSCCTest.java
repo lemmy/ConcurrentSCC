@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class SequentialFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 		
 		// No vertices at all
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		Assert.assertEquals(0, sccs.size());
 	}
 
@@ -54,7 +55,7 @@ public class SequentialFastSCCTest {
 		roots.add(one);
 		one.addSuccessor(one);
 
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
 		Assert.assertEquals(0, sccs.size());
 	}
@@ -82,21 +83,21 @@ public class SequentialFastSCCTest {
 
 		four.addSuccessor(three);
 
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
-		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
-		Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
+		Stack<GraphNode> anSCC = new Stack<GraphNode>();
 		anSCC.add(one);
 		anSCC.add(two);
 		expected.add(anSCC);
-		anSCC = new HashSet<GraphNode>();
+		anSCC = new Stack<GraphNode>();
 		anSCC.add(three);
 		anSCC.add(four);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
 		Assert.assertEquals(sccs.toString(), 2, sccs.size());
-		for (Set<GraphNode> scc : sccs) {
+		for (Stack<GraphNode> scc : sccs) {
 			Assert.assertEquals(scc.toString(), 2, scc.size());
 		}
 	}
@@ -124,10 +125,10 @@ public class SequentialFastSCCTest {
 		three.addSuccessor(two);
 		three.addSuccessor(three);
 
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
-		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
-		Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
+		Stack<GraphNode> anSCC = new Stack<GraphNode>();
 		anSCC.add(one);
 		anSCC.add(two);
 		anSCC.add(three);
@@ -135,7 +136,7 @@ public class SequentialFastSCCTest {
 		Assert.assertEquals(expected, sccs);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
-		for (Set<GraphNode> scc : sccs) {
+		for (Stack<GraphNode> scc : sccs) {
 			Assert.assertEquals(scc.toString(), 3, scc.size());
 		}
 	}
@@ -166,20 +167,20 @@ public class SequentialFastSCCTest {
 		
 		five.addSuccessor(two);
 		
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
-		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
-		Set<GraphNode> anSCC = new HashSet<GraphNode>();
-		anSCC.add(one);
-		anSCC.add(two);
+		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
+		Stack<GraphNode> anSCC = new Stack<GraphNode>();
 		anSCC.add(three);
 		anSCC.add(four);
+		anSCC.add(one);
 		anSCC.add(five);
+		anSCC.add(two);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
-		for (Set<GraphNode> scc : sccs) {
+		for (Stack<GraphNode> scc : sccs) {
 			Assert.assertEquals(scc.toString(), 5, scc.size());
 		}
 	}
@@ -205,21 +206,21 @@ public class SequentialFastSCCTest {
 
 		four.addSuccessor(three);
 		
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
-		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
-		Set<GraphNode> anSCC = new HashSet<GraphNode>();
-		anSCC.add(one);
+		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
+		Stack<GraphNode> anSCC = new Stack<GraphNode>();
 		anSCC.add(two);
+		anSCC.add(one);
 		expected.add(anSCC);
-		anSCC = new HashSet<GraphNode>();
-		anSCC.add(three);
+		anSCC = new Stack<GraphNode>();
 		anSCC.add(four);
+		anSCC.add(three);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
 		Assert.assertEquals(sccs.toString(), 2, sccs.size());
-		for (Set<GraphNode> scc : sccs) {
+		for (Stack<GraphNode> scc : sccs) {
 			Assert.assertEquals(scc.toString(), 2, scc.size());
 		}
 	}
@@ -254,21 +255,21 @@ public class SequentialFastSCCTest {
 		
 		six.addSuccessor(one);
 
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
-		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
-		Set<GraphNode> anSCC = new HashSet<GraphNode>();
-		anSCC.add(one);
+		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
+		Stack<GraphNode> anSCC = new Stack<GraphNode>();
 		anSCC.add(two);
 		anSCC.add(three);
 		anSCC.add(four);
 		anSCC.add(five);
 		anSCC.add(six);
+		anSCC.add(one);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
-		for (Set<GraphNode> scc : sccs) {
+		for (Stack<GraphNode> scc : sccs) {
 			Assert.assertEquals(scc.toString(), 6, scc.size());
 		}
 	}
@@ -309,12 +310,12 @@ public class SequentialFastSCCTest {
 		six.addSuccessor(one);
 		six.addSuccessor(five);
 
-		final Set<Set<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = new SequentialFastSCC().searchSCCs(roots);
 		
-		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
-		Set<GraphNode> anSCC = new HashSet<GraphNode>();
-		anSCC.add(one);
+		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
+		Stack<GraphNode> anSCC = new Stack<GraphNode>();
 		anSCC.add(two);
+		anSCC.add(one);
 		anSCC.add(three);
 		anSCC.add(four);
 		anSCC.add(five);
@@ -323,7 +324,7 @@ public class SequentialFastSCCTest {
 		Assert.assertEquals(expected, sccs);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
-		for (Set<GraphNode> scc : sccs) {
+		for (Stack<GraphNode> scc : sccs) {
 			Assert.assertEquals(scc.toString(), 6, scc.size());
 		}
 	}
