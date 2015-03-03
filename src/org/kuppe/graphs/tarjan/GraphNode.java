@@ -33,7 +33,13 @@ import java.util.TreeSet;
 public class GraphNode implements Comparable<GraphNode> {
 
 	public enum Visited {
-		UN, PRE, POST
+		UN(0), PRE(1), POST(2);
+		
+		final int order;
+		
+		Visited(int anOrder) {
+			this.order = anOrder;
+		}
 	};
 
 	private final Set<GraphNode> successors = new TreeSet<GraphNode>();
@@ -54,6 +60,7 @@ public class GraphNode implements Comparable<GraphNode> {
 	}
 
 	public void setVisited(Visited visited) {
+		assert this.visited.order <= visited.order;
 		this.visited = visited;
 	}
 
