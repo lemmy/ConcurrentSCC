@@ -26,8 +26,10 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class GraphNode {
 
@@ -38,21 +40,23 @@ public class GraphNode {
 
 	// TODO Do we need a stack here? A set will do to check liveness as by
 	// definition of SCC, each vertex can reach every other one.
-	private final Set<GraphNode> contractedInto = new HashSet<GraphNode>();
+	private final Set<GraphNode> contractedInto = new TreeSet<GraphNode>(new Comparator<GraphNode>() {
+		public int compare(GraphNode o1, GraphNode o2) {
+			// want a stable order of the nodes inside the SCC for the moment
+			// (to better test if the correct SCC has been found)
+			return Integer.compare(o1.id, o2.id);
+		}
+	});
 	private final Set<Arc> successors = new HashSet<Arc>();
 	
-	private final String id;
+	private final int id;
 	
 	private Visited visited = Visited.UN;
 	private GraphNode parent;
-	private GraphNode contracted = this;
+	public GraphNode contracted = this;
 
-	public GraphNode(final String anId) {
-		this.id = anId;
-	}
-	
 	public GraphNode(final int anId) {
-		this(Integer.toString(anId));
+		this.id = anId;
 	}
 
 	public boolean is(Visited v) {
@@ -85,7 +89,7 @@ public class GraphNode {
 
 	public Set<Arc> getSuccessor() {
 		return contracted.successors;
-	}
+		}
 
 	public void setParent(GraphNode parent) {
 		contracted.parent = parent;

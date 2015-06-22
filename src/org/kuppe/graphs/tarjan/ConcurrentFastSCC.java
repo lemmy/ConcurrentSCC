@@ -27,6 +27,7 @@
 package org.kuppe.graphs.tarjan;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +35,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
 public class ConcurrentFastSCC {
-	
-	
 	
 	public Set<Set<GraphNode>> searchSCCs(final List<GraphNode> initNodes) {
 		
@@ -53,30 +52,6 @@ public class ConcurrentFastSCC {
 		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		executor.shutdown();
 		
-		return sccs;
+		return new HashSet<Set<GraphNode>>(sccs);
 	}
-		
-//	private Set<Stack<GraphNode>> doIt(Collection<Callable<Void>> tasks) {
-//		
-//		// TODO 25 is obviously an arbitrary number, but keep queue length bounded
-//		// so that it doesn't grow indefinitely.
-//		// TODO remove duplicates from queue after contractions to minimize space consumption.
-//		final BlockingQueue<GraphNode> roots = new ArrayBlockingQueue<>(25, false, initNodes);
-//		
-//		executor.submit(new Callable<Void>() {
-//
-//			public Void call() throws InterruptedException {
-//			}
-//		});
-//		
-//		
-//		try {
-//			executor.shutdown();
-//			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
-//			assert roots.isEmpty();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		return sccs;
-//	}
 }

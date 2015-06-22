@@ -47,9 +47,8 @@ public class SCCWorker implements Callable<Void> {
 	}
 	
 	public Void call() throws Exception {
-		synchronized (v) {
+		synchronized (v.contracted) {
 			if (v.is(Visited.POST)) {
-				System.out.println(String.format("Skipping POST-visited node %s", v));
 				return null;
 			}
 
@@ -67,7 +66,6 @@ public class SCCWorker implements Callable<Void> {
 				 */
 				final Arc arc = itr.next();
 				if (arc.isTraversed()) {
-					System.out.println(String.format("Skipping traversed arc %s", arc));
 					continue;
 				}
 				arc.setTraversed();
@@ -76,20 +74,16 @@ public class SCCWorker implements Callable<Void> {
 
 				// To traverse an arc (v, w), if w is postvisited do nothing.
 				if (w.is(Visited.POST)) {
-					System.out.println(String.format("Skipping POST-visited node %s", w));
 					continue;
 				}
 
 				// Otherwise...
 				if (!w.isInSameTree(v)) {
-					System.out.println(String.format("%s and %s not in same tree", v, w));
 					// If w is in a different tree than v, make w the
 					// parent of v and mark w previsited if it is unvisited.
 					v.setParent(w);
 
-					if (w.is(Visited.UN)) {
-						w.set(Visited.PRE);
-					}
+					w.set(Visited.PRE);
 
 					// We've potentially just created a new root
 					this.v = w;
@@ -109,7 +103,6 @@ public class SCCWorker implements Callable<Void> {
 					 * contractions.)
 					 */
 					if (!w.equals(v)) {
-						System.out.println(String.format("%s and %s in same tree", v, w));
 						/*
 						 * If v # w, contract all the ancestors of w into a single
 						 * vertex, which is a root. It may be convenient and
@@ -140,9 +133,8 @@ public class SCCWorker implements Callable<Void> {
 							throw new RuntimeException("SCC violates liveness");
 						}
 					} else {
-						System.out.println(String.format("%s and %s are equal", v, w));
 						// do nothing
-						System.out.println("nop");
+						//TODO self-loop, might check stuttering here 
 					}
 				}
 

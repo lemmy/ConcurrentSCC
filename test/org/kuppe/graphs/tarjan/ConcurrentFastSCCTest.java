@@ -333,13 +333,13 @@ public class ConcurrentFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
 		// a star with one loop
-		final GraphNode center = new GraphNode("center");
-		final GraphNode leftUpper = new GraphNode("leftUpper");
+		final GraphNode center = new GraphNode(1);
+		final GraphNode leftUpper = new GraphNode(2);
 		roots.add(leftUpper);
-		final GraphNode rightUpper = new GraphNode("rightUpper");
-		final GraphNode leftBottom = new GraphNode("leftBottom");
+		final GraphNode rightUpper = new GraphNode(3);
+		final GraphNode leftBottom = new GraphNode(4);
 		roots.add(leftBottom);
-		final GraphNode rightBottom = new GraphNode("rightBottom");
+		final GraphNode rightBottom = new GraphNode(5);
 		
 		leftUpper.addEdge(center);
 		leftBottom.addEdge(center);
