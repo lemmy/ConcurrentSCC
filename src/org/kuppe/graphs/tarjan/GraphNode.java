@@ -28,7 +28,6 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 
 public class GraphNode {
 
@@ -39,14 +38,14 @@ public class GraphNode {
 
 	// TODO Do we need a stack here? A set will do to check liveness as by
 	// definition of SCC, each vertex can reach every other one.
-	private final Stack<GraphNode> contractedInto = new Stack<GraphNode>();
+	private final Set<GraphNode> contractedInto = new HashSet<GraphNode>();
 	private final Set<Arc> successors = new HashSet<Arc>();
 	
 	private final String id;
 	
 	private Visited visited = Visited.UN;
 	private GraphNode parent;
-	private boolean contracted = false;
+	private GraphNode contracted = this;
 
 	public GraphNode(final String anId) {
 		this.id = anId;
@@ -57,7 +56,7 @@ public class GraphNode {
 	}
 
 	public boolean is(Visited v) {
-		return visited == v;
+		return contracted.visited == v;
 	}
 	
 	public boolean isNot(Visited v) {
@@ -65,14 +64,13 @@ public class GraphNode {
 	}
 
 	public void set(Visited visited) {
-		assert !contracted;
 		// Only state changes from UN > PRE > POST are allowed
-		assert this.visited.ordinal() <= visited.ordinal();
-		this.visited = visited;
+		assert contracted.visited.ordinal() <= visited.ordinal();
+		contracted.visited = visited;
 	}
 
 	public void addEdge(final GraphNode aGraphNode) {
-		successors.add(new Arc(this, aGraphNode));
+		contracted.successors.add(new Arc(this, aGraphNode));
 	}
 
 	/* (non-Javadoc)
@@ -86,13 +84,11 @@ public class GraphNode {
 	}
 
 	public Set<Arc> getSuccessor() {
-		assert !contracted;
-		return successors;
+		return contracted.successors;
 	}
 
 	public void setParent(GraphNode parent) {
-		assert !contracted;
-		this.parent = parent;
+		contracted.parent = parent;
 	}
 
 	/**
@@ -109,39 +105,59 @@ public class GraphNode {
 	 * @return true iff there exists a path from this to other
 	 */
 	public boolean isInSameTree(GraphNode other) {
-		// Assert this node hasn't been contracted into another node
-		assert !contracted;
 		
 		// TODO Do this for this and other and compare the root for equality. An
 		// optimization is to compare the element on the path. If other is on
 		// the path of this (or vice-versa), both are obviously in the same tree
+		
+		
 
 		// Recursively traverse all ancestors to the root
-		if (this.equals(other)) {
+		if (contracted.equals(other)) {
 			return true;
 		}
-		if (parent == null) {
+		if (contracted.parent == null) {
 			return false;
 		}
-		return parent.isInSameTree(other);
+		if (contracted.parent.isInSameTree(other)) {
+			return true;
+		}
+		return root(contracted).equals(root(other));
 	}
 
-	public Stack<GraphNode> contract(GraphNode graphNode) {
+	private GraphNode root(GraphNode node) {
+		GraphNode parent = node.parent;
+		while (parent != null) {
+			parent = parent.parent;
+		}
+		return parent;
+	}
+
+	public void contract(Set<Set<GraphNode>> sccs, GraphNode graphNode) {
+		// Must add ourself to the SCC
+		contractedInto.add(this);
+		
 		// "merge" successor's outgoing arcs into the current set of arcs.
 		// Do the same merge for all of successor's parents
 		//TODO merge w into v too or does it remain a root?
 
 		GraphNode parent = graphNode;
 		while (parent != null) {
-			
-			// Add parent to stack of contracted (SCC)
-			contractedInto.push(parent);
-			
 			// Special care needs to be taken if we are about to merge ourself.
 			// Since we will represent the new contracted node, our visited
 			// state must *not* change.
 			//TODO Visited state of new node UN or PRE? 
 			if (parent != this) {
+				
+				if (!parent.contractedInto.isEmpty()) {
+					// If parent is also contracted, we have to merge it's
+					// contraction into us. It is an SCC, but we have found a larger
+					// one that contains the smaller.
+					sccs.remove(parent.contractedInto);
+					contractedInto.addAll(parent.contractedInto);
+				}
+				// Add parent to stack of contracted (SCC)
+				contractedInto.add(parent);
 
 				// Merge parent's untraversed outgoing arcs into ours
 				for (Arc arc : parent.getSuccessor()) {
@@ -152,7 +168,7 @@ public class GraphNode {
 				
 				// Exclude parent from further processing
 				parent.visited = Visited.POST;
-				parent.contracted = true;
+				parent.contracted = this;
 			}
 			
 			// Continue with parent's parent (up to the root which is indicated
@@ -160,20 +176,12 @@ public class GraphNode {
 			parent = parent.parent;
 		}
 		
-		return contractedInto;
+		// Add to SCCs
+		sccs.add(contractedInto);
 	}
-//	
-//	private void mergeUnvisistedArcs(final Collection<GraphNode> successors, final GraphNode successor) {
-//		Set<GraphNode> successorSuccessors = successor.getSuccessor();
-//		for (GraphNode graphNode : successorSuccessors) {
-//			if (graphNode.isNot(Visited.POST)) {
-//				successors.add(graphNode);
-//			}
-//		}
-//	}
 
 	public boolean checkSCC() {
-		assert !contractedInto.isEmpty();
+		assert !contracted.contractedInto.isEmpty();
 		//TODO check liveness here
 		return true;
 	}
