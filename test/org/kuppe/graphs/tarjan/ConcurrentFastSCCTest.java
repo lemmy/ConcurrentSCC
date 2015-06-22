@@ -35,39 +35,39 @@ import java.util.Stack;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SequentialFastSCCTest {
+public class ConcurrentFastSCCTest {
 	
-	private final SequentialFastSCC seqFastScc = new SequentialFastSCC();
+	private final ConcurrentFastSCC concurrentFastScc = new ConcurrentFastSCC();
 
-	@Test
-	public void testEmpty() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
-		
-		// No vertices at all
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
-		Assert.assertEquals(0, sccs.size());
-	}
-
-	@Test
-	public void testSingleVertex() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
-		
-		// single vertex with arc to self
-		final GraphNode one = new GraphNode(1);
-		roots.add(one);
-		one.addEdge(one);
-
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
-		
-		Assert.assertEquals(0, sccs.size());
-	}
+//	@Test
+//	public void testEmpty() {
+//		final List<GraphNode> roots = new ArrayList<GraphNode>();
+//		
+//		// No vertices at all
+//		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+//		Assert.assertEquals(0, sccs.size());
+//	}
+//
+//	@Test
+//	public void testSingleVertex() {
+//		final List<GraphNode> roots = new ArrayList<GraphNode>();
+//		
+//		// single vertex with arc to self
+//		final GraphNode one = new GraphNode(1);
+//		roots.add(one);
+//		one.addEdge(one);
+//
+//		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+//		
+//		Assert.assertEquals(0, sccs.size());
+//	}
 	
 	@Test
 	public void testA() {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
+		roots.add(one); // One is our init node
 		final GraphNode two = new GraphNode(2);
 		roots.add(two);
 		final GraphNode three = new GraphNode(3);
@@ -85,7 +85,7 @@ public class SequentialFastSCCTest {
 
 		four.addEdge(three);
 
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
 		
 		Assert.assertEquals(sccs.toString(), 2, sccs.size());
 		for (Stack<GraphNode> scc : sccs) {
@@ -94,12 +94,12 @@ public class SequentialFastSCCTest {
 		
 		final Set<Stack<GraphNode>> expected = new HashSet<Stack<GraphNode>>();
 		Stack<GraphNode> anSCC = new Stack<GraphNode>();
-		anSCC.add(two);
 		anSCC.add(one);
+		anSCC.add(two);
 		expected.add(anSCC);
 		anSCC = new Stack<GraphNode>();
-		anSCC.add(four);
 		anSCC.add(three);
+		anSCC.add(four);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 	}
@@ -109,9 +109,7 @@ public class SequentialFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
 		final GraphNode two = new GraphNode(2);
-		roots.add(two);
 		final GraphNode three = new GraphNode(3);
 		roots.add(three);
 
@@ -127,7 +125,7 @@ public class SequentialFastSCCTest {
 		three.addEdge(two);
 		three.addEdge(three);
 
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Stack<GraphNode> scc : sccs) {
@@ -148,15 +146,12 @@ public class SequentialFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
 		final GraphNode two = new GraphNode(2);
 		roots.add(two);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
 		final GraphNode four = new GraphNode(4);
 		roots.add(four);
 		final GraphNode five = new GraphNode(5);
-		roots.add(five);
 
 		one.addEdge(three);
 
@@ -169,7 +164,7 @@ public class SequentialFastSCCTest {
 		
 		five.addEdge(two);
 		
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
 
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Stack<GraphNode> scc : sccs) {
@@ -192,13 +187,11 @@ public class SequentialFastSCCTest {
 		final List<GraphNode> roots = new ArrayList<GraphNode>();
 
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
 		final GraphNode two = new GraphNode(2);
 		roots.add(two);
 		final GraphNode three = new GraphNode(3);
 		roots.add(three);
 		final GraphNode four = new GraphNode(4);
-		roots.add(four);
 
 		one.addEdge(two);
 
@@ -208,7 +201,7 @@ public class SequentialFastSCCTest {
 
 		four.addEdge(three);
 		
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
 		
 		Assert.assertEquals(sccs.toString(), 2, sccs.size());
 		for (Stack<GraphNode> scc : sccs) {
@@ -233,17 +226,13 @@ public class SequentialFastSCCTest {
 
 		// a ring
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
 		final GraphNode two = new GraphNode(2);
 		roots.add(two);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
 		final GraphNode four = new GraphNode(4);
 		roots.add(four);
 		final GraphNode five = new GraphNode(5);
-		roots.add(five);
 		final GraphNode six = new GraphNode(6);
-		roots.add(six);
 
 		one.addEdge(two);
 
@@ -257,7 +246,7 @@ public class SequentialFastSCCTest {
 		
 		six.addEdge(one);
 
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Stack<GraphNode> scc : sccs) {
@@ -282,17 +271,13 @@ public class SequentialFastSCCTest {
 
 		// a ring with bi-directional edges
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
 		final GraphNode two = new GraphNode(2);
 		roots.add(two);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
 		final GraphNode four = new GraphNode(4);
 		roots.add(four);
 		final GraphNode five = new GraphNode(5);
-		roots.add(five);
 		final GraphNode six = new GraphNode(6);
-		roots.add(six);
 
 		one.addEdge(two);
 		one.addEdge(six);
@@ -312,7 +297,7 @@ public class SequentialFastSCCTest {
 		six.addEdge(one);
 		six.addEdge(five);
 
-		final Set<Stack<GraphNode>> sccs = seqFastScc.searchSCCs(roots);
+		final Set<Stack<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Stack<GraphNode> scc : sccs) {
@@ -329,5 +314,30 @@ public class SequentialFastSCCTest {
 		anSCC.add(two);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
+	}
+
+	@Test
+	public void testF() {
+		final List<GraphNode> roots = new ArrayList<GraphNode>();
+
+		// a star with one loop
+		final GraphNode center = new GraphNode("center");
+		final GraphNode leftUpper = new GraphNode("leftUpper");
+		roots.add(leftUpper);
+		final GraphNode rightUpper = new GraphNode("rightUpper");
+		final GraphNode leftBottom = new GraphNode("leftBottom");
+		roots.add(leftBottom);
+		final GraphNode rightBottom = new GraphNode("rightBottom");
+		
+		leftUpper.addEdge(center);
+		leftBottom.addEdge(center);
+
+		center.addEdge(rightUpper);
+		center.addEdge(rightBottom);
+		
+		// arc creating the cycle leftUpper > Center > rightUpper > leftU...
+		rightUpper.addEdge(leftUpper);
+
+		concurrentFastScc.searchSCCs(roots);
 	}
 }
