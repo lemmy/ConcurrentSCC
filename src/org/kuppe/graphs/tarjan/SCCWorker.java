@@ -65,14 +65,12 @@ public class SCCWorker implements Callable<Void> {
 				 * ..traverse the next outgoing untraversed arc
 				 */
 				final Arc arc = itr.next();
-				if (arc.isTraversed()) {
+				if (arc.setTraversed()) {
 					continue;
 				}
-				arc.setTraversed();
-
-				final GraphNode w = arc.getTo();
 
 				// To traverse an arc (v, w), if w is postvisited do nothing.
+				final GraphNode w = arc.getTo();
 				if (w.is(Visited.POST)) {
 					continue;
 				}

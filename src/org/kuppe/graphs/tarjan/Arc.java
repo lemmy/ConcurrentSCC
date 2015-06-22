@@ -55,8 +55,12 @@ public class Arc {
 
 	/**
 	 */
-	public void setTraversed() {
+	public boolean setTraversed() {
+		if (this.traversed) {
+			return true;
+		}
 		this.traversed = true;
+		return false;
 	}
 
 	/**
