@@ -165,7 +165,7 @@ public class GraphNode {
 
 				// Merge parent's untraversed outgoing arcs into ours
 				for (Arc arc : parent.getSuccessor()) {
-					if (!arc.isTraversed()) {
+				if (!arc.isTraversed() && !this.successors.contains(arc)) {
 						this.successors.add(arc);
 					}
 				}
