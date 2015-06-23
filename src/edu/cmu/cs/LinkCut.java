@@ -123,7 +123,7 @@ public class LinkCut {
 	/**
 	 * this returns the id of the node that is the root of the tree containing p
 	 */
-	public static Node rootid(Node p) {
+	public static Node root(Node p) {
 		expose(p);
 		while (p.r != null) {
 			p = p.r;
@@ -133,10 +133,11 @@ public class LinkCut {
 		return p;
 	}
 
-	// Added by mku
 	/**
 	 * p is not a tree root. Delete the edge from p to its parent, thus
 	 * separating the tree in two
+	 * 
+	 * Added by mku
 	 */
 	public static void cut(Node p) {
 		p.p = null;

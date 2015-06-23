@@ -42,7 +42,7 @@ public class LinkCutTest {
 		
 		assertTrue(root.isroot());
 		
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 	}
 	
 	public void testLinkIdentical() {
@@ -62,30 +62,30 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 
 		LinkCut.link(child, root);
 
 		assertTrue(root.isroot());
 		assertTrue(child.isroot());
 		
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 	}
 
 	@Test
 	public void testLinkThreeInPath() {
 		Node root = new Node(1);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 		
 		Node childsChild = new Node(3);
-		assertEquals(childsChild, LinkCut.rootid(childsChild));
+		assertEquals(childsChild, LinkCut.root(childsChild));
 	
 		
 		LinkCut.link(childsChild, child);
@@ -95,29 +95,29 @@ public class LinkCutTest {
 		assertTrue(child.isroot());
 		assertTrue(childsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childsChild));
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childsChild));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 	}
 
 	@Test
 	public void testLinkChildThree() {
 		Node root = new Node(1);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 		
 		Node childsChild = new Node(3);
-		assertEquals(childsChild, LinkCut.rootid(childsChild));
+		assertEquals(childsChild, LinkCut.root(childsChild));
 	
 		LinkCut.link(childsChild, child);
 		assertTrue(root.isroot());
 		assertTrue(child.isroot());
 		assertTrue(childsChild.isroot());
-		assertEquals(child, LinkCut.rootid(childsChild));
-		assertEquals(child, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(child, LinkCut.root(childsChild));
+		assertEquals(child, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 
 		// Invalid link
 		try {
@@ -133,13 +133,13 @@ public class LinkCutTest {
 		// root > child > childsChild
 		
 		Node root = new Node(1);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 		
 		Node childsChild = new Node(3);
-		assertEquals(childsChild, LinkCut.rootid(childsChild));
+		assertEquals(childsChild, LinkCut.root(childsChild));
 	
 		// reverse the order in which the nodes are linked
 		LinkCut.link(child, root);
@@ -149,9 +149,9 @@ public class LinkCutTest {
 		assertTrue(child.isroot());
 		assertTrue(childsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childsChild));
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childsChild));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 	}
 	
 	@Test
@@ -160,16 +160,16 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 		
 		Node childsChild = new Node(3);
-		assertEquals(childsChild, LinkCut.rootid(childsChild));
+		assertEquals(childsChild, LinkCut.root(childsChild));
 
 		Node childsChildsChild = new Node(4);
-		assertEquals(childsChildsChild, LinkCut.rootid(childsChildsChild));
+		assertEquals(childsChildsChild, LinkCut.root(childsChildsChild));
 	
 		// reverse the order in which the nodes are linked
 		LinkCut.link(childsChildsChild, child);
@@ -181,10 +181,10 @@ public class LinkCutTest {
 		assertTrue(childsChild.isroot());
 		assertTrue(childsChildsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childsChildsChild));
-		assertEquals(root, LinkCut.rootid(childsChild));
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childsChildsChild));
+		assertEquals(root, LinkCut.root(childsChild));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 	}
 
 	@Test
@@ -194,13 +194,13 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node childA = new Node(2);
-		assertEquals(childA, LinkCut.rootid(childA));
+		assertEquals(childA, LinkCut.root(childA));
 		
 		Node childB = new Node(3);
-		assertEquals(childB, LinkCut.rootid(childB));
+		assertEquals(childB, LinkCut.root(childB));
 	
 
 		LinkCut.link(childA, root);
@@ -210,12 +210,12 @@ public class LinkCutTest {
 		assertTrue(childA.isroot());
 		assertTrue(childB.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childA));
-		assertEquals(root, LinkCut.rootid(childB));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childA));
+		assertEquals(root, LinkCut.root(childB));
+		assertEquals(root, LinkCut.root(root));
 		
 		//
-		assertNotEquals(root, LinkCut.rootid(new Node(3)));
+		assertNotEquals(root, LinkCut.root(new Node(3)));
 	}
 	
 	@Test
@@ -224,12 +224,12 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		assertTrue(root.isroot());
 
 		// Doesn't do anything
 		LinkCut.cut(root);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		assertTrue(root.isroot());
 	}
 	
@@ -239,24 +239,24 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 
 		LinkCut.link(child, root);
 
 		assertTrue(root.isroot());
 		assertTrue(child.isroot());
 		
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 		
 		// up to this line identical to testLinkTwo()
 		LinkCut.cut(child);
 		
-		assertNotEquals(root, LinkCut.rootid(child));
-		assertEquals(child, LinkCut.rootid(child));
+		assertNotEquals(root, LinkCut.root(child));
+		assertEquals(child, LinkCut.root(child));
 	}
 
 	@Test
@@ -265,30 +265,30 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
 		Node childsChild = new Node(3);
-		assertEquals(childsChild, LinkCut.rootid(childsChild));
+		assertEquals(childsChild, LinkCut.root(childsChild));
 		LinkCut.link(childsChild, child);
 
 		assertTrue(root.isroot());
 		assertTrue(child.isroot());
 		assertTrue(childsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childsChild));
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childsChild));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 		
 		// Cut off child
 		LinkCut.cut(child);
 		
-		assertEquals(child, LinkCut.rootid(childsChild));
-		assertEquals(child, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(child, LinkCut.root(childsChild));
+		assertEquals(child, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 	}
 	
 	@Test
@@ -297,30 +297,30 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
 		Node childsChild = new Node(3);
-		assertEquals(childsChild, LinkCut.rootid(childsChild));
+		assertEquals(childsChild, LinkCut.root(childsChild));
 		LinkCut.link(childsChild, child);
 
 		assertTrue(root.isroot());
 		assertTrue(child.isroot());
 		assertTrue(childsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childsChild));
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childsChild));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 		
 		// Cut off child
 		LinkCut.cut(childsChild);
 		
-		assertEquals(childsChild, LinkCut.rootid(childsChild));
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(childsChild, LinkCut.root(childsChild));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(root));
 	}
 	
 	@Test
@@ -330,22 +330,22 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node childA = new Node(2);
-		assertEquals(childA, LinkCut.rootid(childA));
+		assertEquals(childA, LinkCut.root(childA));
 		LinkCut.link(childA, root);
 
 		Node childAsChild = new Node(3);
-		assertEquals(childAsChild, LinkCut.rootid(childAsChild));
+		assertEquals(childAsChild, LinkCut.root(childAsChild));
 		LinkCut.link(childAsChild, childA);
 
 		Node childB = new Node(4);
-		assertEquals(childB, LinkCut.rootid(childB));
+		assertEquals(childB, LinkCut.root(childB));
 		LinkCut.link(childB, root);
 
 		Node childBsChild = new Node(5);
-		assertEquals(childBsChild, LinkCut.rootid(childBsChild));
+		assertEquals(childBsChild, LinkCut.root(childBsChild));
 		LinkCut.link(childBsChild, childB);
 		
 		assertTrue(root.isroot());
@@ -354,20 +354,20 @@ public class LinkCutTest {
 		assertTrue(childB.isroot());
 		assertTrue(childBsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childAsChild));
-		assertEquals(root, LinkCut.rootid(childA));
-		assertEquals(root, LinkCut.rootid(childBsChild));
-		assertEquals(root, LinkCut.rootid(childB));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childAsChild));
+		assertEquals(root, LinkCut.root(childA));
+		assertEquals(root, LinkCut.root(childBsChild));
+		assertEquals(root, LinkCut.root(childB));
+		assertEquals(root, LinkCut.root(root));
 		
 		// Cut off child
 		LinkCut.cut(childAsChild);
 		
-		assertEquals(childAsChild, LinkCut.rootid(childAsChild));
-		assertEquals(root, LinkCut.rootid(childA));
-		assertEquals(root, LinkCut.rootid(childBsChild));
-		assertEquals(root, LinkCut.rootid(childB));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(childAsChild, LinkCut.root(childAsChild));
+		assertEquals(root, LinkCut.root(childA));
+		assertEquals(root, LinkCut.root(childBsChild));
+		assertEquals(root, LinkCut.root(childB));
+		assertEquals(root, LinkCut.root(root));
 	}
 	
 	@Test
@@ -377,22 +377,22 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node childA = new Node(2);
-		assertEquals(childA, LinkCut.rootid(childA));
+		assertEquals(childA, LinkCut.root(childA));
 		LinkCut.link(childA, root);
 
 		Node childAsChild = new Node(3);
-		assertEquals(childAsChild, LinkCut.rootid(childAsChild));
+		assertEquals(childAsChild, LinkCut.root(childAsChild));
 		LinkCut.link(childAsChild, childA);
 
 		Node childB = new Node(4);
-		assertEquals(childB, LinkCut.rootid(childB));
+		assertEquals(childB, LinkCut.root(childB));
 		LinkCut.link(childB, root);
 
 		Node childBsChild = new Node(5);
-		assertEquals(childBsChild, LinkCut.rootid(childBsChild));
+		assertEquals(childBsChild, LinkCut.root(childBsChild));
 		LinkCut.link(childBsChild, childB);
 		
 		assertTrue(root.isroot());
@@ -401,21 +401,21 @@ public class LinkCutTest {
 		assertTrue(childB.isroot());
 		assertTrue(childBsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childAsChild));
-		assertEquals(root, LinkCut.rootid(childA));
-		assertEquals(root, LinkCut.rootid(childBsChild));
-		assertEquals(root, LinkCut.rootid(childB));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childAsChild));
+		assertEquals(root, LinkCut.root(childA));
+		assertEquals(root, LinkCut.root(childBsChild));
+		assertEquals(root, LinkCut.root(childB));
+		assertEquals(root, LinkCut.root(root));
 		
 		// Cut off child
 		LinkCut.cut(childA);
 		
-		assertEquals(childA, LinkCut.rootid(childAsChild));
-		assertEquals(childA, LinkCut.rootid(childA));
+		assertEquals(childA, LinkCut.root(childAsChild));
+		assertEquals(childA, LinkCut.root(childA));
 		
-		assertEquals(root, LinkCut.rootid(childBsChild));
-		assertEquals(root, LinkCut.rootid(childB));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childBsChild));
+		assertEquals(root, LinkCut.root(childB));
+		assertEquals(root, LinkCut.root(root));
 	}
 	
 	@Test
@@ -425,18 +425,18 @@ public class LinkCutTest {
 		
 		final int id = 1;
 		Node root = new Node(id);
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 		
 		Node child = new Node(2);
-		assertEquals(child, LinkCut.rootid(child));
+		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
 		Node childAsChild = new Node(3);
-		assertEquals(childAsChild, LinkCut.rootid(childAsChild));
+		assertEquals(childAsChild, LinkCut.root(childAsChild));
 		LinkCut.link(childAsChild, child);
 
 		Node childBsChild = new Node(5);
-		assertEquals(childBsChild, LinkCut.rootid(childBsChild));
+		assertEquals(childBsChild, LinkCut.root(childBsChild));
 		LinkCut.link(childBsChild, child);
 		
 		assertTrue(root.isroot());
@@ -444,18 +444,18 @@ public class LinkCutTest {
 		assertTrue(childAsChild.isroot());
 		assertTrue(childBsChild.isroot());
 		
-		assertEquals(root, LinkCut.rootid(childAsChild));
-		assertEquals(root, LinkCut.rootid(child));
-		assertEquals(root, LinkCut.rootid(childBsChild));
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(childAsChild));
+		assertEquals(root, LinkCut.root(child));
+		assertEquals(root, LinkCut.root(childBsChild));
+		assertEquals(root, LinkCut.root(root));
 		
 		// Cut off child
 		LinkCut.cut(child);
 		
-		assertEquals(child, LinkCut.rootid(childAsChild));
-		assertEquals(child, LinkCut.rootid(child));
-		assertEquals(child, LinkCut.rootid(childBsChild));
+		assertEquals(child, LinkCut.root(childAsChild));
+		assertEquals(child, LinkCut.root(child));
+		assertEquals(child, LinkCut.root(childBsChild));
 		
-		assertEquals(root, LinkCut.rootid(root));
+		assertEquals(root, LinkCut.root(root));
 	}
 }
