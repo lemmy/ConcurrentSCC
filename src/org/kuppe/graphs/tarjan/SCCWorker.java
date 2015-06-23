@@ -152,10 +152,21 @@ public class SCCWorker implements Callable<Void> {
 			v.set(Visited.POST);
 
 			/*
-			 * b) and make all its children idle roots (POST visited children are by
-			 * definition not roots).
+			 * b) and make all its children idle roots (POST visited children
+			 * are by definition not roots).
 			 * 
-			 * TODO Read Bob's errata note
+			 * TODO Bob's errata note:
+			 * I overlooked one thing in my high-level description of the
+			 * proposed algorithm: when a root runs out of outgoing arcs to be
+			 * traversed and it is marked as post visited, deleting it breaks
+			 * its tree into s number of new trees, one per child. This means
+			 * that one cannot use the disjoint-set data structure to keep track
+			 * of trees, since sets must be broken up as well as combined. There
+			 * are efficient data structures to solve this more-complicated
+			 * problem, notably Euler tour trees, which represent a tree by an
+			 * Euler tour stored in a binary search tree. The time for a query
+			 * is O(logn), as is the time to add an arc (a link) or break an arc
+			 * (a cut).
 			 */
 			for (Arc arc : v.getSuccessor()) {
 				final GraphNode to = arc.getTo();
