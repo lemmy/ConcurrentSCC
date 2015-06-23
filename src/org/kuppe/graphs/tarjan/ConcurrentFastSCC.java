@@ -40,15 +40,15 @@ public class ConcurrentFastSCC {
 		
 		//TODO Name threads inside executor to aid debugging.
 		// see http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
-		final ForkJoinPool executor = new ForkJoinPool(1);
+		final ForkJoinPool executor = new ForkJoinPool();
 
 		final Set<Set<GraphNode>> sccs = Collections.newSetFromMap(new ConcurrentHashMap(0));
 
 		for (GraphNode graphNode : initNodes) {
 			executor.submit(new SCCWorker(executor, sccs, graphNode));
-			executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		}
 		
+		// Wait until no SCCWorker is running and no SCCWorker is queued.
 		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		executor.shutdown();
 		
