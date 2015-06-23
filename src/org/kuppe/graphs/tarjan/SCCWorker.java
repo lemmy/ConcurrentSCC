@@ -117,6 +117,9 @@ public class SCCWorker implements Callable<Void> {
 
 						// This is when an SCC has been found in v.
 						// TODO SCCs might not be maximal SCCs.
+						// TODO Release any lock we own and work on a copy?
+						// After all, we don't want to block the concurrent fast
+						// SCC search.
 						if (v.checkSCC()) {
 							// v is a (contracted) root and thus eligible
 							// for further processing.	this.v = v;
