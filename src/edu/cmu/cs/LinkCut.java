@@ -1,9 +1,9 @@
 package edu.cmu.cs;
 public class LinkCut {
 	
-	static void rotR(Node p) {
-		Node q = p.p;
-		Node r = q.p;
+	static void rotR(LinkCutTreeNode p) {
+		LinkCutTreeNode q = p.p;
+		LinkCutTreeNode r = q.p;
 		q.normalize();
 		p.normalize();
 		if ((q.l = p.r) != null) {
@@ -21,9 +21,9 @@ public class LinkCut {
 		q.update();
 	}
 
-	static void rotL(Node p) {
-		Node q = p.p;
-		Node r = q.p;
+	static void rotL(LinkCutTreeNode p) {
+		LinkCutTreeNode q = p.p;
+		LinkCutTreeNode r = q.p;
 		q.normalize();
 		p.normalize();
 		if ((q.r = p.l) != null) {
@@ -41,9 +41,9 @@ public class LinkCut {
 		q.update();
 	}
 
-	static void splay(Node p) {
+	static void splay(LinkCutTreeNode p) {
 		while (!p.isroot()) {
-			Node q = p.p;
+			LinkCutTreeNode q = p.p;
 			if (q.isroot()) {
 				if (q.l == p) {
 					rotR(p);
@@ -51,7 +51,7 @@ public class LinkCut {
 					rotL(p);
 				}
 			} else {
-				Node r = q.p;
+				LinkCutTreeNode r = q.p;
 				if (r.l == q) {
 					if (q.l == p) {
 						rotR(q);
@@ -79,9 +79,9 @@ public class LinkCut {
 	 * This makes node q the root of the virtual tree, and also q is the
 	 * leftmost node in its splay tree
 	 */
-	static void expose(Node q) {
-		Node r = null;
-		for (Node p = q; p != null; p = p.p) {
+	static void expose(LinkCutTreeNode q) {
+		LinkCutTreeNode r = null;
+		for (LinkCutTreeNode p = q; p != null; p = p.p) {
 			splay(p);
 			p.l = r;
 			p.update();
@@ -95,7 +95,7 @@ public class LinkCut {
 	 * Assuming p and q are nodes in different trees and that p is a root of its
 	 * tree, this links p to q
 	 */
-	public static void link(Node p, Node q) {
+	public static void link(LinkCutTreeNode p, LinkCutTreeNode q) {
 		// Added by mku to prevent livelock.
 		if (p == q) {
 			throw new RuntimeException("Trying to link identical nodes");
@@ -123,7 +123,7 @@ public class LinkCut {
 	/**
 	 * this returns the id of the node that is the root of the tree containing p
 	 */
-	public static Node root(Node p) {
+	public static LinkCutTreeNode root(LinkCutTreeNode p) {
 		expose(p);
 		while (p.r != null) {
 			p = p.r;
@@ -139,7 +139,7 @@ public class LinkCut {
 	 * 
 	 * Added by mku
 	 */
-	public static void cut(Node p) {
+	public static void cut(LinkCutTreeNode p) {
 		p.p = null;
 		splay(p);
 	}
