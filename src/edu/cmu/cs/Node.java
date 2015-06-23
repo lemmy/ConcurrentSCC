@@ -1,23 +1,23 @@
 package edu.cmu.cs;
 public class Node {
 
-	int s, my_s, on, id;
+//	int s, my_s, on, id;
 
-	boolean flip, my_flip;
+//	boolean flip, my_flip;
 
 	Node l, r, p;
-
-	Node (int id) {
-		this(0, id);
-	}
 	
-	Node(int c, int i) {
-		id = i;
-		s = my_s = c;
-		on = 0;
-		l = r = p = null;
-		flip = my_flip = false;
-	}
+//	Node (int id) {
+//		this(0, id);
+//	}
+//	
+//	Node(int c, int i) {
+////		id = i;
+////		s = my_s = c;
+////		on = 0;
+//		l = r = p = null;
+////		flip = my_flip = false;
+//	}
 
 	boolean isroot() {
 		return p == null || (p.l != this && p.r != this);
@@ -28,17 +28,17 @@ public class Node {
 	 * so that it represents the same thing.
 	 */
 	void normalize() {
-		if (flip) {
-			flip = false;
-			on = s - on;
-			my_flip = !my_flip;
-			if (l != null) {
-				l.flip = !l.flip;
-			}
-			if (r != null) {
-				r.flip = !r.flip;
-			}
-		}
+//		if (flip) {
+//			flip = false;
+//			on = s - on;
+//			my_flip = !my_flip;
+//			if (l != null) {
+//				l.flip = !l.flip;
+//			}
+//			if (r != null) {
+//				r.flip = !r.flip;
+//			}
+//		}
 	}
 
 	/*
@@ -47,23 +47,23 @@ public class Node {
 	 * function fixes up the data fields in the node to maintain invariants.
 	 */
 	void update() {
-		s = my_s;
-		on = (my_flip) ? my_s : 0;
-		if (l != null) {
-			s += l.s;
-			if (l.flip) {
-				on += l.s - l.on;
-			} else {
-				on += l.on;
-			}
-		}
-		if (r != null) {
-			s += r.s;
-			if (r.flip) {
-				on += r.s - r.on;
-			} else {
-				on += r.on;
-			}
-		}
+//		s = my_s;
+//		on = (my_flip) ? my_s : 0;
+//		if (l != null) {
+//			s += l.s;
+//			if (l.flip) {
+//				on += l.s - l.on;
+//			} else {
+//				on += l.on;
+//			}
+//		}
+//		if (r != null) {
+//			s += r.s;
+//			if (r.flip) {
+//				on += r.s - r.on;
+//			} else {
+//				on += r.on;
+//			}
+//		}
 	}
 }

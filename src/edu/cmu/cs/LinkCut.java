@@ -111,14 +111,14 @@ public class LinkCut {
 	 * Toggle all the edges on the path from p to the root return the count
 	 * after - count before
 	 */
-	static int toggle(Node p) {
-		expose(p);
-		int before = p.on;
-		p.flip = !p.flip;
-		p.normalize();
-		int after = p.on;
-		return after - before;
-	}
+//	static int toggle(Node p) {
+//		expose(p);
+//		int before = p.on;
+//		p.flip = !p.flip;
+//		p.normalize();
+//		int after = p.on;
+//		return after - before;
+//	}
 
 	/**
 	 * this returns the id of the node that is the root of the tree containing p

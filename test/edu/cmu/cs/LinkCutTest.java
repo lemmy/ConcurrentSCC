@@ -37,8 +37,7 @@ public class LinkCutTest {
 
 	@Test
 	public void testRoot() {
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		
 		assertTrue(root.isroot());
 		
@@ -46,7 +45,7 @@ public class LinkCutTest {
 	}
 	
 	public void testLinkIdentical() {
-		Node n = new Node(1);
+		Node n = new Node();
 
 		try {
 			LinkCut.link(n, n);
@@ -60,11 +59,10 @@ public class LinkCutTest {
 	public void testLinkTwo() {
 		// root > child
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 
 		LinkCut.link(child, root);
@@ -78,13 +76,13 @@ public class LinkCutTest {
 
 	@Test
 	public void testLinkThreeInPath() {
-		Node root = new Node(1);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 		
-		Node childsChild = new Node(3);
+		Node childsChild = new Node();
 		assertEquals(childsChild, LinkCut.root(childsChild));
 	
 		
@@ -102,13 +100,13 @@ public class LinkCutTest {
 
 	@Test
 	public void testLinkChildThree() {
-		Node root = new Node(1);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 		
-		Node childsChild = new Node(3);
+		Node childsChild = new Node();
 		assertEquals(childsChild, LinkCut.root(childsChild));
 	
 		LinkCut.link(childsChild, child);
@@ -132,13 +130,13 @@ public class LinkCutTest {
 	public void testLinkThreeInPathLinkChilds() {
 		// root > child > childsChild
 		
-		Node root = new Node(1);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 		
-		Node childsChild = new Node(3);
+		Node childsChild = new Node();
 		assertEquals(childsChild, LinkCut.root(childsChild));
 	
 		// reverse the order in which the nodes are linked
@@ -158,17 +156,16 @@ public class LinkCutTest {
 	public void testLinkFourInPathLinkChilds() {
 		// root > child > childsChild
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 		
-		Node childsChild = new Node(3);
+		Node childsChild = new Node();
 		assertEquals(childsChild, LinkCut.root(childsChild));
 
-		Node childsChildsChild = new Node(4);
+		Node childsChildsChild = new Node();
 		assertEquals(childsChildsChild, LinkCut.root(childsChildsChild));
 	
 		// reverse the order in which the nodes are linked
@@ -192,14 +189,13 @@ public class LinkCutTest {
 		// root with child left and right
 		// root > childA /\ root > childB
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node childA = new Node(2);
+		Node childA = new Node();
 		assertEquals(childA, LinkCut.root(childA));
 		
-		Node childB = new Node(3);
+		Node childB = new Node();
 		assertEquals(childB, LinkCut.root(childB));
 	
 
@@ -215,15 +211,14 @@ public class LinkCutTest {
 		assertEquals(root, LinkCut.root(root));
 		
 		//
-		assertNotEquals(root, LinkCut.root(new Node(3)));
+		assertNotEquals(root, LinkCut.root(new Node()));
 	}
 	
 	@Test
 	public void testCutRoot() {
 		// root
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		assertTrue(root.isroot());
 
@@ -237,11 +232,10 @@ public class LinkCutTest {
 	public void testCutTwo() {
 		// root > child
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 
 		LinkCut.link(child, root);
@@ -263,15 +257,14 @@ public class LinkCutTest {
 	public void testCutThreeInPath() {
 		// root > child (cut) > childsChild
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
-		Node childsChild = new Node(3);
+		Node childsChild = new Node();
 		assertEquals(childsChild, LinkCut.root(childsChild));
 		LinkCut.link(childsChild, child);
 
@@ -295,15 +288,14 @@ public class LinkCutTest {
 	public void testCutThreeInPathChildsChild() {
 		// root > child > childsChild (cut)
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
-		Node childsChild = new Node(3);
+		Node childsChild = new Node();
 		assertEquals(childsChild, LinkCut.root(childsChild));
 		LinkCut.link(childsChild, child);
 
@@ -328,23 +320,22 @@ public class LinkCutTest {
 		// root > childA > childAsChild (cut) /\
 		// root > childB > childBsChild
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node childA = new Node(2);
+		Node childA = new Node();
 		assertEquals(childA, LinkCut.root(childA));
 		LinkCut.link(childA, root);
 
-		Node childAsChild = new Node(3);
+		Node childAsChild = new Node();
 		assertEquals(childAsChild, LinkCut.root(childAsChild));
 		LinkCut.link(childAsChild, childA);
 
-		Node childB = new Node(4);
+		Node childB = new Node();
 		assertEquals(childB, LinkCut.root(childB));
 		LinkCut.link(childB, root);
 
-		Node childBsChild = new Node(5);
+		Node childBsChild = new Node();
 		assertEquals(childBsChild, LinkCut.root(childBsChild));
 		LinkCut.link(childBsChild, childB);
 		
@@ -375,23 +366,22 @@ public class LinkCutTest {
 		// root > childA(cut) > childAsChild /\
 		// root > childB > childBsChild
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node childA = new Node(2);
+		Node childA = new Node();
 		assertEquals(childA, LinkCut.root(childA));
 		LinkCut.link(childA, root);
 
-		Node childAsChild = new Node(3);
+		Node childAsChild = new Node();
 		assertEquals(childAsChild, LinkCut.root(childAsChild));
 		LinkCut.link(childAsChild, childA);
 
-		Node childB = new Node(4);
+		Node childB = new Node();
 		assertEquals(childB, LinkCut.root(childB));
 		LinkCut.link(childB, root);
 
-		Node childBsChild = new Node(5);
+		Node childBsChild = new Node();
 		assertEquals(childBsChild, LinkCut.root(childBsChild));
 		LinkCut.link(childBsChild, childB);
 		
@@ -423,19 +413,18 @@ public class LinkCutTest {
 		// root > child(cut) > childsChildA /\
 		// root > child(cut) > childsChildB
 		
-		final int id = 1;
-		Node root = new Node(id);
+		Node root = new Node();
 		assertEquals(root, LinkCut.root(root));
 		
-		Node child = new Node(2);
+		Node child = new Node();
 		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
-		Node childAsChild = new Node(3);
+		Node childAsChild = new Node();
 		assertEquals(childAsChild, LinkCut.root(childAsChild));
 		LinkCut.link(childAsChild, child);
 
-		Node childBsChild = new Node(5);
+		Node childBsChild = new Node();
 		assertEquals(childBsChild, LinkCut.root(childBsChild));
 		LinkCut.link(childBsChild, child);
 		
