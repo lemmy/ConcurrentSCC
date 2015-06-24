@@ -41,12 +41,12 @@ public class GraphNode extends LinkCutTreeNode {
 		UN, PRE, POST;
 	};
 	
-	private final int id;
-	
 	private volatile Visited visited = Visited.UN;
 
+	private GraphNode representedTreeParent;
+	
 	public GraphNode(final int anId) {
-		this.id = anId;
+		super(anId);
 	}
 
 	public boolean is(Visited v) {
@@ -68,10 +68,10 @@ public class GraphNode extends LinkCutTreeNode {
 	 */
 	@Override
 	public String toString() {
-		if (!isRoot()) {
+		if (representedTreeParent != null) {
 			return "GN [id=" + id
 					+ ", visited=" + visited
-					+ ", parent=" + LinkCut.parent(this)
+					+ ", parent=" + representedTreeParent
 					+ "]";
 		}
 		return "GN [id=" + id
@@ -81,6 +81,7 @@ public class GraphNode extends LinkCutTreeNode {
 	}
 
 	public void setParent(GraphNode parent) {
+		representedTreeParent = parent;
 		LinkCut.link(this, parent);
 	}
 
@@ -89,54 +90,59 @@ public class GraphNode extends LinkCutTreeNode {
 	}
 		
 	public void contract(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, final GraphNode graphNode) {
-		assert isRoot();
-		
-		assert LinkCut.root(graphNode) == this;
-		
-		final Set<GraphNode> scc = getNewScc();
-		
-		// Traverse the tree up to the root
-		GraphNode parent = graphNode;
- 		while(parent != this) {
-			// Merge the others subset scc into this new one and remove it from
-			// the set of sccs.
- 			final Set<GraphNode> subset = sccs.remove(parent);
-			if (subset != null) {
- 				scc.addAll(subset);
- 			} else {
- 				scc.add(parent);
- 			}
+		try {
+			assert isRoot();
 			
-			// Mark parent done
-			parent.visited = Visited.POST;
-
- 			// Logically replace parent with this GraphNode in the Graph.
-			graph.contract(this, parent);
+			assert LinkCut.root(graphNode) == this;
 			
-			// Before unlink/cut, remember parent's parent
-			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
+			final Set<GraphNode> scc = getNewScc();
 			
-			// Unlink parent from its tree (this might not be necessary as the
-			// whole tree including the root will be logically removed from the
-			// forest.
-			
-			// Don't unlink parent even though it's contracted. It might has
-			// children that would loose their tree membership otherwise.
+			// Traverse the tree up to the root
+			GraphNode parent = graphNode;
+			while(parent != this) {
+				// Merge the others subset scc into this new one and remove it from
+				// the set of sccs.
+				final Set<GraphNode> subset = sccs.remove(parent);
+				if (subset != null) {
+					scc.addAll(subset);
+				} else {
+					scc.add(parent);
+				}
+				
+				// Mark parent done
+				parent.visited = Visited.POST;
+				
+				// Logically replace parent with this GraphNode in the Graph.
+				graph.contract(this, parent);
+				
+				// Before unlink/cut, remember parent's parent
+//			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
+				GraphNode parentsParent = parent.representedTreeParent;
+				
+				// Unlink parent from its tree (this might not be necessary as the
+				// whole tree including the root will be logically removed from the
+				// forest.
+				
+				// Don't unlink parent even though it's contracted. It potentially has
+				// children that would loose their tree membership otherwise.
 //			LinkCut.cut(parent);
+				
+				// Continue with parent's parent.
+				parent = parentsParent;
+			}
 			
-			// Continue with parent's parent.
-			parent = parentsParent;
+			scc.add(this);
+			
+			// Get the subset SCCs (if any) which has been contracted into this before.
+			final Set<GraphNode> subset = sccs.get(this);
+			if (subset != null) {
+				scc.addAll(subset);
+			}
+			
+			sccs.put(this, scc);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
- 		scc.add(this);
- 		
- 		// Get the subset SCCs (if any) which has been contracted into this before.
- 		final Set<GraphNode> subset = sccs.get(this);
- 		if (subset != null) {
- 			scc.addAll(subset);
- 		}
- 		
-		sccs.put(this, scc);
 	}
 	
 	private Set<GraphNode> getNewScc() {
@@ -164,5 +170,10 @@ public class GraphNode extends LinkCutTreeNode {
 	public boolean isRoot() {
 		final LinkCutTreeNode root = LinkCut.root(this);
 		return root == this;
+	}
+
+	public Set<GraphNode> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -212,11 +212,19 @@ public class SCCWorker implements Callable<Void> {
 					 * is O(logn), as is the time to add an arc (a link) or break an arc
 					 * (a cut).
 					 */
-					//TODO This seems incorrect. There won't be any untraversed arcs left.
-					while ((arc = graph.getUntraversedArc(v)) != null) {
-						final GraphNode to = graph.get(arc.getTo());
-						if (to.isNot(Visited.POST)) {
-							executor.submit(new SCCWorker(-1, executor, graph, sccs, to));
+					// Cut all children of v in the tree (not graph which are
+					// its arcs). This essentially converts them
+					// into roots which in turn makes them eligible for further
+					// processing.
+					//
+					// The assumption is that we can just collect the children
+					// and null all their pointers. The pointer from v to the
+					// will be irrelevant, as v's tree will be garbage
+					// collected.
+					final Set<GraphNode> children = v.getChildren();
+					for (GraphNode child : children) {
+						if (child.isNot(Visited.POST)) {
+							executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
 						}
 					}
 					graph.unlock(this, v);

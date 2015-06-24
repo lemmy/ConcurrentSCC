@@ -24,11 +24,17 @@ package edu.cmu.cs;
  * Contributors:
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import edu.cmu.cs.LinkCut;
-import edu.cmu.cs.LinkCutTreeNode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+import org.junit.Test;
 
 /**
  * @see http://www.cs.cmu.edu/~avrim/451f12/lectures/lect1009-linkcut.txt
@@ -257,14 +263,14 @@ public class LinkCutTest {
 	public void testCutThreeInPath() {
 		// root > child (cut) > childsChild
 		
-		LinkCutTreeNode root = new LinkCutTreeNode();
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
 		assertEquals(root, LinkCut.root(root));
 		
-		LinkCutTreeNode child = new LinkCutTreeNode();
+		LinkCutTreeNode child = new LinkCutTreeNode(1);
 		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
-		LinkCutTreeNode childsChild = new LinkCutTreeNode();
+		LinkCutTreeNode childsChild = new LinkCutTreeNode(2);
 		assertEquals(childsChild, LinkCut.root(childsChild));
 		LinkCut.link(childsChild, child);
 
@@ -288,14 +294,14 @@ public class LinkCutTest {
 	public void testCutThreeInPathChildsChild() {
 		// root > child > childsChild (cut)
 		
-		LinkCutTreeNode root = new LinkCutTreeNode();
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
 		assertEquals(root, LinkCut.root(root));
 		
-		LinkCutTreeNode child = new LinkCutTreeNode();
+		LinkCutTreeNode child = new LinkCutTreeNode(1);
 		assertEquals(child, LinkCut.root(child));
 		LinkCut.link(child, root);
 
-		LinkCutTreeNode childsChild = new LinkCutTreeNode();
+		LinkCutTreeNode childsChild = new LinkCutTreeNode(2);
 		assertEquals(childsChild, LinkCut.root(childsChild));
 		LinkCut.link(childsChild, child);
 
@@ -631,11 +637,11 @@ public class LinkCutTest {
 
 	@Test
 	public void testGetPath5() {
-		LinkCutTreeNode three = new LinkCutTreeNode();
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
 		assertEquals(three, LinkCut.root(three));
 		
 		// Add one as child of three
-		LinkCutTreeNode one = new LinkCutTreeNode();
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
 		LinkCut.link(one, three);
 		assertNull(LinkCut.parent(three));
 		assertEquals(three, LinkCut.root(three));
@@ -643,7 +649,7 @@ public class LinkCutTest {
 		assertEquals(three, LinkCut.parent(one));
 
 		// Add two as child of three
-		LinkCutTreeNode two = new LinkCutTreeNode();
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
 		LinkCut.link(two, three);
 		assertNull(LinkCut.parent(three));
 		assertEquals(three, LinkCut.root(three));
@@ -653,7 +659,7 @@ public class LinkCutTest {
 		assertEquals(three, LinkCut.parent(two));
 		
 		// Add five as child of two
-		LinkCutTreeNode five = new LinkCutTreeNode();
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
 		LinkCut.link(five, two);
 		assertNull(LinkCut.parent(three));
 		assertEquals(three, LinkCut.root(three));
@@ -665,7 +671,7 @@ public class LinkCutTest {
 		assertEquals(two, LinkCut.parent(five));
 		
 		// Add root as parent of three
-		LinkCutTreeNode root = new LinkCutTreeNode();
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
 		LinkCut.link(three, root);
 		assertEquals(root, LinkCut.root(three));
 		assertEquals(root, LinkCut.parent(three));
@@ -675,5 +681,548 @@ public class LinkCutTest {
 		assertEquals(three, LinkCut.parent(two));
 		assertEquals(root, LinkCut.root(five));
 		assertEquals(two, LinkCut.parent(five));
+	}
+	
+	@Test
+	public void testGetPath6() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		assertNull(LinkCut.parent(three));
+		assertEquals(three, LinkCut.root(three));
+		assertEquals(three, LinkCut.root(one));
+		assertEquals(three, LinkCut.parent(one));
+
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		assertNull(LinkCut.parent(three));
+		assertEquals(three, LinkCut.root(three));
+		assertEquals(three, LinkCut.root(one));
+		assertEquals(three, LinkCut.parent(one));
+		assertEquals(three, LinkCut.root(two));
+		assertEquals(three, LinkCut.parent(two));
+		
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		assertNull(LinkCut.parent(root));
+		assertEquals(root, LinkCut.root(three));
+		assertEquals(root, LinkCut.parent(three));
+		assertEquals(root, LinkCut.root(one));
+		assertEquals(three, LinkCut.parent(one));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(three, LinkCut.parent(two));
+		
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		assertNull(LinkCut.parent(root));
+		assertEquals(root, LinkCut.root(three));
+		assertEquals(root, LinkCut.parent(three));
+		assertEquals(root, LinkCut.root(one));
+		assertEquals(root, LinkCut.root(three));
+		assertEquals(root, LinkCut.root(one));
+		assertEquals(three, LinkCut.parent(one));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(three, LinkCut.parent(two));
+		assertEquals(two, LinkCut.parent(five));
+		assertEquals(root, LinkCut.root(five));
+
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		assertNull(LinkCut.parent(root));
+		assertEquals(root, LinkCut.root(three));
+		assertEquals(root, LinkCut.parent(three));
+		assertEquals(root, LinkCut.root(one));
+		assertEquals(root, LinkCut.root(three));
+		assertEquals(root, LinkCut.root(one));
+		assertEquals(three, LinkCut.parent(one));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(three, LinkCut.parent(two));
+		assertEquals(root, LinkCut.root(five));
+		assertEquals(two, LinkCut.parent(five));
+		assertEquals(five, LinkCut.parent(six));
+		assertEquals(root, LinkCut.root(six));
+		
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		assertNull(LinkCut.parent(root));
+		assertEquals(root, LinkCut.root(three));
+		assertEquals(root, LinkCut.parent(three));
+		assertEquals(root, LinkCut.root(one));
+		assertEquals(root, LinkCut.root(three));
+		assertEquals(root, LinkCut.root(one));
+		assertEquals(three, LinkCut.parent(one));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(three, LinkCut.parent(two));
+		assertEquals(root, LinkCut.root(five));
+		assertEquals(two, LinkCut.parent(five));
+		assertEquals(five, LinkCut.parent(six));
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(one, LinkCut.parent(seven));
+		assertEquals(root, LinkCut.root(seven));
+	}
+	
+	@Test
+	public void testParentsRoot() {
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		final Stack<LinkCutTreeNode> parents = (Stack<LinkCutTreeNode>) LinkCut.parents(root,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(1, parents.size());
+		assertTrue(parents.contains(root));
+	}
+
+	@Test
+	public void testParentsPathA() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+
+		
+		// Do some reads on the graph
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+		
+		final Stack<LinkCutTreeNode> parents = (Stack<LinkCutTreeNode>) LinkCut.parents(seven,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(4, parents.size());
+		assertEquals(seven, parents.pop());
+		assertEquals(one, parents.pop());
+		assertEquals(three, parents.pop());
+		assertEquals(root, parents.pop());
+	}
+	
+	@Test
+	public void testParentsPathB() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+
+		// Do some reads (mutations) on the graph
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+		final Stack<LinkCutTreeNode> parents = (Stack<LinkCutTreeNode>) LinkCut.parents(six,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(5, parents.size());
+		assertEquals(six, parents.pop());
+		assertEquals(five, parents.pop());
+		assertEquals(two, parents.pop());
+		assertEquals(three, parents.pop());
+		assertEquals(root, parents.pop());
+	}
+	
+	@Test
+	public void testParentsPathBArray() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+
+		// Do some reads (mutations) on the graph
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+		final List<LinkCutTreeNode> parents = (List<LinkCutTreeNode>) LinkCut.parents(six,
+				new ArrayList<LinkCutTreeNode>());
+		assertEquals(5, parents.size());
+		assertEquals(root, parents.get(0));
+		assertEquals(three, parents.get(1));
+		assertEquals(two, parents.get(2));
+		assertEquals(five, parents.get(3));
+		assertEquals(six, parents.get(4));
+	}
+	
+	@Test
+	public void testChildrenOnChild() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		// Do some reads (mutations) on the graph. Reading a Link/Cut tree
+		// changes its internal state.
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(six,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(1, result.size());
+		assertTrue(result.contains(six));
+	}
+
+	@Test
+	public void testChildsRoot() {
+		final LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		final LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		final LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		final LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		final LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		final LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		final LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		// Do some reads (mutations) on the graph. Reading a Link/Cut tree
+		// changes its internal state.
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(root,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(7, result.size());
+		assertTrue(result.contains(root));
+		assertTrue(result.contains(three));
+		assertTrue(result.contains(two));
+		assertTrue(result.contains(five));
+		assertTrue(result.contains(six));
+		assertTrue(result.contains(one));
+		assertTrue(result.contains(seven));
+		
+		//TODO test order, ordered by depth
+	}
+
+	@Test
+	public void testChildsSplitNode() {
+		final LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		final LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		final LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		final LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		final LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		final LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		final LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		// Do some reads (mutations) on the graph. Reading a Link/Cut tree
+		// changes its internal state.
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(root,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(5, result.size());
+		assertTrue(result.contains(root));
+		assertTrue(result.contains(three));
+		assertTrue(result.contains(two));
+		assertTrue(result.contains(five));
+		assertTrue(result.contains(six));
+	}
+
+	@Test
+	public void testChildsPathA() {
+		final LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		final LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		final LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		final LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		final LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		final LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		final LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		// Do some reads (mutations) on the graph. Reading a Link/Cut tree
+		// changes its internal state.
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+		
+		// TODO Add children
+		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(two,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(3, result.size());
+		assertTrue(result.contains(two));
+		assertTrue(result.contains(five));
+		assertTrue(result.contains(six));
+	}		
+
+	@Test
+	public void testChildsPathB() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		// Do some reads (mutations) on the graph
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+		
+		// TODO Add children
+		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(one,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(2, result.size());
+		assertTrue(result.contains(one));
+		assertTrue(result.contains(seven));
+	}
+	
+	@Test
+	public void testExposePathB() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		
+		LinkCut.expose(seven);
+		//TODO doesn't test a thing
+	}
+
+	@Test
+	public void testExposePathA() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		
+		LinkCut.expose(six);
+		LinkCut.expose(two);
+		LinkCut.expose(five);
+		//TODO doesn't test a thing
+	}
+	
+	@Test
+	public void testRootPathB() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		
+		assertEquals(root, LinkCut.root(seven));
+		//TODO doesn't test a thing
+	}
+
+	@Test
+	public void testRootA() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		
+		assertEquals(root, LinkCut.root(six));
+		//TODO doesn't test a thing
+	}
+
+	
+	@Test
+	public void testToggle() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		
+		LinkCut.toggle(seven);
+		//TODO doesn't test a thing
 	}
 }

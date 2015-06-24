@@ -1,16 +1,21 @@
 package edu.cmu.cs;
 public class LinkCutTreeNode {
 
-//	int s, my_s, on, id;
+	int s, my_s, on/*, id*/;
 
-//	boolean flip, my_flip;
+	boolean flip, my_flip;
 
-	LinkCutTreeNode l, r;
-	protected LinkCutTreeNode p;
+	LinkCutTreeNode left, right;
+	protected LinkCutTreeNode preferred;
+	protected final int id;
 	
-//	Node (int id) {
-//		this(0, id);
-//	}
+	LinkCutTreeNode() {
+		this(-1);
+	}
+	
+	protected LinkCutTreeNode(int id) {
+		this.id = id;
+	}
 //	
 //	Node(int c, int i) {
 ////		id = i;
@@ -21,7 +26,18 @@ public class LinkCutTreeNode {
 //	}
 
 	boolean isroot() {
-		return p == null || (p.l != this && p.r != this);
+		return preferred == null || (preferred.left != this && preferred.right != this);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		if (id == -1) {
+			return super.toString();
+		}
+		return "LinkCutTreeNode [id=" + id + "]";
 	}
 
 	/*
@@ -29,17 +45,17 @@ public class LinkCutTreeNode {
 	 * so that it represents the same thing.
 	 */
 	void normalize() {
-//		if (flip) {
-//			flip = false;
-//			on = s - on;
-//			my_flip = !my_flip;
-//			if (l != null) {
-//				l.flip = !l.flip;
-//			}
-//			if (r != null) {
-//				r.flip = !r.flip;
-//			}
-//		}
+		if (flip) {
+			flip = false;
+			on = s - on;
+			my_flip = !my_flip;
+			if (left != null) {
+				left.flip = !left.flip;
+			}
+			if (right != null) {
+				right.flip = !right.flip;
+			}
+		}
 	}
 
 	/*
@@ -48,23 +64,23 @@ public class LinkCutTreeNode {
 	 * function fixes up the data fields in the node to maintain invariants.
 	 */
 	void update() {
-//		s = my_s;
-//		on = (my_flip) ? my_s : 0;
-//		if (l != null) {
-//			s += l.s;
-//			if (l.flip) {
-//				on += l.s - l.on;
-//			} else {
-//				on += l.on;
-//			}
-//		}
-//		if (r != null) {
-//			s += r.s;
-//			if (r.flip) {
-//				on += r.s - r.on;
-//			} else {
-//				on += r.on;
-//			}
-//		}
+		s = my_s;
+		on = (my_flip) ? my_s : 0;
+		if (left != null) {
+			s += left.s;
+			if (left.flip) {
+				on += left.s - left.on;
+			} else {
+				on += left.on;
+			}
+		}
+		if (right != null) {
+			s += right.s;
+			if (right.flip) {
+				on += right.s - right.on;
+			} else {
+				on += right.on;
+			}
+		}
 	}
 }
