@@ -143,4 +143,18 @@ public class LinkCut {
 		p.p = null;
 		splay(p);
 	}
+
+	/**
+	 * Returns p's parent or null if p is a root.
+	 * 
+	 * Added by mku
+	 */
+	public static LinkCutTreeNode parent(LinkCutTreeNode p) {
+		expose(p);
+		try {
+			return p.r;
+		} finally {
+			splay(p);
+		}
+	}
 }

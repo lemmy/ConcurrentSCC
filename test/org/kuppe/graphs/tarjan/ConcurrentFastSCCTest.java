@@ -26,10 +26,9 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.ArrayList;
+import static org.junit.Assert.fail;
+
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -64,28 +63,18 @@ public class ConcurrentFastSCCTest {
 	
 	@Test
 	public void testA() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
+		final Graph graph = new Graph();
 
 		final GraphNode one = new GraphNode(1);
-		roots.add(one); // One is our init node
+		graph.addNode(one, 1, 2);
 		final GraphNode two = new GraphNode(2);
-		roots.add(two);
+		graph.addNode(two, 1, 3);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
+		graph.addNode(three, 4);
 		final GraphNode four = new GraphNode(4);
-		roots.add(four);
+		graph.addNode(four, 3);
 
-		one.addEdge(two);
-		one.addEdge(one);
-
-		two.addEdge(one);
-		two.addEdge(three);
-
-		three.addEdge(four);
-
-		four.addEdge(three);
-
-		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
 		Assert.assertEquals(sccs.toString(), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -111,26 +100,16 @@ public class ConcurrentFastSCCTest {
 	
 	@Test
 	public void testB() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
+		final Graph graph = new Graph();
 
 		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 1,2,3);
 		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 1,2,3);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
+		graph.addNode(three, 1,2,3);
 
-		one.addEdge(one);
-		one.addEdge(two);
-		one.addEdge(three);
-
-		two.addEdge(one);
-		two.addEdge(two);
-		two.addEdge(three);
-
-		three.addEdge(one);
-		three.addEdge(two);
-		three.addEdge(three);
-
-		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -148,31 +127,20 @@ public class ConcurrentFastSCCTest {
 	
 	@Test
 	public void testC() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
+		final Graph graph = new Graph();
 
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
+		graph.addNode(one,3);
 		final GraphNode two = new GraphNode(2);
-		roots.add(two);
+		graph.addNode(two,3);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
+		graph.addNode(three,4,5);
 		final GraphNode four = new GraphNode(4);
-		roots.add(four);
+		graph.addNode(four,1);
 		final GraphNode five = new GraphNode(5);
-		roots.add(five);
-
-		one.addEdge(three);
-
-		two.addEdge(three);
-
-		three.addEdge(four);
-		three.addEdge(five);
-
-		four.addEdge(one);
+		graph.addNode(five,2);
 		
-		five.addEdge(two);
-		
-		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -192,24 +160,18 @@ public class ConcurrentFastSCCTest {
 
 	@Test
 	public void testD() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
+		final Graph graph = new Graph();
 
 		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 1);
 		final GraphNode two = new GraphNode(2);
-		roots.add(two);
+		graph.addNode(two, 1);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
+		graph.addNode(three, 4);
 		final GraphNode four = new GraphNode(4);
-
-		one.addEdge(two);
-
-		two.addEdge(one);
-
-		three.addEdge(four);
-
-		four.addEdge(three);
+		graph.addNode(four, 3);
 		
-		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
 		Assert.assertEquals(sccs.toString(), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -230,31 +192,23 @@ public class ConcurrentFastSCCTest {
 	
 	@Test
 	public void testE() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
+		final Graph graph = new Graph();
 
 		// a ring
 		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 2);
 		final GraphNode two = new GraphNode(2);
-		roots.add(two);
+		graph.addNode(two, 3);
 		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 4);
 		final GraphNode four = new GraphNode(4);
-		roots.add(four);
+		graph.addNode(four, 5);
 		final GraphNode five = new GraphNode(5);
+		graph.addNode(five, 6);
 		final GraphNode six = new GraphNode(6);
+		graph.addNode(six, 1);
 
-		one.addEdge(two);
-
-		two.addEdge(three);
-
-		three.addEdge(four);
-
-		four.addEdge(five);
-
-		five.addEdge(six);
-		
-		six.addEdge(one);
-
-		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -275,41 +229,23 @@ public class ConcurrentFastSCCTest {
 	
 	@Test
 	public void testEBiDirectional() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
+		final Graph graph = new Graph();
 
 		// a ring with bi-directional edges
 		final GraphNode one = new GraphNode(1);
-		roots.add(one);
+		graph.addNode(one, 2,6);
 		final GraphNode two = new GraphNode(2);
-		roots.add(two);
+		graph.addNode(two,1,3);
 		final GraphNode three = new GraphNode(3);
-		roots.add(three);
+		graph.addNode(three,2,4);
 		final GraphNode four = new GraphNode(4);
-		roots.add(four);
+		graph.addNode(four,3,5);
 		final GraphNode five = new GraphNode(5);
-		roots.add(five);
+		graph.addNode(five,4,6);
 		final GraphNode six = new GraphNode(6);
-		roots.add(six);
-		
-		one.addEdge(two);
-		one.addEdge(six);
+		graph.addNode(six,5,1);
 
-		two.addEdge(three);
-		two.addEdge(one);
-		
-		three.addEdge(four);
-		three.addEdge(two);
-		
-		four.addEdge(five);
-		four.addEdge(three);
-		
-		five.addEdge(six);
-		five.addEdge(four);
-		
-		six.addEdge(one);
-		six.addEdge(five);
-
-		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
 		Assert.assertEquals(sccs.toString(), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -330,26 +266,26 @@ public class ConcurrentFastSCCTest {
 
 	@Test
 	public void testF() {
-		final List<GraphNode> roots = new ArrayList<GraphNode>();
+		final Graph graph = new Graph();
 
 		// a star with one loop
 		final GraphNode center = new GraphNode(1);
+		graph.addNode(center, 2,4,5);
+		
 		final GraphNode leftUpper = new GraphNode(2);
-		roots.add(leftUpper);
+		graph.addNode(leftUpper, 2);
+		
 		final GraphNode rightUpper = new GraphNode(3);
+		graph.addNode(rightUpper, 1);
+		
 		final GraphNode leftBottom = new GraphNode(4);
-		roots.add(leftBottom);
+		graph.addNode(leftBottom,4);
+		
 		final GraphNode rightBottom = new GraphNode(5);
+		graph.addNode(rightBottom, 3);
 		
-		leftUpper.addEdge(center);
-		leftBottom.addEdge(center);
-
-		center.addEdge(rightUpper);
-		center.addEdge(rightBottom);
+		concurrentFastScc.searchSCCs(graph);
 		
-		// arc creating the cycle leftUpper > Center > rightUpper > leftU...
-		rightUpper.addEdge(leftUpper);
-
-		concurrentFastScc.searchSCCs(roots);
+		fail("Not yet implemented");
 	}
 }

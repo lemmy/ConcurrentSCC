@@ -26,35 +26,47 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class ConcurrentFastSCC {
+import org.junit.Test;
+
+public class GraphNodeTest {
+
+	@Test
+	public void testIsInSameTree() {
+		final GraphNode root = new GraphNode(0);
+		
+		final GraphNode left = new GraphNode(1);
+		left.setParent(root);
+
+		final GraphNode right = new GraphNode(2);
+		right.setParent(root);
+		
+		assertTrue(root.isInSameTree(root));
+
+		assertTrue(left.isInSameTree(root));
+		assertTrue(root.isInSameTree(left));
+
+		assertTrue(right.isInSameTree(root));
+		assertTrue(root.isInSameTree(right));
+
+		assertTrue(left.isInSameTree(left));
+		assertTrue(left.isInSameTree(right));
+		
+		assertTrue(right.isInSameTree(right));
+		assertTrue(right.isInSameTree(left));
+	}
 	
-	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
-		System.out.println("=====================================================");
-		//TODO Name threads inside executor to aid debugging.
-		// see http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
-		final ForkJoinPool executor = new ForkJoinPool();
+	@Test
+	public void testInDifferentTrees() {
+		final GraphNode A = new GraphNode(1);
+		final GraphNode B = new GraphNode(2);
 
-		final Map<GraphNode, Set<GraphNode>> sccs = new ConcurrentHashMap<GraphNode, Set<GraphNode>>(0);
-
-		int id = 0;
-		for (GraphNode graphNode : graph.getStartNodes()) {
-			executor.submit(new SCCWorker(id++, executor, graph, sccs, graphNode));
-		}
+		assertTrue(A.isInSameTree(A));
+		assertFalse(A.isInSameTree(B));
 		
-		// Wait until no SCCWorker is running and no SCCWorker is queued.
-		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-		executor.shutdown();
-		
-		// The mapping from GraphNode to its final SCC has become irrelevant
-		// (the caller is just interested in the set of SCCs, not into which
-		// node SCCs have been contracted).
-		return new HashSet<Set<GraphNode>>(sccs.values());
+		assertTrue(B.isInSameTree(B));
+		assertFalse(B.isInSameTree(A));
 	}
 }
