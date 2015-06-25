@@ -266,8 +266,6 @@ public class ConcurrentFastSCCTest {
 
 	@Test
 	public void testF() {
-		
-		fail("Not yet implemented");
 		final Graph graph = new Graph();
 
 		// a star with one loop
@@ -286,7 +284,18 @@ public class ConcurrentFastSCCTest {
 		final GraphNode rightBottom = new GraphNode(5);
 		graph.addNode(rightBottom, 3);
 		
-		concurrentFastScc.searchSCCs(graph);
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 3, scc.size());
+		}
+		
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		final Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(center);
+		anSCC.add(rightBottom);
+		anSCC.add(rightUpper);
+		Assert.assertEquals(expected, sccs);
 	}
 	
 	private String printSCC(Set<GraphNode> scc) {
