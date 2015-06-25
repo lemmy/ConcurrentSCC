@@ -76,9 +76,9 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
-		Assert.assertEquals(sccs.toString(), 2, sccs.size());
+		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
-			Assert.assertEquals(scc.toString(), 2, scc.size());
+			Assert.assertEquals(printSCC(scc), 2, scc.size());
 		}
 		
 		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
@@ -111,9 +111,9 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
-		Assert.assertEquals(sccs.toString(), 1, sccs.size());
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
-			Assert.assertEquals(scc.toString(), 3, scc.size());
+			Assert.assertEquals(printSCC(scc), 3, scc.size());
 		}
 		
 		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
@@ -142,9 +142,9 @@ public class ConcurrentFastSCCTest {
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 
-		Assert.assertEquals(sccs.toString(), 1, sccs.size());
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
-			Assert.assertEquals(scc.toString(), 5, scc.size());
+			Assert.assertEquals(printSCC(scc), 5, scc.size());
 		}
 		
 		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
@@ -173,9 +173,9 @@ public class ConcurrentFastSCCTest {
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
-		Assert.assertEquals(sccs.toString(), 2, sccs.size());
+		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
-			Assert.assertEquals(scc.toString(), 2, scc.size());
+			Assert.assertEquals(printSCC(scc), 2, scc.size());
 		}
 
 		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
@@ -189,7 +189,7 @@ public class ConcurrentFastSCCTest {
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 	}
-	
+
 	@Test
 	public void testE() {
 		final Graph graph = new Graph();
@@ -210,9 +210,9 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
-		Assert.assertEquals(sccs.toString(), 1, sccs.size());
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
-			Assert.assertEquals(scc.toString(), 6, scc.size());
+			Assert.assertEquals(printSCC(scc), 6, scc.size());
 		}
 		
 		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
@@ -247,9 +247,9 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
-		Assert.assertEquals(sccs.toString(), 1, sccs.size());
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
-			Assert.assertEquals(scc.toString(), 6, scc.size());
+			Assert.assertEquals(printSCC(scc), 6, scc.size());
 		}
 		
 		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
@@ -266,6 +266,8 @@ public class ConcurrentFastSCCTest {
 
 	@Test
 	public void testF() {
+		
+		fail("Not yet implemented");
 		final Graph graph = new Graph();
 
 		// a star with one loop
@@ -285,7 +287,35 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(rightBottom, 3);
 		
 		concurrentFastScc.searchSCCs(graph);
-		
-		fail("Not yet implemented");
+	}
+	
+	private String printSCC(Set<GraphNode> scc) {
+		StringBuffer buf = new StringBuffer(scc.size());
+		buf.append("{");
+		for (GraphNode graphNode : scc) {
+			buf.append(graphNode.getId());
+			buf.append(",");
+		}
+		removeIfDangling(buf, ",");
+		buf.append("}");
+		return buf.toString();
+	}
+
+	private void removeIfDangling(StringBuffer buf, String string) {
+		if (buf.lastIndexOf(",") == buf.length() - 1) {
+			buf.setLength(buf.length() - 1);
+		}
+	}
+
+	private String printSCCs(Set<Set<GraphNode>> sccs) {
+		StringBuffer buf = new StringBuffer(sccs.size());
+		buf.append("Found SCCs: [");
+		for (Set<GraphNode> set : sccs) {
+			buf.append(printSCC(set));
+			buf.append(",");
+		}
+		removeIfDangling(buf, ",");
+		buf.append("]");
+		return buf.toString();
 	}
 }

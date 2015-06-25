@@ -26,10 +26,13 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import edu.cmu.cs.LinkCut;
 import edu.cmu.cs.LinkCutTreeNode;
@@ -116,8 +119,9 @@ public class GraphNode extends LinkCutTreeNode {
 				graph.contract(this, parent);
 				
 				// Before unlink/cut, remember parent's parent
-//			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
-				GraphNode parentsParent = parent.representedTreeParent;
+				GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
+				assert parentsParent == parent.representedTreeParent;
+//				GraphNode parentsParent = parent.representedTreeParent;
 				
 				// Unlink parent from its tree (this might not be necessary as the
 				// whole tree including the root will be logically removed from the
@@ -126,6 +130,9 @@ public class GraphNode extends LinkCutTreeNode {
 				// Don't unlink parent even though it's contracted. It potentially has
 				// children that would loose their tree membership otherwise.
 //			LinkCut.cut(parent);
+
+				
+				parent.children.forEach((child) -> {LinkCut.cut(child);});
 				
 				// Continue with parent's parent.
 				parent = parentsParent;
@@ -173,7 +180,22 @@ public class GraphNode extends LinkCutTreeNode {
 	}
 
 	public Set<GraphNode> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO Cannot implement this method for link/cut tree and thus just
+		// return an empty set to avoid NPEs.
+		Collection<LinkCutTreeNode> lctnChildren = LinkCut.directChildren(this, new HashSet<LinkCutTreeNode>());
+		// HACK: Convert lctnChildren to correct type BUT ALSO CUT EACH CHILD FROM ITS PARENT
+		Set<GraphNode> children = new HashSet<GraphNode>(lctnChildren.size());
+		for (LinkCutTreeNode linkCutTreeNode : lctnChildren) {
+			GraphNode child = (GraphNode) linkCutTreeNode;
+			if (child.isNot(Visited.POST)) {
+				children.add(child);
+			}
+			LinkCut.cut(child);
+		}
+		return children;
+	}
+	
+	public void applyToDirectTreeChildren(Function<LinkCutTreeNode, Void> func) {
+		LinkCut.applyDirectChildren(this, func);
 	}
 }

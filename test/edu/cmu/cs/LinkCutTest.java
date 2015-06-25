@@ -453,6 +453,66 @@ public class LinkCutTest {
 		
 		assertEquals(root, LinkCut.root(root));
 	}
+	
+	@Test
+	public void testParentsChildrenOnChildCut() {
+		LinkCutTreeNode three = new LinkCutTreeNode(3);
+		assertEquals(three, LinkCut.root(three));
+		// Add one as child of three
+		LinkCutTreeNode one = new LinkCutTreeNode(1);
+		LinkCut.link(one, three);
+		// Add two as child of three
+		LinkCutTreeNode two = new LinkCutTreeNode(2);
+		LinkCut.link(two, three);
+		// Add root as parent of three
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
+		LinkCut.link(three, root);
+		// Add five as child of two
+		LinkCutTreeNode five = new LinkCutTreeNode(5);
+		LinkCut.link(five, two);
+		// Add six as child of five
+		LinkCutTreeNode six = new LinkCutTreeNode(6);
+		LinkCut.link(six, five);
+		// Add seven as child of one
+		LinkCutTreeNode seven = new LinkCutTreeNode(7);
+		LinkCut.link(seven, one);
+		// Do some reads (mutations) on the graph. Reading a Link/Cut tree
+		// changes its internal state.
+		assertEquals(root, LinkCut.root(six));
+		assertEquals(root, LinkCut.root(two));
+		assertEquals(root, LinkCut.root(root));
+		assertEquals(root, LinkCut.root(seven));
+
+
+		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(three,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(6, result.size());
+		assertTrue(result.contains(three));
+		assertTrue(result.contains(two));
+		assertTrue(result.contains(five));
+		assertTrue(result.contains(six));
+		assertTrue(result.contains(one));
+		assertTrue(result.contains(seven));
+		
+		// cut two off of three
+		LinkCut.cut(two);
+		
+		// two has no parent anymore
+		assertNull(LinkCut.parent(two));
+		
+		// two is the only elements returned by parents
+		List<LinkCutTreeNode> parents = (List<LinkCutTreeNode>) LinkCut.parents(two, new ArrayList<LinkCutTreeNode>());
+		assertEquals(1, parents.size());
+		assertEquals(two, parents.get(0));
+		
+		// Test three's children don't include two's subtree
+		final Stack<LinkCutTreeNode> children = (Stack<LinkCutTreeNode>) LinkCut.children(three,
+				new Stack<LinkCutTreeNode>());
+		assertEquals(3, children.size());
+		assertTrue(children.contains(three));
+		assertTrue(children.contains(one));
+		assertTrue(children.contains(seven));
+	}
 
 	@Test
 	public void testGetPath() {
@@ -969,8 +1029,6 @@ public class LinkCutTest {
 		assertTrue(result.contains(six));
 		assertTrue(result.contains(one));
 		assertTrue(result.contains(seven));
-		
-		//TODO test order, ordered by depth
 	}
 
 	@Test
@@ -1002,14 +1060,15 @@ public class LinkCutTest {
 		assertEquals(root, LinkCut.root(root));
 		assertEquals(root, LinkCut.root(seven));
 
-		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(root,
+		final Stack<LinkCutTreeNode> result = (Stack<LinkCutTreeNode>) LinkCut.children(three,
 				new Stack<LinkCutTreeNode>());
-		assertEquals(5, result.size());
-		assertTrue(result.contains(root));
+		assertEquals(6, result.size());
 		assertTrue(result.contains(three));
 		assertTrue(result.contains(two));
 		assertTrue(result.contains(five));
 		assertTrue(result.contains(six));
+		assertTrue(result.contains(one));
+		assertTrue(result.contains(seven));
 	}
 
 	@Test

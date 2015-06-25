@@ -81,7 +81,8 @@ public class SCCWorker implements Callable<Void> {
 					if (w.equals(v)) {
 						arc.setTraversed();
 						//TODO self-loop, might check stuttering here
-
+						System.out.println(String.format("Check self-loop on v (%s)", v));
+						
 						// do nothing
 						graph.unlock(this, v);
 						executor.submit(this);
@@ -107,7 +108,7 @@ public class SCCWorker implements Callable<Void> {
 							// If w is in a different tree than v, make w the
 							// parent of v and mark w previsited if it is unvisited.
 							v.setParent(w);
-							System.out.println(String.format("%s: ### w (%s) PARENT OF v (%s)", id, w, v));
+							System.out.println(String.format("%s: ### w (%s) PARENT OF v (%s)", id, w.getId(), v.getId()));
 
 							w.set(Visited.PRE);
 
@@ -162,6 +163,21 @@ public class SCCWorker implements Callable<Void> {
 									boolean hasUntraversedArcs = graph.hasUntraversedArc(v);
 									if (!hasUntraversedArcs) {
 										v.set(Visited.POST);
+										// Cut its remaining direct tree childs loose. This
+										// is i.e. necessary for Graph A, when:
+									    //
+										// Tree is (with 3&4 contracted):
+										// (3 < 4) < 2 < 1 
+										// and the untraversed arcs are
+										// {{1,1},{2,1}}.
+										//
+										// At this point, 2 must become a root so that its
+										// last untraversed arc {2,1} gets explored and node
+										// 2 and 1 contracted.
+										final Set<GraphNode> children = v.getChildren();
+										for (GraphNode child : children) {
+											executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
+										}
 									}
 									
 									// v is a (contracted) root and thus eligible
@@ -223,9 +239,7 @@ public class SCCWorker implements Callable<Void> {
 					// collected.
 					final Set<GraphNode> children = v.getChildren();
 					for (GraphNode child : children) {
-						if (child.isNot(Visited.POST)) {
-							executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
-						}
+						executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
 					}
 					graph.unlock(this, v);
 				}

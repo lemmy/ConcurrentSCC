@@ -1,6 +1,7 @@
 package edu.cmu.cs;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 public class LinkCut {
 	// rotR and rotL are also known as zig and zag
@@ -113,6 +114,10 @@ public class LinkCut {
 			throw new RuntimeException("non-root link");
 		}
 		p.preferred = q;
+		
+		// Hack: Store child of represented tree to reconstruct the set of
+		// children (even unpreferred paths) later (see children(..)).
+		q.addChild(p);
 	}
 
 	/*
@@ -150,6 +155,7 @@ public class LinkCut {
 	public static void cut(LinkCutTreeNode p) {
 		expose(p);
 		if(p.right != null) {
+			p.right.children.remove(p);
 			p.right.preferred = null;
 			p.right = null;
 		}
@@ -194,16 +200,34 @@ public class LinkCut {
 	 * Added by mku
 	 */
 	public static Collection<LinkCutTreeNode> children(LinkCutTreeNode p, Collection<LinkCutTreeNode> into) {
-		throw new UnsupportedOperationException(
-				"Not implemented");
+//		throw new UnsupportedOperationException(
+//				"Not implemented");
 		// Not sure this can possibly be implemented, as subtrees can be
 		// disconnected when they are not on the preferred path. Generally,
 		// Link/Cut allows to go from a vertex up to its root. On the
 		// other hand, the children of a root are not reachable from the
 		// root unless they are on the current preferred path. They are
 		// made the preferred path by calling expose() on the child.
+		//
+		//
+		into.add(p);
+		for (LinkCutTreeNode child : p.children) {
+			children(child, into);
+		}
+		return into;
 	}
-	
+
+	public static Collection<LinkCutTreeNode> directChildren(LinkCutTreeNode p, Collection<LinkCutTreeNode> into) {
+		into.addAll(p.children);
+		return into;
+	}
+
+	public static void applyDirectChildren(LinkCutTreeNode p, Function<LinkCutTreeNode, Void> func) {
+		for (LinkCutTreeNode child : p.children) {
+			func.apply(child);
+		}
+	}
+
 	/**
 	 * Returns p's parent/ancestor or null if p is a root of the represented/real tree.
 	 * 

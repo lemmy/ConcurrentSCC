@@ -1,4 +1,8 @@
 package edu.cmu.cs;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public class LinkCutTreeNode {
 
 	int s, my_s, on/*, id*/;
@@ -8,6 +12,8 @@ public class LinkCutTreeNode {
 	LinkCutTreeNode left, right;
 	protected LinkCutTreeNode preferred;
 	protected final int id;
+	
+	protected Set<LinkCutTreeNode> children = new HashSet<LinkCutTreeNode>();
 	
 	LinkCutTreeNode() {
 		this(-1);
@@ -82,5 +88,9 @@ public class LinkCutTreeNode {
 				on += right.on;
 			}
 		}
+	}
+
+	public void addChild(LinkCutTreeNode p) {
+		children.add(p);
 	}
 }
