@@ -26,40 +26,56 @@
 
 package org.kuppe.graphs.tarjan;
 
-import static org.junit.Assert.fail;
-
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 public class ConcurrentFastSCCTest {
 	
 	private final ConcurrentFastSCC concurrentFastScc = new ConcurrentFastSCC();
 
-//	@Test
-//	public void testEmpty() {
-//		final List<GraphNode> roots = new ArrayList<GraphNode>();
-//		
-//		// No vertices at all
-//		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
-//		Assert.assertEquals(0, sccs.size());
-//	}
-//
-//	@Test
-//	public void testSingleVertex() {
-//		final List<GraphNode> roots = new ArrayList<GraphNode>();
-//		
-//		// single vertex with arc to self
-//		final GraphNode one = new GraphNode(1);
-//		roots.add(one);
-//		one.addEdge(one);
-//
-//		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(roots);
-//		
-//		Assert.assertEquals(0, sccs.size());
-//	}
+	@Rule public TestName name = new TestName();
+
+	@Before
+	public void before() {
+		System.out.println("=================================================================");
+		System.out.println("==================== " + name.getMethodName() + " =========================");
+		System.out.println("=================================================================");
+	}
+
+	@After
+	public void after() {
+		System.out.println("=================================================================");
+		System.out.println("==================== " + name.getMethodName() + " =========================");
+		System.out.println("=================================================================\n\n");
+	}
+	
+	@Test
+	public void testEmpty() {
+		final Graph graph = new Graph();
+		
+		// No vertices at all
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertEquals(0, sccs.size());
+	}
+
+	@Test
+	public void testSingleVertex() {
+		final Graph graph = new Graph();
+
+		final GraphNode single = new GraphNode(1);
+		graph.addNode(single, 1);
+
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		Assert.assertEquals(0, sccs.size());
+	}
 	
 	@Test
 	public void testA() {
