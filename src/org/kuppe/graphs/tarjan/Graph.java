@@ -85,22 +85,27 @@ public class Graph {
 	
 
 	public void contract(GraphNode dst, GraphNode src) {
-		final Record dstRecord = this.nodePtrTable.get(dst.getId());
-		assert dstRecord != null;
-		
-		// Globally Replace src with dst
-		final Record replaced = this.nodePtrTable.replace(src.getId(), dstRecord);
-		assert replaced != dstRecord;
-		
-		// all all outgoing arcs to dstRecord
-		dstRecord.arcs.addAll(replaced.arcs);
-		
-		// Replace lock of dst with lock of src
-		final Lock lock = this.lockTable.replace(dst, this.lockTable.get(src));
-		assert lock != null;
-		System.out.println(String.format("Unlocked node (%s) due to contraction.", src));
-		lock.unlock();
-		//TODO Probably have to unlock w's tree too
+		try {
+			final Record dstRecord = this.nodePtrTable.get(dst.getId());
+			assert dstRecord != null;
+			
+			// Globally Replace src with dst
+			final Record replaced = this.nodePtrTable.replace(src.getId(), dstRecord);
+			assert replaced != dstRecord;
+			
+			// all all outgoing arcs to dstRecord
+			dstRecord.arcs.addAll(replaced.arcs);
+			
+			// Replace lock of dst with lock of src
+			final Lock lock = this.lockTable.replace(dst, this.lockTable.get(src));
+			assert lock != null;
+			System.out.println(String.format("Trying unlock of node (%s) due to contraction.", src));
+			lock.unlock();
+			System.out.println(String.format("Unlocked node (%s) due to contraction.", src));
+			//TODO Probably have to unlock w's tree too
+		} catch (Error e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/* Graph Locking */
