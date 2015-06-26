@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class ConcurrentFastSCCTest {
 	
@@ -395,7 +396,12 @@ public class ConcurrentFastSCCTest {
 
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
 		four.contract(sccs, graph, one);
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		
 		four.contract(sccs, graph, five);
+		Assert.assertTrue(five.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
 
 		final Set<GraphNode> expected = new HashSet<GraphNode>();
 		expected.add(one);
