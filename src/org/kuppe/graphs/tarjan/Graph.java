@@ -104,10 +104,12 @@ public class Graph {
 
 	public void contract(GraphNode dst, GraphNode src) {
 		final Record dstRecord = this.nodePtrTable.get(dst.getId());
+		assert dstRecord.node == dst;
 		assert dstRecord != null;
 		
 		// Globally Replace src with dst
 		final Record replaced = this.nodePtrTable.replace(src.getId(), dstRecord);
+		assert replaced.node == src;
 		assert replaced != dstRecord;
 		
 		// add all outgoing arcs to dstRecord

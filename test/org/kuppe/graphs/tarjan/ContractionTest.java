@@ -170,10 +170,15 @@ public class ContractionTest {
 		
 		// The SCC in F
 		five.setParent(three);
+		five.set(Visited.PRE);
 		one.setParent(four);
+		one.set(Visited.PRE);
 		// one is root at this
 		three.setParent(one);
+		three.set(Visited.PRE);
 		// one is not at root at this point
+
+		Assert.assertTrue(!one.isRoot());
 		
 		// Roots: (2), (4)
 		// Untraversed arcs: 1:5
@@ -182,17 +187,18 @@ public class ContractionTest {
 		// child (1) must be cut loose.
 		four.set(Visited.PRE);
 		new SCCWorker(noopExecutor, graph, sccs, four).call();
+		Assert.assertTrue(four.is(Visited.POST));
+		Assert.assertTrue(one.isRoot());
 
 		// Now one should be free again and contract its children into an SCC
-		new SCCWorker(noopExecutor, graph, sccs, one).call();
+		final SCCWorker sccWorker = new SCCWorker(noopExecutor, graph, sccs, one);
+		sccWorker.call();
 		
-		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
-		final Set<GraphNode> anSCC = new HashSet<GraphNode>();
-		anSCC.add(one);
-		anSCC.add(five);
-		anSCC.add(three);
-		expected.add(anSCC);
-		Assert.assertEquals(expected, sccs);
+		final Set<GraphNode> expected = new HashSet<GraphNode>();
+		expected.add(one);
+		expected.add(three);
+		expected.add(five);
+		Assert.assertEquals(expected, sccs.get(one));
 	}
 	
 	private static class NoopExecutorService implements ExecutorService {
