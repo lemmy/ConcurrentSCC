@@ -151,6 +151,7 @@ public class SCCWorker implements Callable<Void> {
 								 */
 
 								// Put SCC in a global set of sccs
+								System.out.println(String.format("%s: Trying to contracted w (%s) into v (%s)", id, w, v));
 								v.contract(sccs, graph, w);
 								System.out.println(String.format("%s: +++ Contracted w (%s) into v (%s)", id, w, v));
 
@@ -162,31 +163,20 @@ public class SCCWorker implements Callable<Void> {
 								if (v.checkSCC()) {
 									boolean hasUntraversedArcs = graph.hasUntraversedArc(v);
 									if (!hasUntraversedArcs) {
-										v.set(Visited.POST);
-										// Cut its remaining direct tree childs loose. This
-										// is i.e. necessary for Graph A, when:
-									    //
-										// Tree is (with 3&4 contracted):
-										// (3 < 4) < 2 < 1 
-										// and the untraversed arcs are
-										// {{1,1},{2,1}}.
-										//
-										// At this point, 2 must become a root so that its
-										// last untraversed arc {2,1} gets explored and node
-										// 2 and 1 contracted.
-										final Set<GraphNode> children = v.getChildren();
-										for (GraphNode child : children) {
-											executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
-										}
+										freeChilds();
+										// v is a (contracted) root and thus eligible
+										// for further processing.	this.v = v;
+										// No need to unlock w, has happened during contraction
+										graph.unlock(this, v);
+									} else {
+										// v is a (contracted) root and thus eligible
+										// for further processing.	this.v = v;
+										// No need to unlock w, has happened during contraction
+										graph.unlock(this, v);
+										
+										executor.submit(this);
+										return null;
 									}
-									
-									// v is a (contracted) root and thus eligible
-									// for further processing.	this.v = v;
-									// No need to unlock w, has happened during contraction
-									graph.unlock(this, v);
-									
-									executor.submit(this);
-									return null;
 								} else {
 									// All other threads can stop, we've found a
 									// violation.
@@ -203,44 +193,7 @@ public class SCCWorker implements Callable<Void> {
 //						return null;
 //					}
 				} else {
-					// No untraversed arcs left
-					assert v.is(Visited.PRE);
-					
-					/*
-					 * if there is no such arc: a) mark the root postvisited
-					 */
-					v.set(Visited.POST);
-
-					/*
-					 * b) and make all its children idle roots (POST visited children
-					 * are by definition not roots).
-					 * 
-					 * TODO Bob's errata note:
-					 * I overlooked one thing in my high-level description of the
-					 * proposed algorithm: when a root runs out of outgoing arcs to be
-					 * traversed and it is marked as post visited, deleting it breaks
-					 * its tree into s number of new trees, one per child. This means
-					 * that one cannot use the disjoint-set data structure to keep track
-					 * of trees, since sets must be broken up as well as combined. There
-					 * are efficient data structures to solve this more-complicated
-					 * problem, notably Euler tour trees, which represent a tree by an
-					 * Euler tour stored in a binary search tree. The time for a query
-					 * is O(logn), as is the time to add an arc (a link) or break an arc
-					 * (a cut).
-					 */
-					// Cut all children of v in the tree (not graph which are
-					// its arcs). This essentially converts them
-					// into roots which in turn makes them eligible for further
-					// processing.
-					//
-					// The assumption is that we can just collect the children
-					// and null all their pointers. The pointer from v to the
-					// will be irrelevant, as v's tree will be garbage
-					// collected.
-					final Set<GraphNode> children = v.getChildren();
-					for (GraphNode child : children) {
-						executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
-					}
+					freeChilds();
 					graph.unlock(this, v);
 				}
 			} else {
@@ -255,6 +208,63 @@ public class SCCWorker implements Callable<Void> {
 			throw e;
 		} finally {
 			GLOBAL_LOCK.unlock();
+		}
+	}
+
+	private void freeChilds() {
+		System.out.println(String.format("Freeing children of v.", v.getId()));
+		
+		// No untraversed arcs left
+		assert v.is(Visited.PRE);
+		
+		/*
+		 * if there is no such arc: a) mark the root postvisited
+		 */
+		v.set(Visited.POST);
+
+		
+		// Cut its remaining direct tree childs loose. This
+		// is i.e. necessary for Graph A, when:
+	    //
+		// Tree is (with 3&4 contracted):
+		// (3 < 4) < 2 < 1 
+		// and the untraversed arcs are
+		// {{1,1},{2,1}}.
+		//
+		// At this point, 2 must become a root so that its
+		// last untraversed arc {2,1} gets explored and node
+		// 2 and 1 contracted.
+
+		/*
+		 * b) and make all its children idle roots (POST visited children
+		 * are by definition not roots).
+		 * 
+		 * TODO Bob's errata note:
+		 * I overlooked one thing in my high-level description of the
+		 * proposed algorithm: when a root runs out of outgoing arcs to be
+		 * traversed and it is marked as post visited, deleting it breaks
+		 * its tree into s number of new trees, one per child. This means
+		 * that one cannot use the disjoint-set data structure to keep track
+		 * of trees, since sets must be broken up as well as combined. There
+		 * are efficient data structures to solve this more-complicated
+		 * problem, notably Euler tour trees, which represent a tree by an
+		 * Euler tour stored in a binary search tree. The time for a query
+		 * is O(logn), as is the time to add an arc (a link) or break an arc
+		 * (a cut).
+		 */
+		// Cut all children of v in the tree (not graph which are
+		// its arcs). This essentially converts them
+		// into roots which in turn makes them eligible for further
+		// processing.
+		//
+		// The assumption is that we can just collect the children
+		// and null all their pointers. The pointer from v to the
+		// will be irrelevant, as v's tree will be garbage
+		// collected.
+		final Set<GraphNode> children = v.freeChildren();
+		for (GraphNode child : children) {
+			System.out.println(String.format("Free'ed child of v. %s", child.getId()));
+			executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
 		}
 	}
 

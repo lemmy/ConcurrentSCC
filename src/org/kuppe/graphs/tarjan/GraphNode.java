@@ -161,7 +161,7 @@ public class GraphNode extends LinkCutTreeNode {
 		return root == this;
 	}
 
-	public Set<GraphNode> getChildren() {
+	public Set<GraphNode> freeChildren() {
 		// TODO Cannot implement this method for link/cut tree and thus just
 		// return an empty set to avoid NPEs.
 		Collection<LinkCutTreeNode> lctnChildren = LinkCut.directChildren(this, new HashSet<LinkCutTreeNode>());
