@@ -1,4 +1,3 @@
-package edu.cmu.cs;
 /*******************************************************************************
  * Copyright (c) 2015 Microsoft Research. All rights reserved. 
  *
@@ -24,6 +23,9 @@ package edu.cmu.cs;
  * Contributors:
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
+
+package edu.cmu.cs;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
