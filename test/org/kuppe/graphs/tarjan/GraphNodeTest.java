@@ -28,8 +28,10 @@ package org.kuppe.graphs.tarjan;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class GraphNodeTest {
 
@@ -68,5 +70,43 @@ public class GraphNodeTest {
 		
 		assertTrue(B.isInSameTree(B));
 		assertFalse(B.isInSameTree(A));
+	}
+	
+	@Test
+	public void testVisitedStateChange() {
+		final GraphNode a = new GraphNode(1);
+		assertTrue(a.is(Visited.UN));
+		a.set(Visited.UN);
+		a.set(Visited.PRE);
+		assertTrue(a.is(Visited.PRE));
+		a.set(Visited.PRE);
+		a.set(Visited.POST);
+		assertTrue(a.is(Visited.POST));
+	}
+
+	@Test
+	public void testVisitedStateChangeInvalidDowngrade() {
+		final GraphNode a = new GraphNode(1);
+		a.set(Visited.PRE);
+		assertTrue(a.is(Visited.PRE));
+		try {
+			a.set(Visited.UN);
+		} catch (AssertionError e) {
+			return;
+		}
+		fail("Invalid state downgrade PRE > UN");
+	}
+
+	@Test
+	public void testVisitedStateChangeInvalidDowngrade2() {
+		final GraphNode a = new GraphNode(1);
+		a.set(Visited.POST);
+		assertTrue(a.is(Visited.POST));
+		try {
+			a.set(Visited.PRE);
+		} catch (AssertionError e) {
+			return;
+		}
+		fail("Invalid state downgrade PRE > UN");
 	}
 }
