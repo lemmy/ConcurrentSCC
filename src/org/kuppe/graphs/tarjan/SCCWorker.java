@@ -61,10 +61,10 @@ public class SCCWorker implements Callable<Void> {
 				// my job is already done
 				return null;
 			}
-			if (graph.tryLock(this, v)) {
+			if (graph.tryLock(v)) {
 				if (v.is(Visited.POST) || !v.isRoot()) {
 					System.out.println(String.format("%s: Skipping v %s", getId(), v));
-					graph.unlock(this, v);
+					graph.unlock(v);
 					return null;
 				}
 
@@ -82,12 +82,12 @@ public class SCCWorker implements Callable<Void> {
 						System.out.println(String.format("Check self-loop on v (%s)", v));
 						
 						// do nothing
-						graph.unlock(this, v);
+						graph.unlock(v);
 						executor.submit(this);
 						return null;
 					}
 					
-					if (graph.tryLockTrees(this, w, v)) {
+					if (graph.tryLockTrees(w, v)) {
 						// We now have v and w locked, lets start doing work with it
 						// Mark the vertex visited (PRE)
 						v.set(Visited.PRE);
@@ -97,7 +97,7 @@ public class SCCWorker implements Callable<Void> {
 						// onto the next arc
 						if (w.is(Visited.POST)) {
 							arc.setTraversed();
-							graph.unlock(this, v);
+							graph.unlock(v);
 							return null;
 						}
 						
@@ -118,8 +118,8 @@ public class SCCWorker implements Callable<Void> {
 							
 							boolean isRoot = w.isRoot();
 							
-							graph.unlockTrees(this, w, v);
-							graph.unlock(this, vOld);
+							graph.unlockTrees(w, v);
+							graph.unlock(vOld);
 							/*
 							 * Since v is now a child, it is not (for the moment) eligible
 							 * for further processing. The thread can switch to an arbitrary
@@ -165,12 +165,12 @@ public class SCCWorker implements Callable<Void> {
 										// v is a (contracted) root and thus eligible
 										// for further processing.	this.v = v;
 										// No need to unlock w, has happened during contraction
-										graph.unlock(this, v);
+										graph.unlock(v);
 									} else {
 										// v is a (contracted) root and thus eligible
 										// for further processing.	this.v = v;
 										// No need to unlock w, has happened during contraction
-										graph.unlock(this, v);
+										graph.unlock(v);
 										
 										executor.submit(this);
 										return null;
@@ -192,7 +192,7 @@ public class SCCWorker implements Callable<Void> {
 //					}
 				} else {
 					freeChilds();
-					graph.unlock(this, v);
+					graph.unlock(v);
 				}
 			} else {
 				// Cannot acquire lock, try later

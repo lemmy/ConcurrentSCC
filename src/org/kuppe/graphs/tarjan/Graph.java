@@ -116,38 +116,39 @@ public class Graph {
 	
 	/* Graph Locking */
 
-	public boolean tryLock(SCCWorker sccWorker, GraphNode node) {
+	public boolean tryLock(GraphNode node) {
 		if (lockTable.get(node).tryLock()) {
-			System.out.println(String.format("%s: Locked node (%s)", sccWorker.getId(), node));
+			System.out.println(String.format("%s: Locked node (%s)", node.getId(), node));
 			return true;
 		} else {
-			System.out.println(String.format("%s: Failed to acquire lock on node (%s)", sccWorker.getId(), node));
+			System.out.println(String.format("%s: Failed to acquire lock on node (%s)", node.getId(), node));
 			return false;
 		}
 	}
 	
-	public void unlock(SCCWorker sccWorker, GraphNode node) {
-		lockTable.get(node).unlock();
-		System.out.println(String.format("%s: Unlocked node %s", sccWorker.getId(), node));
+	public void unlock(GraphNode node) {
+		final Lock nodeLock = lockTable.get(node);
+		nodeLock.unlock();
+		System.out.println(String.format("%s: Unlocked node %s", node.getId(), node));
 	}
 
 	/* Link cut tree locking */
 	
-	public boolean tryLockTrees(SCCWorker sccWorker, GraphNode w, GraphNode v) {
+	public boolean tryLockTrees(GraphNode w, GraphNode v) {
 		if (lockTable.get(w).tryLock()) {
-			System.out.println(String.format("%s: Locked v (%s) and w (%s)", sccWorker.getId(), v, w));
+			System.out.println(String.format("%s: Locked v (%s) and w (%s)", v.getId(), v, w));
 			// Acquired w, lets try to lock both trees
 			//TODO
 			return true;
 		} else {
-			System.out.println(String.format("%s: Locked v (%s), failed acquire w (%s)", sccWorker.getId(), v, w));
+			System.out.println(String.format("%s: Locked v (%s), failed acquire w (%s)", v.getId(), v, w));
 			return false;
 		}
 	}
 
-	public void unlockTrees(SCCWorker sccWorker, GraphNode w, GraphNode v) {
+	public void unlockTrees(GraphNode w, GraphNode v) {
 		//TODO
 		lockTable.get(w).unlock();
-		System.out.println(String.format("%s: Unlocked tree node %s", sccWorker.getId(), w));
+		System.out.println(String.format("%s: Unlocked tree node %s", w.getId(), w));
 	}
 }
