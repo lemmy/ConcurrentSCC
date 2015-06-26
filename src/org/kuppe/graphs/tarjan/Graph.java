@@ -1,13 +1,16 @@
 package org.kuppe.graphs.tarjan;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * Abstraction of TLC's NodePtrTable.
@@ -16,7 +19,7 @@ public class Graph {
 	
 	private static class Record {
 		GraphNode node;
-		Set<Arc> arcs;
+		Collection<Arc> arcs;
 	}
 	
 	private final Map<Integer, Record> nodePtrTable;
@@ -46,7 +49,7 @@ public class Graph {
 		assert !this.nodePtrTable.containsKey(node) && !this.lockTable.containsKey(node);
 
 		// Create the entry in the nodePtrTable
-		final Set<Arc> s = new HashSet<Arc>();
+		final List<Arc> s = new ArrayList<Arc>();
 		for (Integer integer : successors) {
 			s.add(new Arc(integer));
 		}
@@ -81,8 +84,13 @@ public class Graph {
 		return getUntraversedArc(v) != null;
 	}
 
-	public Set<Arc> getArcs(GraphNode node) {
+	public Collection<Arc> getArcs(GraphNode node) {
 		return this.nodePtrTable.get(node.getId()).arcs;
+	}
+	
+	public Collection<Arc> getUntraversedArcs(GraphNode node) {
+		final Collection<Arc> arcs = this.nodePtrTable.get(node.getId()).arcs;
+		return arcs.stream().filter((arc) -> !arc.isTraversed()).collect(Collectors.toSet());
 	}
 	
 	/* contraction */
