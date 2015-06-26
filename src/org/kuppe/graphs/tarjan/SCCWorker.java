@@ -261,7 +261,7 @@ public class SCCWorker implements Callable<Void> {
 		// and null all their pointers. The pointer from v to the
 		// will be irrelevant, as v's tree will be garbage
 		// collected.
-		final Set<GraphNode> children = v.freeChildren();
+		final Set<GraphNode> children = v.cutChildren();
 		for (GraphNode child : children) {
 			System.out.println(String.format("Free'ed child of v. %s", child.getId()));
 			executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
