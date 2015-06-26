@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 public class ConcurrentFastSCC {
 	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
-		System.out.println("=====================================================");
 		//TODO Name threads inside executor to aid debugging.
 		// see http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
 		final ForkJoinPool executor = new ForkJoinPool();
