@@ -374,6 +374,42 @@ public class ConcurrentFastSCCTest {
 	}
 	
 	@Test
+	public void testInvalidContraction() {
+		final Graph graph = new Graph();
+
+		// a star with one loop
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 2,4,5);
+		
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 2);
+		
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 1);
+		
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four,4);
+		
+		final GraphNode five = new GraphNode(5);
+		graph.addNode(five, 3);
+		
+		// The SCC in F
+		five.setParent(three);
+		one.setParent(four);
+		// one is root at this
+		three.setParent(one);
+
+		// Cannot set two as parent of one, four is its parent already. 
+		try {
+			one.setParent(two);
+		} catch (RuntimeException e) {
+			Assert.assertEquals("non-root link", e.getMessage());
+			return;
+		}
+		Assert.fail("Linked non-root node.");
+	}
+	
+	@Test
 	public void testContractionsInC() {
 		final Graph graph = new Graph();
 
