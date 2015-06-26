@@ -111,6 +111,7 @@ public class GraphNode extends LinkCutTreeNode {
 			}
 
 			// Mark parent done
+			assert parent.is(Visited.PRE);
 			parent.set(Visited.POST);
 
 			// Logically replace parent with this GraphNode in the Graph.

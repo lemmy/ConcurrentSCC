@@ -374,6 +374,42 @@ public class ConcurrentFastSCCTest {
 	}
 	
 	@Test
+	public void testInvalidVisitedStateChildContraction() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 1,2);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 1,2);
+		
+		one.setParent(two);
+		try {
+			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
+		} catch (AssertionError e) {
+			return;
+		}
+		Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");
+	}
+	
+	@Test
+	public void testVisitedStateChildContraction() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 1,2);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 1,2);
+		
+		one.setParent(two);
+		one.set(Visited.PRE);
+		try {
+			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
+		} catch (AssertionError e) {
+			Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");
+		}
+	}
+	
+	@Test
 	public void testInvalidContraction() {
 		final Graph graph = new Graph();
 
@@ -426,9 +462,13 @@ public class ConcurrentFastSCCTest {
 		
 		// One possible permutation of child>parent relationships in the tree
 		one.setParent(three);
+		one.set(Visited.PRE);
 		five.setParent(two);
+		five.set(Visited.PRE);
 		three.setParent(four);
+		three.set(Visited.PRE);
 		two.setParent(three);
+		two.set(Visited.PRE);
 
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
 		four.contract(sccs, graph, one);
