@@ -22,7 +22,7 @@ public class Graph {
 	private final Map<Integer, Record> nodePtrTable;
 
 	// Have on lock per GraphNode. Later this has to change when the number of
-	// GraphNode growth. Then, use hash the GraphNode to a Lock.
+	// GraphNode growth. Then, hash the GraphNode to a Lock.
 	private final Map<GraphNode, Lock> lockTable;
 
 //	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
@@ -64,6 +64,8 @@ public class Graph {
 		return this.nodePtrTable.get(id).node;
 	}
 
+	/* (outgoing) arcs */
+
 	public Arc getUntraversedArc(GraphNode node) {
 		Iterator<Arc> arcs = this.nodePtrTable.get(node.getId()).arcs.iterator();
 		while (arcs.hasNext()) {
@@ -83,29 +85,33 @@ public class Graph {
 		return this.nodePtrTable.get(node.getId()).arcs;
 	}
 	
+	/* contraction */
 
 	public void contract(GraphNode dst, GraphNode src) {
-		try {
-			final Record dstRecord = this.nodePtrTable.get(dst.getId());
-			assert dstRecord != null;
-			
-			// Globally Replace src with dst
-			final Record replaced = this.nodePtrTable.replace(src.getId(), dstRecord);
-			assert replaced != dstRecord;
-			
-			// all all outgoing arcs to dstRecord
-			dstRecord.arcs.addAll(replaced.arcs);
-			
-			// Replace lock of dst with lock of src
-			final Lock lock = this.lockTable.replace(dst, this.lockTable.get(src));
-			assert lock != null;
-			System.out.println(String.format("Trying unlock of node (%s) due to contraction.", src));
-			lock.unlock();
-			System.out.println(String.format("Unlocked node (%s) due to contraction.", src));
-			//TODO Probably have to unlock w's tree too
-		} catch (Error e) {
-			e.printStackTrace();
-		}
+		final Record dstRecord = this.nodePtrTable.get(dst.getId());
+		assert dstRecord != null;
+		
+		// Globally Replace src with dst
+		final Record replaced = this.nodePtrTable.replace(src.getId(), dstRecord);
+		assert replaced != dstRecord;
+		
+		// all all outgoing arcs to dstRecord
+		dstRecord.arcs.addAll(replaced.arcs);
+		
+		// Replace lock of dst with lock of src
+		final Lock lock = this.lockTable.replace(dst, this.lockTable.get(src));
+		assert lock != null;
+		
+		// lock the lock first to get its monitor...
+		System.out.println(String.format("Trying unlock of node (%s) due to contraction.", src));
+		lock.lock();
+		
+		// ...now we have the monitor and are free to unlock the lock
+		lock.unlock();
+		System.out.println(String.format("Unlocked node (%s) due to contraction.", src));
+		
+		
+		//TODO Probably have to unlock w's tree too
 	}
 	
 	/* Graph Locking */

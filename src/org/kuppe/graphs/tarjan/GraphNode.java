@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
 
 import edu.cmu.cs.LinkCut;
 import edu.cmu.cs.LinkCutTreeNode;
@@ -84,58 +83,54 @@ public class GraphNode extends LinkCutTreeNode {
 	}
 		
 	public void contract(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, final GraphNode graphNode) {
-		try {
-			assert isRoot();
-			assert LinkCut.root(graphNode) == this;
+		assert isRoot();
+		assert LinkCut.root(graphNode) == this;
 
-			// Get the subset SCCs (if any) which has been contracted into this
-			// before.
-			Set<GraphNode> scc = sccs.get(this);
-			if (scc == null) {
-				// No previous scc for this node
-				scc = getNewScc();
-				scc.add(this);
-				sccs.put(this, scc);
+		// Get the subset SCCs (if any) which has been contracted into this
+		// before.
+		Set<GraphNode> scc = sccs.get(this);
+		if (scc == null) {
+			// No previous scc for this node
+			scc = getNewScc();
+			scc.add(this);
+			sccs.put(this, scc);
+		}
+
+		
+		// Traverse GraphNode's tree up to the root which is us/this.
+		GraphNode parent = graphNode;
+		while (parent != this) {
+			// Merge the others subset scc into this new one and remove it
+			// from the set of sccs.
+			final Set<GraphNode> parentsSubset = sccs.remove(parent);
+			if (parentsSubset != null) {
+				scc.addAll(parentsSubset);
+			} else {
+				scc.add(parent);
 			}
 
-			
-			// Traverse GraphNode's tree up to the root which is us/this.
-			GraphNode parent = graphNode;
-			while (parent != this) {
-				// Merge the others subset scc into this new one and remove it
-				// from the set of sccs.
-				final Set<GraphNode> parentsSubset = sccs.remove(parent);
-				if (parentsSubset != null) {
-					scc.addAll(parentsSubset);
-				} else {
-					scc.add(parent);
-				}
+			// Mark parent done
+			parent.visited = Visited.POST;
 
-				// Mark parent done
-				parent.visited = Visited.POST;
+			// Logically replace parent with this GraphNode in the Graph.
+			graph.contract(this, parent);
 
-				// Logically replace parent with this GraphNode in the Graph.
-				graph.contract(this, parent);
+			// Before unlink/cut, remember parent's parent
+			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
 
-				// Before unlink/cut, remember parent's parent
-				GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
+			// Unlink/Cut children of parent from parent and link them to
+			// us/this node.
+			// E.g. for test B when {2,1} form a contraction and tree being:
+			// {2,1} < 3 exploring the arc {2,3} has to trigger compaction
+			// of 3 into 2. But when only cut is done without linking to
+			// this, the previous compaction will have cut 3 loose already.
+			parent.children.forEach((child) -> {
+				LinkCut.cut(child);
+				LinkCut.link(child, this);
+			});
 
-				// Unlink/Cut children of parent from parent and link them to
-				// us/this node.
-				// E.g. for test B when {2,1} form a contraction and tree being:
-				// {2,1} < 3 exploring the arc {2,3} has to trigger compaction
-				// of 3 into 2. But when only cut is done without linking to
-				// this, the previous compaction will have cut 3 loose already.
-				parent.children.forEach((child) -> {
-					LinkCut.cut(child);
-					LinkCut.link(child, this);
-				});
-
-				// Continue with parent's parent.
-				parent = parentsParent;
-			}
-		} catch (Error e) {
-			e.printStackTrace();
+			// Continue with parent's parent.
+			parent = parentsParent;
 		}
 	}
 	
@@ -180,9 +175,5 @@ public class GraphNode extends LinkCutTreeNode {
 			LinkCut.cut(child);
 		}
 		return children;
-	}
-	
-	public void applyToDirectTreeChildren(Function<LinkCutTreeNode, Void> func) {
-		LinkCut.applyDirectChildren(this, func);
 	}
 }

@@ -250,6 +250,9 @@ public class SCCWorker implements Callable<Void> {
 				return null;
 			}
 			return null;
+		} catch (Exception|Error e) {
+			e.printStackTrace();
+			throw e;
 		} finally {
 			GLOBAL_LOCK.unlock();
 		}
