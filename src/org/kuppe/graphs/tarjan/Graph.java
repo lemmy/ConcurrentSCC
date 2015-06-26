@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +44,8 @@ import java.util.stream.Collectors;
  */
 public class Graph {
 	
+    private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
+
 	private class Record {
 		private final GraphNode node;
 		private final Collection<Arc> arcs;
@@ -164,12 +167,12 @@ public class Graph {
 		assert lock != null;
 		
 		// lock the lock first to get its monitor...
-		System.out.println(String.format("Trying unlock of node (%s) due to contraction.", src));
+		logger.fine(() -> String.format("Trying unlock of node (%s) due to contraction.", src));
 		lock.lock();
 		
 		// ...now we have the monitor and are free to unlock the lock
 		lock.unlock();
-		System.out.println(String.format("Unlocked node (%s) due to contraction.", src));
+		logger.fine(() -> String.format("Unlocked node (%s) due to contraction.", src));
 		
 		
 		//TODO Probably have to unlock w's tree too
@@ -180,10 +183,10 @@ public class Graph {
 	public boolean tryLock(GraphNode node) {
 		assert nodePtrTable.get(node.getId()) != null;
 		if (nodePtrTable.get(node.getId()).getLock().tryLock()) {
-			System.out.println(String.format("%s: Locked node (%s)", node.getId(), node));
+			logger.fine(() -> String.format("%s: Locked node (%s)", node.getId(), node));
 			return true;
 		} else {
-			System.out.println(String.format("%s: Failed to acquire lock on node (%s)", node.getId(), node));
+			logger.fine(() -> String.format("%s: Failed to acquire lock on node (%s)", node.getId(), node));
 			return false;
 		}
 	}
@@ -192,7 +195,7 @@ public class Graph {
 		assert nodePtrTable.get(node.getId()) != null;
 		final Lock nodeLock = nodePtrTable.get(node.getId()).getLock();
 		nodeLock.unlock();
-		System.out.println(String.format("%s: Unlocked node %s", node.getId(), node));
+		logger.fine(() -> String.format("%s: Unlocked node %s", node.getId(), node));
 	}
 
 	/* Link cut tree locking */
@@ -200,12 +203,12 @@ public class Graph {
 	public boolean tryLockTrees(GraphNode w, GraphNode v) {
 		assert nodePtrTable.get(w.getId()) != null;
 		if (nodePtrTable.get(w.getId()).lock.tryLock()) {
-			System.out.println(String.format("%s: Locked v (%s) and w (%s)", v.getId(), v, w));
+			logger.fine(() -> String.format("%s: Locked v (%s) and w (%s)", v.getId(), v, w));
 			// Acquired w, lets try to lock both trees
 			//TODO
 			return true;
 		} else {
-			System.out.println(String.format("%s: Locked v (%s), failed acquire w (%s)", v.getId(), v, w));
+			logger.fine(() -> String.format("%s: Locked v (%s), failed acquire w (%s)", v.getId(), v, w));
 			return false;
 		}
 	}
@@ -214,6 +217,6 @@ public class Graph {
 		assert nodePtrTable.get(w.getId()) != null;
 		//TODO
 		nodePtrTable.get(w.getId()).getLock().unlock();
-		System.out.println(String.format("%s: Unlocked tree node %s", w.getId(), w));
+		logger.fine(() -> String.format("%s: Unlocked tree node %s", w.getId(), w));
 	}
 }

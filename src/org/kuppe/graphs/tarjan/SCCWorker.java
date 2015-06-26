@@ -32,10 +32,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class SCCWorker implements Callable<Void> {
+	
+    private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private static final Lock GLOBAL_LOCK = new ReentrantLock(true);
 //	private static final Random rnd = new Random(1541980);
@@ -54,16 +57,16 @@ public class SCCWorker implements Callable<Void> {
 	
 	public Void call() throws Exception {
 		GLOBAL_LOCK.lock();
-		System.out.println("----------- " + this.getId()+ " ----------------");
+		logger.fine(() -> "----------- " + this.getId()+ " ----------------");
 		try {
 			if (v.is(Visited.POST)) {
-				System.out.println(String.format("%s: Skipping post-visted v %s", getId(), v));
+				logger.fine(() -> String.format("%s: Skipping post-visted v %s", getId(), v));
 				// my job is already done
 				return null;
 			}
 			if (graph.tryLock(v)) {
 				if (v.is(Visited.POST) || !v.isRoot()) {
-					System.out.println(String.format("%s: Skipping v %s", getId(), v));
+					logger.fine(() -> String.format("%s: Skipping v %s", getId(), v));
 					graph.unlock(v);
 					return null;
 				}
@@ -81,7 +84,7 @@ public class SCCWorker implements Callable<Void> {
 						
 						arc.setTraversed();
 						//TODO self-loop, might check stuttering here
-						System.out.println(String.format("Check self-loop on v (%s)", v));
+						logger.fine(() -> String.format("Check self-loop on v (%s)", v));
 						
 						// do nothing
 						graph.unlock(v);
@@ -109,7 +112,7 @@ public class SCCWorker implements Callable<Void> {
 							// If w is in a different tree than v, make w the
 							// parent of v and mark w previsited if it is unvisited.
 							v.setParent(w);
-							System.out.println(String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(), v.getId()));
+							logger.fine(() -> String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(), v.getId()));
 
 							w.set(Visited.PRE);
 
@@ -152,9 +155,9 @@ public class SCCWorker implements Callable<Void> {
 								 */
 
 								// Put SCC in a global set of sccs
-								System.out.println(String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
+								logger.fine(() -> String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
 								v.contract(sccs, graph, w);
-								System.out.println(String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
+								logger.fine(() -> String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
 
 								// This is when an SCC has been found in v.
 								// TODO SCCs might not be maximal SCCs.
@@ -213,7 +216,7 @@ public class SCCWorker implements Callable<Void> {
 	}
 
 	private void freeChilds() {
-		System.out.println(String.format("Freeing children of v.", v.getId()));
+		logger.fine(() -> String.format("Freeing children of v.", v.getId()));
 		
 		// No untraversed arcs left (PRE) or no arcs at all (UN).
 		assert v.isNot(Visited.POST);
@@ -264,7 +267,7 @@ public class SCCWorker implements Callable<Void> {
 		// collected.
 		final Set<GraphNode> children = v.cutChildren();
 		for (GraphNode child : children) {
-			System.out.println(String.format("Free'ed child (%s)", child));
+			logger.fine(() -> String.format("Free'ed child (%s)", child));
 			executor.submit(new SCCWorker(executor, graph, sccs, child));
 		}
 	}
