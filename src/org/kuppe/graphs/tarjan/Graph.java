@@ -87,10 +87,17 @@ public class Graph {
 		nodePtrTable.values().forEach((value) -> {start.add(value.node);});
 		return start;
 	}
+	
+
+	public void addArc(int nodeId, int arcId) {
+		assert this.nodePtrTable.containsKey(nodeId);
+		Record record = this.nodePtrTable.get(nodeId);
+		record.arcs.add(new Arc(arcId));
+	}
 
 	// Convenience method for unit tests (see AbstractGraph#addNode)
 	public void addNode(GraphNode node, Integer... successors) {
-		assert !this.nodePtrTable.containsKey(node);
+		assert !this.nodePtrTable.containsKey(node.getId());
 
 		// Create the entry in the nodePtrTable
 		final List<Arc> s = new ArrayList<Arc>();
@@ -103,7 +110,12 @@ public class Graph {
 	}
 
 	public GraphNode get(int id) {
-		return this.nodePtrTable.get(id).node;
+		Record record = this.nodePtrTable.get(id);
+		if (record == null) {
+			record = new Record(new GraphNode(id), new ArrayList<Arc>(), new ReentrantLock());
+			this.nodePtrTable.put(id, record);
+		}
+		return record.node;
 	}
 
 	/* (outgoing) arcs */
