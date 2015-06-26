@@ -20,6 +20,13 @@ public class Graph {
 	private static class Record {
 		GraphNode node;
 		Collection<Arc> arcs;
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "Record [node=" + node + ", arcs=" + arcs + "]";
+		}
 	}
 	
 	private final Map<Integer, Record> nodePtrTable;
