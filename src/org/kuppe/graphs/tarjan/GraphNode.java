@@ -68,9 +68,15 @@ public class GraphNode extends LinkCutTreeNode {
 	 */
 	@Override
 	public String toString() {
+		if (isRoot()) {
+			return "GN [id=" + id
+					+ ", visited=" + visited
+					+ ", ROOT"
+					+ "]";
+		}
 		return "GN [id=" + id
 				+ ", visited=" + visited
-				+ ", ROOT"
+				+ ", CHILD"
 				+ "]";
 	}
 
