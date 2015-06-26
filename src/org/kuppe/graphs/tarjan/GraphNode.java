@@ -77,7 +77,6 @@ public class GraphNode extends LinkCutTreeNode {
 	public void setParent(GraphNode parent) {
 		assert this.isNot(Visited.POST);
 		LinkCut.link(this, parent);
-		this.visited = Visited.PRE;
 	}
 
 	public boolean isInSameTree(GraphNode other) {
@@ -112,7 +111,7 @@ public class GraphNode extends LinkCutTreeNode {
 			}
 
 			// Mark parent done
-			parent.visited = Visited.POST;
+			parent.set(Visited.POST);
 
 			// Logically replace parent with this GraphNode in the Graph.
 			graph.contract(this, parent);

@@ -95,7 +95,7 @@ public class Graph {
 		final Record replaced = this.nodePtrTable.replace(src.getId(), dstRecord);
 		assert replaced != dstRecord;
 		
-		// all all outgoing arcs to dstRecord
+		// add all outgoing arcs to dstRecord
 		dstRecord.arcs.addAll(replaced.arcs);
 		
 		// Replace lock of dst with lock of src
