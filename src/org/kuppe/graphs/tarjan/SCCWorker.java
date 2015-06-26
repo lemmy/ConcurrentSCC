@@ -214,8 +214,8 @@ public class SCCWorker implements Callable<Void> {
 	private void freeChilds() {
 		System.out.println(String.format("Freeing children of v.", v.getId()));
 		
-		// No untraversed arcs left
-		assert v.is(Visited.PRE);
+		// No untraversed arcs left (PRE) or no arcs at all (UN).
+		assert v.isNot(Visited.POST);
 		
 		/*
 		 * if there is no such arc: a) mark the root postvisited

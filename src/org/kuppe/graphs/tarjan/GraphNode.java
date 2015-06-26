@@ -59,7 +59,7 @@ public class GraphNode extends LinkCutTreeNode {
 
 	public void set(Visited visited) {
 		// Only state changes from UN > PRE > POST are allowed
-		assert visited.ordinal() <= visited.ordinal();
+		assert this.visited.ordinal() <= visited.ordinal();
 		this.visited = visited;
 	}
 
