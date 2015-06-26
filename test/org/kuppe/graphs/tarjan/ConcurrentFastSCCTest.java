@@ -76,6 +76,9 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(single));
+		
 		Assert.assertEquals(0, sccs.size());
 	}
 	
@@ -93,6 +96,12 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(four, 3);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(graph.hasUntraversedArc(four));
 		
 		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -129,6 +138,11 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+	
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
 			Assert.assertEquals(printSCC(scc), 3, scc.size());
@@ -159,6 +173,13 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(five,2);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(graph.hasUntraversedArc(four));
+		Assert.assertFalse(graph.hasUntraversedArc(five));
 
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -190,6 +211,12 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(four, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(graph.hasUntraversedArc(four));
 		
 		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -228,6 +255,14 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(graph.hasUntraversedArc(four));
+		Assert.assertFalse(graph.hasUntraversedArc(five));
+		Assert.assertFalse(graph.hasUntraversedArc(six));
+		
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
 			Assert.assertEquals(printSCC(scc), 6, scc.size());
@@ -264,6 +299,14 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(six,5,1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(graph.hasUntraversedArc(four));
+		Assert.assertFalse(graph.hasUntraversedArc(five));
+		Assert.assertFalse(graph.hasUntraversedArc(six));
 		
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -303,6 +346,14 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(rightBottom, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(center));
+		Assert.assertFalse(graph.hasUntraversedArc(leftUpper));
+		Assert.assertFalse(graph.hasUntraversedArc(leftBottom));
+		Assert.assertFalse(graph.hasUntraversedArc(rightUpper));
+		Assert.assertFalse(graph.hasUntraversedArc(rightBottom));
+
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
 			Assert.assertEquals(printSCC(scc), 3, scc.size());
@@ -329,6 +380,11 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(right, 1);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(left));
+		Assert.assertFalse(graph.hasUntraversedArc(right));
+		
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
 			Assert.assertEquals(printSCC(scc), 2, scc.size());
