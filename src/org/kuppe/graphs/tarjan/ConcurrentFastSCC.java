@@ -42,9 +42,8 @@ public class ConcurrentFastSCC {
 
 		final Map<GraphNode, Set<GraphNode>> sccs = new ConcurrentHashMap<GraphNode, Set<GraphNode>>(0);
 
-		int id = 0;
 		for (GraphNode graphNode : graph.getStartNodes()) {
-			executor.submit(new SCCWorker(id++, executor, graph, sccs, graphNode));
+			executor.submit(new SCCWorker(executor, graph, sccs, graphNode));
 		}
 		
 		// Wait until no SCCWorker is running and no SCCWorker is queued.

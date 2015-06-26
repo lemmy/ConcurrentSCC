@@ -43,11 +43,9 @@ public class SCCWorker implements Callable<Void> {
 	private final ExecutorService executor;
 	private final Map<GraphNode, Set<GraphNode>> sccs;
 	private final Graph graph;
-	private final int id;
 	private GraphNode v;
 
-	public SCCWorker(int id, final ExecutorService executor, final Graph graph, Map<GraphNode, Set<GraphNode>> sccs, final GraphNode root) {
-		this.id = id;
+	public SCCWorker(final ExecutorService executor, final Graph graph, Map<GraphNode, Set<GraphNode>> sccs, final GraphNode root) {
 		this.executor = executor;
 		this.graph = graph;
 		this.sccs = sccs;
@@ -108,7 +106,7 @@ public class SCCWorker implements Callable<Void> {
 							// If w is in a different tree than v, make w the
 							// parent of v and mark w previsited if it is unvisited.
 							v.setParent(w);
-							System.out.println(String.format("%s: ### w (%s) PARENT OF v (%s)", id, w.getId(), v.getId()));
+							System.out.println(String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(), v.getId()));
 
 							w.set(Visited.PRE);
 
@@ -151,9 +149,9 @@ public class SCCWorker implements Callable<Void> {
 								 */
 
 								// Put SCC in a global set of sccs
-								System.out.println(String.format("%s: Trying to contracted w (%s) into v (%s)", id, w, v));
+								System.out.println(String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
 								v.contract(sccs, graph, w);
-								System.out.println(String.format("%s: +++ Contracted w (%s) into v (%s)", id, w, v));
+								System.out.println(String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
 
 								// This is when an SCC has been found in v.
 								// TODO SCCs might not be maximal SCCs.
@@ -264,11 +262,11 @@ public class SCCWorker implements Callable<Void> {
 		final Set<GraphNode> children = v.cutChildren();
 		for (GraphNode child : children) {
 			System.out.println(String.format("Free'ed child of v. %s", child.getId()));
-			executor.submit(new SCCWorker(-1, executor, graph, sccs, child));
+			executor.submit(new SCCWorker(executor, graph, sccs, child));
 		}
 	}
 
 	public int getId() {
-		return id;
+		return v.getId();
 	}
 }
