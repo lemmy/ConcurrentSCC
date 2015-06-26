@@ -28,7 +28,6 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.After;
@@ -317,7 +316,7 @@ public class ConcurrentFastSCCTest {
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 	}
-	
+
 	@Test
 	public void testG() {
 		final Graph graph = new Graph();
@@ -374,24 +373,6 @@ public class ConcurrentFastSCCTest {
 	}
 	
 	@Test
-	public void testInvalidVisitedStateChildContraction() {
-		final Graph graph = new Graph();
-
-		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 1,2);
-		final GraphNode two = new GraphNode(2);
-		graph.addNode(two, 1,2);
-		
-		one.setParent(two);
-		try {
-			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
-		} catch (AssertionError e) {
-			return;
-		}
-		Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");
-	}
-	
-	@Test
 	public void testVisitedStateChildContraction() {
 		final Graph graph = new Graph();
 
@@ -407,85 +388,5 @@ public class ConcurrentFastSCCTest {
 		} catch (AssertionError e) {
 			Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");
 		}
-	}
-	
-	@Test
-	public void testInvalidContraction() {
-		final Graph graph = new Graph();
-
-		// a star with one loop
-		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 2,4,5);
-		
-		final GraphNode two = new GraphNode(2);
-		graph.addNode(two, 2);
-		
-		final GraphNode three = new GraphNode(3);
-		graph.addNode(three, 1);
-		
-		final GraphNode four = new GraphNode(4);
-		graph.addNode(four,4);
-		
-		final GraphNode five = new GraphNode(5);
-		graph.addNode(five, 3);
-		
-		// The SCC in F
-		five.setParent(three);
-		one.setParent(four);
-		// one is root at this
-		three.setParent(one);
-
-		// Cannot set two as parent of one, four is its parent already. 
-		try {
-			one.setParent(two);
-		} catch (RuntimeException e) {
-			Assert.assertEquals("non-root link", e.getMessage());
-			return;
-		}
-		Assert.fail("Linked non-root node.");
-	}
-	
-	@Test
-	public void testContractionsInC() {
-		final Graph graph = new Graph();
-
-		final GraphNode one = new GraphNode(1);
-		graph.addNode(one,3);
-		final GraphNode two = new GraphNode(2);
-		graph.addNode(two,3);
-		final GraphNode three = new GraphNode(3);
-		graph.addNode(three,4,5);
-		final GraphNode four = new GraphNode(4);
-		graph.addNode(four,1);
-		final GraphNode five = new GraphNode(5);
-		graph.addNode(five,2);
-		
-		// One possible permutation of child>parent relationships in the tree
-		one.setParent(three);
-		one.set(Visited.PRE);
-		five.setParent(two);
-		five.set(Visited.PRE);
-		three.setParent(four);
-		three.set(Visited.PRE);
-		two.setParent(three);
-		two.set(Visited.PRE);
-
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
-		four.contract(sccs, graph, one);
-		Assert.assertTrue(one.is(Visited.POST));
-		Assert.assertTrue(three.is(Visited.POST));
-		
-		four.contract(sccs, graph, five);
-		Assert.assertTrue(five.is(Visited.POST));
-		Assert.assertTrue(two.is(Visited.POST));
-
-		final Set<GraphNode> expected = new HashSet<GraphNode>();
-		expected.add(one);
-		expected.add(two);
-		expected.add(three);
-		expected.add(four);
-		expected.add(five);
-		Set<GraphNode> actual = sccs.get(four);
-		Assert.assertEquals(expected, actual);
 	}
 }
