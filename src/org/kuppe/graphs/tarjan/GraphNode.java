@@ -118,13 +118,18 @@ public class GraphNode extends LinkCutTreeNode {
 			// Before unlink/cut, remember parent's parent
 			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
 
+			// Take copy of parent.children. parent.children is modified by
+			// LinkCut.cut/LinkCut.link which results in a
+			// ConcurrentModificationException otherwise.
+			final Set<LinkCutTreeNode> children = new HashSet<>(parent.children);
+			
 			// Unlink/Cut children of parent from parent and link them to
 			// us/this node.
 			// E.g. for test B when {2,1} form a contraction and tree being:
 			// {2,1} < 3 exploring the arc {2,3} has to trigger compaction
 			// of 3 into 2. But when only cut is done without linking to
 			// this, the previous compaction will have cut 3 loose already.
-			parent.children.forEach((child) -> {
+			children.forEach((child) -> {
 				LinkCut.cut(child);
 				LinkCut.link(child, this);
 			});
