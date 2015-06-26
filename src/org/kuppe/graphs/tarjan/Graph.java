@@ -1,3 +1,29 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Microsoft Research. All rights reserved. 
+ *
+ * The MIT License (MIT)
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy 
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software. 
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Contributors:
+ *   Markus Alexander Kuppe - initial API and implementation
+ ******************************************************************************/
+
 package org.kuppe.graphs.tarjan;
 
 import java.util.ArrayList;
@@ -17,9 +43,25 @@ import java.util.stream.Collectors;
  */
 public class Graph {
 	
-	private static class Record {
-		GraphNode node;
-		Collection<Arc> arcs;
+	private class Record {
+		private final GraphNode node;
+		private final Collection<Arc> arcs;
+		private final Lock lock;
+		
+		private Record(GraphNode node, Collection<Arc> arcs, Lock nodeLock) {
+			assert node != null && arcs != null && nodeLock != null;
+			this.node = node;
+			this.arcs = arcs;
+			this.lock = nodeLock;
+		}
+		
+		/**
+		 * @return the lock
+		 */
+		public Lock getLock() {
+			return lock;
+		}
+
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
@@ -31,15 +73,10 @@ public class Graph {
 	
 	private final Map<Integer, Record> nodePtrTable;
 
-	// Have on lock per GraphNode. Later this has to change when the number of
-	// GraphNode growth. Then, hash the GraphNode to a Lock.
-	private final Map<GraphNode, Lock> lockTable;
-
 //	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 	
 	public Graph() {
 		this.nodePtrTable = new HashMap<Integer, Record>();
-		this.lockTable = new HashMap<GraphNode, Lock>();
 	}
 	
 	/**
@@ -53,7 +90,7 @@ public class Graph {
 
 	// Convenience method for unit tests (see AbstractGraph#addNode)
 	public void addNode(GraphNode node, Integer... successors) {
-		assert !this.nodePtrTable.containsKey(node) && !this.lockTable.containsKey(node);
+		assert !this.nodePtrTable.containsKey(node);
 
 		// Create the entry in the nodePtrTable
 		final List<Arc> s = new ArrayList<Arc>();
@@ -61,13 +98,8 @@ public class Graph {
 			s.add(new Arc(integer));
 		}
 		
-		Record r = new Record();
-		r.node = node;
-		r.arcs = s;
+		Record r = new Record(node, s, new ReentrantLock());
 		this.nodePtrTable.put(node.getId(), r);
-		
-		// Create the corresponding lock object
-		this.lockTable.put(node, new ReentrantLock());
 	}
 
 	public GraphNode get(int id) {
@@ -116,7 +148,7 @@ public class Graph {
 		dstRecord.arcs.addAll(replaced.arcs);
 		
 		// Replace lock of dst with lock of src
-		final Lock lock = this.lockTable.replace(dst, this.lockTable.get(src));
+		final Lock lock = replaced.getLock();
 		assert lock != null;
 		
 		// lock the lock first to get its monitor...
@@ -134,7 +166,8 @@ public class Graph {
 	/* Graph Locking */
 
 	public boolean tryLock(GraphNode node) {
-		if (lockTable.get(node).tryLock()) {
+		assert nodePtrTable.get(node.getId()) != null;
+		if (nodePtrTable.get(node.getId()).getLock().tryLock()) {
 			System.out.println(String.format("%s: Locked node (%s)", node.getId(), node));
 			return true;
 		} else {
@@ -144,7 +177,8 @@ public class Graph {
 	}
 	
 	public void unlock(GraphNode node) {
-		final Lock nodeLock = lockTable.get(node);
+		assert nodePtrTable.get(node.getId()) != null;
+		final Lock nodeLock = nodePtrTable.get(node.getId()).getLock();
 		nodeLock.unlock();
 		System.out.println(String.format("%s: Unlocked node %s", node.getId(), node));
 	}
@@ -152,7 +186,8 @@ public class Graph {
 	/* Link cut tree locking */
 	
 	public boolean tryLockTrees(GraphNode w, GraphNode v) {
-		if (lockTable.get(w).tryLock()) {
+		assert nodePtrTable.get(w.getId()) != null;
+		if (nodePtrTable.get(w.getId()).lock.tryLock()) {
 			System.out.println(String.format("%s: Locked v (%s) and w (%s)", v.getId(), v, w));
 			// Acquired w, lets try to lock both trees
 			//TODO
@@ -164,8 +199,9 @@ public class Graph {
 	}
 
 	public void unlockTrees(GraphNode w, GraphNode v) {
+		assert nodePtrTable.get(w.getId()) != null;
 		//TODO
-		lockTable.get(w).unlock();
+		nodePtrTable.get(w.getId()).getLock().unlock();
 		System.out.println(String.format("%s: Unlocked tree node %s", w.getId(), w));
 	}
 }
