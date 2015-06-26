@@ -26,7 +26,9 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.After;
@@ -179,7 +181,7 @@ public class ConcurrentFastSCCTest {
 		final Graph graph = new Graph();
 
 		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 1);
+		graph.addNode(one, 2);
 		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1);
 		final GraphNode three = new GraphNode(3);
@@ -311,6 +313,32 @@ public class ConcurrentFastSCCTest {
 		anSCC.add(center);
 		anSCC.add(rightBottom);
 		anSCC.add(rightUpper);
+		expected.add(anSCC);
+		Assert.assertEquals(expected, sccs);
+	}
+	
+	@Test
+	public void testG() {
+		final Graph graph = new Graph();
+
+		// two nodes with bi-directional connection
+		final GraphNode left = new GraphNode(1);
+		graph.addNode(left, 2);
+		
+		final GraphNode right = new GraphNode(2);
+		graph.addNode(right, 1);
+		
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 2, scc.size());
+		}
+		
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		final Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(left);
+		anSCC.add(right);
+		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 	}
 	
@@ -342,5 +370,40 @@ public class ConcurrentFastSCCTest {
 		removeIfDangling(buf, ",");
 		buf.append("]");
 		return buf.toString();
+	}
+	
+	@Test
+	public void testContractionsInC() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one,3);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two,3);
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three,4,5);
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four,1);
+		final GraphNode five = new GraphNode(5);
+		graph.addNode(five,2);
+		
+		// One possible permutation of child>parent relationships in the tree
+		one.setParent(three);
+		five.setParent(two);
+		three.setParent(four);
+		two.setParent(three);
+
+		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		four.contract(sccs, graph, one);
+		four.contract(sccs, graph, five);
+
+		final Set<GraphNode> expected = new HashSet<GraphNode>();
+		expected.add(one);
+		expected.add(two);
+		expected.add(three);
+		expected.add(four);
+		expected.add(five);
+		Set<GraphNode> actual = sccs.get(four);
+		Assert.assertEquals(expected, actual);
 	}
 }
