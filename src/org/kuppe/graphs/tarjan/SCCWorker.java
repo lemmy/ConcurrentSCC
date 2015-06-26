@@ -77,6 +77,8 @@ public class SCCWorker implements Callable<Void> {
 					final GraphNode w = graph.get(arc.getTo());
 					
 					if (w.equals(v)) {
+						v.set(Visited.PRE);
+						
 						arc.setTraversed();
 						//TODO self-loop, might check stuttering here
 						System.out.println(String.format("Check self-loop on v (%s)", v));
@@ -98,6 +100,7 @@ public class SCCWorker implements Callable<Void> {
 						if (w.is(Visited.POST)) {
 							arc.setTraversed();
 							graph.unlock(v);
+							executor.submit(this);
 							return null;
 						}
 						
@@ -261,7 +264,7 @@ public class SCCWorker implements Callable<Void> {
 		// collected.
 		final Set<GraphNode> children = v.cutChildren();
 		for (GraphNode child : children) {
-			System.out.println(String.format("Free'ed child of v. %s", child.getId()));
+			System.out.println(String.format("Free'ed child (%s)", child));
 			executor.submit(new SCCWorker(executor, graph, sccs, child));
 		}
 	}
