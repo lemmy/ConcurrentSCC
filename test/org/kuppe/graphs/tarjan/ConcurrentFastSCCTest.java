@@ -76,6 +76,9 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
+		// All nodes are post-visited
+		Assert.assertTrue(single.is(Visited.POST));
+	
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(single));
 		
@@ -138,6 +141,11 @@ public class ConcurrentFastSCCTest {
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(one));
 		Assert.assertFalse(graph.hasUntraversedArc(two));
@@ -173,6 +181,13 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(five,2);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
+		Assert.assertTrue(five.is(Visited.POST));
 		
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(one));
@@ -211,6 +226,12 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(four, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
 		
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(one));
@@ -254,6 +275,14 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(six, 1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
+		Assert.assertTrue(five.is(Visited.POST));
+		Assert.assertTrue(six.is(Visited.POST));
 		
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(one));
@@ -299,6 +328,14 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(six,5,1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
+		Assert.assertTrue(five.is(Visited.POST));
+		Assert.assertTrue(six.is(Visited.POST));
 		
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(one));
@@ -346,7 +383,14 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(rightBottom, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
-		
+
+		// All nodes are post-visited
+		Assert.assertTrue(center.is(Visited.POST));
+		Assert.assertTrue(leftUpper.is(Visited.POST));
+		Assert.assertTrue(leftBottom.is(Visited.POST));
+		Assert.assertTrue(rightUpper.is(Visited.POST));
+		Assert.assertTrue(rightBottom.is(Visited.POST));
+
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(center));
 		Assert.assertFalse(graph.hasUntraversedArc(leftUpper));
@@ -380,6 +424,10 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(right, 1);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		
+		// All nodes are post-visited
+		Assert.assertTrue(left.is(Visited.POST));
+		Assert.assertTrue(right.is(Visited.POST));
 		
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(left));
