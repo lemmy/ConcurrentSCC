@@ -73,6 +73,23 @@ public class GraphNodeTest {
 	}
 	
 	@Test
+	public void testRoot() {
+		final GraphNode a = new GraphNode(1);
+		final GraphNode b = new GraphNode(2);
+
+		assertTrue(a.isRoot());
+		assertTrue(b.isRoot());
+
+		a.setParent(b);
+		
+		assertFalse(a.isRoot());
+		assertTrue(b.isRoot());
+		
+		b.cutChildren();
+		assertTrue(a.isRoot());
+	}
+	
+	@Test
 	public void testVisitedStateChange() {
 		final GraphNode a = new GraphNode(1);
 		assertTrue(a.is(Visited.UN));
