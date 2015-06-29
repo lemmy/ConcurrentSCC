@@ -54,7 +54,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		readFile(graph, "tinyDG.txt");
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
-		Assert.assertTrue(graph.checkPostCondition());
+		Assert.assertTrue(graph.checkPostCondition(13));
 		Assert.assertEquals(printSCCs(sccs), 3, sccs.size());
 		
 		final Set<Set<Integer>> converted = convertToInts(sccs);
@@ -109,7 +109,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
-		while (!graph.checkPostCondition()) {
+		while (!graph.checkPostCondition(50)) {
 			for (GraphNode graphNode : nodes) {
 				new SCCWorker(executor, graph, sccs, graphNode).call();
 			}
@@ -118,7 +118,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	}
 
 	private void testMediumSCCs(final Graph graph, final Set<Set<GraphNode>> sccs) {
-		Assert.assertTrue(graph.checkPostCondition());
+		Assert.assertTrue(graph.checkPostCondition(50));
 		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 	
 		final Set<Set<Integer>> converted = convertToInts(sccs);

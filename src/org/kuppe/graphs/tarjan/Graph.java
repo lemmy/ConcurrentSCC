@@ -144,9 +144,12 @@ public class Graph {
 		return record.node;
 	}
 	
-	public boolean checkPostCondition() {
+	public boolean checkPostCondition(int totalNodes) {
 		// All arcs of all nodes have to be traversed, all nodes have to be
 		// post-visited.
+		if (totalNodes != new HashSet<Record>(this.nodePtrTable.values()).size() + this.allReplaced.size()) {
+			return false;
+		}
 		for (Record record : this.nodePtrTable.values()) {
 			if (record.node.isNot(Visited.POST)) {
 				return false;
