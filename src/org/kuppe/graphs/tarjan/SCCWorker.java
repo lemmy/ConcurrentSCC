@@ -60,22 +60,22 @@ public class SCCWorker implements Callable<Void> {
 //		logger.info(() -> "----------- " + this.getId()+ " ----------------");
 		try {
 			
-//			// Skip POST-visited v (POST will never transition back to PRE,
-//			// whereas isRoot() can change between now and when the lock is
-//			// acquired in the next line.
-//			if (v.is(Visited.POST)) {
-//				// If POST, there must not be any children
-//				assert v.getChildren().isEmpty();
-//				// All arcs must be traversed
-//				if (graph.hasUntraversedArc(v)) {
-//					assert Boolean.FALSE;
-//				}
-//				assert !graph.hasUntraversedArc(v);
-//				
-//				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
-//				// my job is already done
-//				return null;
-//			}
+			// Skip POST-visited v (POST will never transition back to PRE,
+			// whereas isRoot() can change between now and when the lock is
+			// acquired in the next line.
+			if (v.is(Visited.POST)) {
+				// If POST, there must not be any children
+				assert v.getChildren().isEmpty();
+				// All arcs must be traversed
+				if (graph.hasUntraversedArc(v)) {
+					assert Boolean.FALSE;
+				}
+				assert !graph.hasUntraversedArc(v);
+				
+				logger.info(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
+				// my job is already done
+				return null;
+			}
 
 			// Get lock of v
 			if (graph.tryLock(v)) {
