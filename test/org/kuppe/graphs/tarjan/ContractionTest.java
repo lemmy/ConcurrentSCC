@@ -26,19 +26,12 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -126,15 +119,37 @@ public class ContractionTest {
 		three.set(Visited.PRE);
 		two.setParent(three);
 		two.set(Visited.PRE);
-		
+		// 4 <- 3 <- 1
+		// 4 <- 3 <- 2 <- 5 
+
+		// Have all outgoing arcs
+		Assert.assertTrue(graph.hasUntraversedArc(one));
+		Assert.assertTrue(graph.hasUntraversedArc(two));
+		Assert.assertTrue(graph.hasUntraversedArc(three));
+		Assert.assertTrue(graph.hasUntraversedArc(four));
+		Assert.assertTrue(graph.hasUntraversedArc(five));
+
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		four.set(Visited.PRE);
 		four.contract(sccs, graph, one);
 		Assert.assertTrue(one.is(Visited.POST));
 		Assert.assertTrue(three.is(Visited.POST));
 		
+		// one and three have no outgoing arcs
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+		// but 2 and 5 still do
+		Assert.assertTrue(graph.hasUntraversedArc(two));
+		Assert.assertTrue(graph.hasUntraversedArc(five));
+
 		four.contract(sccs, graph, five);
 		Assert.assertTrue(five.is(Visited.POST));
 		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(five));
+		
+		// all arcs are now in four
+		Assert.assertEquals(5, graph.getUntraversedArcs(four).size());
 
 		final Set<GraphNode> expected = new HashSet<GraphNode>();
 		expected.add(one);
@@ -144,6 +159,64 @@ public class ContractionTest {
 		expected.add(five);
 		Set<GraphNode> actual = sccs.get(four);
 		Assert.assertEquals(expected, actual);
+	}
+	
+	
+	@Test
+	public void testNestedContraction() {
+		final Graph graph = new Graph();
+
+		// a unidirectional loop
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 2);
+		
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 3);
+		
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 4);
+		
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four,5);
+		
+		final GraphNode five = new GraphNode(5);
+		graph.addNode(five, 1);
+
+		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+
+		// Contract two into one
+		two.setParent(one);
+		two.set(Visited.PRE);
+		one.set(Visited.PRE);
+		one.contract(sccs, graph, two);
+		Assert.assertTrue(graph.get(two.getId()) == one);
+		
+		// contract one into five
+		one.setParent(five);
+		one.set(Visited.PRE);
+		five.set(Visited.PRE);
+		five.contract(sccs, graph, one);
+		Assert.assertTrue(graph.get(two.getId()) == five);
+		Assert.assertTrue(graph.get(one.getId()) == five);
+
+		// contract five into four
+		five.setParent(four);
+		five.set(Visited.PRE);
+		four.set(Visited.PRE);
+		four.contract(sccs, graph, five);
+		Assert.assertTrue(graph.get(two.getId()) == four);
+		Assert.assertTrue(graph.get(one.getId()) == four);
+		Assert.assertTrue(graph.get(five.getId()) == four);
+		
+		// contract four into three
+		four.setParent(three);
+		four.set(Visited.PRE);
+		three.set(Visited.PRE);
+		three.contract(sccs, graph, four);
+		Assert.assertTrue(graph.get(two.getId()) == three);
+		Assert.assertTrue(graph.get(one.getId()) == three);
+		Assert.assertTrue(graph.get(five.getId()) == three);
+		Assert.assertTrue(graph.get(four.getId()) == three);
 	}
 	
 	@Test
@@ -180,6 +253,11 @@ public class ContractionTest {
 
 		Assert.assertTrue(!one.isRoot());
 		
+		// one has outgoing arcs
+		Assert.assertTrue(graph.hasUntraversedArc(one));
+		
+		Assert.assertTrue(one.is(Visited.PRE));
+		
 		// Roots: (2), (4)
 		// Untraversed arcs: 1:5
 		//
@@ -188,11 +266,14 @@ public class ContractionTest {
 		four.set(Visited.PRE);
 		new SCCWorker(noopExecutor, graph, sccs, four).call();
 		Assert.assertTrue(four.is(Visited.POST));
+		
+		// Since with the NoopExcecutor nested calls are executed recursively,
+		// also one is done now.
+		Assert.assertTrue(one.is(Visited.POST));
 		Assert.assertTrue(one.isRoot());
-
-		// Now one should be free again and contract its children into an SCC
-		final SCCWorker sccWorker = new SCCWorker(noopExecutor, graph, sccs, one);
-		sccWorker.call();
+		// one has no outgoing arcs
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertEquals(0, graph.getUntraversedArcs(one).size());
 		
 		final Set<GraphNode> expected = new HashSet<GraphNode>();
 		expected.add(one);
@@ -201,77 +282,39 @@ public class ContractionTest {
 		Assert.assertEquals(expected, sccs.get(one));
 	}
 	
-	private static class NoopExecutorService implements ExecutorService {
+	@Test
+	public void testContractionsInFLoop() throws Exception {
+		final Graph graph = new Graph();
 
-		@Override
-		public void execute(Runnable command) {
-		}
+		// a star with one loop
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 2,4,5);
+		
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 2);
+		
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 1);
+		
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four,4);
+		
+		final GraphNode five = new GraphNode(5);
+		graph.addNode(five, 3);
 
-		@Override
-		public void shutdown() {
-		}
+		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
 
-		@Override
-		public List<Runnable> shutdownNow() {
-			return new ArrayList<>();
-		}
-
-		@Override
-		public boolean isShutdown() {
-			return true;
-		}
-
-		@Override
-		public boolean isTerminated() {
-			return true;
-		}
-
-		@Override
-		public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-			return true;
-		}
-
-		@Override
-		public <T> Future<T> submit(Callable<T> task) {
-			try {
-				task.call();
-			} catch (Exception e) {
-				e.printStackTrace();
+		final Collection<GraphNode> nodes = graph.getStartNodes();
+		while (!graph.checkPostCondition()) {
+			for (GraphNode graphNode : nodes) {
+				new SCCWorker(noopExecutor, graph, sccs, graphNode).call();
 			}
-			return null;
 		}
-
-		@Override
-		public <T> Future<T> submit(Runnable task, T result) {
-			return null;
-		}
-
-		@Override
-		public Future<?> submit(Runnable task) {
-			return null;
-		}
-
-		@Override
-		public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-			return null;
-		}
-
-		@Override
-		public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
-				throws InterruptedException {
-			return null;
-		}
-
-		@Override
-		public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
-				throws InterruptedException, ExecutionException {
-			return null;
-		}
-
-		@Override
-		public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
-				throws InterruptedException, ExecutionException, TimeoutException {
-			return null;
-		}
+		Assert.assertEquals(1, sccs.size());
+		final Set<GraphNode> expected = new HashSet<GraphNode>();
+		expected.add(one);
+		expected.add(three);
+		expected.add(five);
+		Assert.assertEquals(expected, sccs.values().toArray()[0]);
 	}
 }

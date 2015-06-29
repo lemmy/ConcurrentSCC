@@ -26,7 +26,6 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,10 +42,20 @@ public class GraphNode extends LinkCutTreeNode {
 		UN, PRE, POST;
 	};
 	
+	private Graph graph;
 	private volatile Visited visited = Visited.UN;
 
 	public GraphNode(final int anId) {
 		super(anId);
+	}
+
+	public GraphNode(int id, Graph graph) {
+		this(id);
+		this.graph = graph;
+	}
+
+	void setGraph(Graph graph) {
+		this.graph = graph;
 	}
 
 	public boolean is(Visited v) {
@@ -60,6 +69,11 @@ public class GraphNode extends LinkCutTreeNode {
 	public void set(Visited visited) {
 		// Only state changes from UN > PRE > POST are allowed
 		assert this.visited.ordinal() <= visited.ordinal();
+		
+		// When a GraphNode transitions into post, all its arcs have to be
+		// explored.
+		assert visited != Visited.POST || !graph.hasUntraversedArc(this);
+
 		this.visited = visited;
 	}
 
@@ -90,7 +104,9 @@ public class GraphNode extends LinkCutTreeNode {
 	}
 		
 	public void contract(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, final GraphNode graphNode) {
-		assert isRoot();
+		// We have to be a root in the tree...
+		assert this.isRoot();
+		// ...and the other has to be in our tree
 		assert LinkCut.root(graphNode) == this;
 
 		// Get the subset SCCs (if any) which has been contracted into this
@@ -111,6 +127,17 @@ public class GraphNode extends LinkCutTreeNode {
 			// from the set of sccs.
 			final Set<GraphNode> parentsSubset = sccs.remove(parent);
 			if (parentsSubset != null) {
+				// Correct all 'id to node' mappings for the previous contracted
+				// nodes. Otherwise, if an arc is later explored
+				// going to one node in parentsSubset "t", it will be skipped as
+				// "t" is post-visited. It has to be pre-visited though, which
+				// is this' visited state after contraction.
+				for (GraphNode s : parentsSubset) {
+					// s' mapping will be updated down below
+					if (s != parent) {
+						graph.contract(this, s);
+					}
+				}
 				scc.addAll(parentsSubset);
 			} else {
 				scc.add(parent);
@@ -118,11 +145,17 @@ public class GraphNode extends LinkCutTreeNode {
 
 			// Mark parent done
 			assert parent.is(Visited.PRE);
-			parent.set(Visited.POST);
+			// This should be the only place where visited is accessed directly
+			// (except to its setter). It is done, to skip the pre-condition,
+			// that all of parents outgoing arcs are traversed. Here we merge
+			// all unprocessed outgoing arcs into this node.
+			parent.visited = Visited.POST;
 
 			// Logically replace parent with this GraphNode in the Graph.
 			graph.contract(this, parent);
-
+			// parent's arcs should have been contracted into this now.
+			assert !graph.hasUntraversedArc(parent);
+			
 			// Before unlink/cut, remember parent's parent
 			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
 
@@ -137,14 +170,19 @@ public class GraphNode extends LinkCutTreeNode {
 			// {2,1} < 3 exploring the arc {2,3} has to trigger compaction
 			// of 3 into 2. But when only cut is done without linking to
 			// this, the previous compaction will have cut 3 loose already.
-			children.forEach((child) -> {
+			for (LinkCutTreeNode child : children) {
 				LinkCut.cut(child);
 				LinkCut.link(child, this);
-			});
+			}
 
 			// Continue with parent's parent.
 			parent = parentsParent;
 		}
+
+		// We remain a root in the tree.
+		assert this.isRoot();
+		// Must not be UN or POST-visited now
+		assert this.is(Visited.PRE);
 	}
 	
 	private Set<GraphNode> getNewScc() {
@@ -170,20 +208,16 @@ public class GraphNode extends LinkCutTreeNode {
 	}
 
 	public boolean isRoot() {
-		final LinkCutTreeNode root = LinkCut.root(this);
-		return root == this;
+		return LinkCut.root(this) == this;
 	}
 
 	/**
 	 * Cuts off the direct tree children. 
 	 */
 	public Set<GraphNode> cutChildren() {
-		// TODO Cannot implement this method for link/cut tree and thus just
-		// return an empty set to avoid NPEs.
-		Collection<LinkCutTreeNode> lctnChildren = LinkCut.directChildren(this, new HashSet<LinkCutTreeNode>());
-		// HACK: Convert lctnChildren to correct type BUT ALSO CUT EACH CHILD FROM ITS PARENT
-		Set<GraphNode> children = new HashSet<GraphNode>(lctnChildren.size());
-		for (LinkCutTreeNode linkCutTreeNode : lctnChildren) {
+		// CUT EACH CHILD FROM ITS PARENT
+		final Set<GraphNode> children = new HashSet<GraphNode>();
+		for (LinkCutTreeNode linkCutTreeNode : LinkCut.directChildren(this, new HashSet<LinkCutTreeNode>())) {
 			GraphNode child = (GraphNode) linkCutTreeNode;
 			if (child.isNot(Visited.POST)) {
 				children.add(child);
@@ -191,5 +225,9 @@ public class GraphNode extends LinkCutTreeNode {
 			LinkCut.cut(child);
 		}
 		return children;
+	}
+
+	public Set<LinkCutTreeNode> getChildren() {
+		return this.children;
 	}
 }

@@ -197,13 +197,13 @@ public class LinkCutTest {
 		// root with child left and right
 		// root > childA /\ root > childB
 		
-		LinkCutTreeNode root = new LinkCutTreeNode();
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
 		assertEquals(root, LinkCut.root(root));
 		
-		LinkCutTreeNode childA = new LinkCutTreeNode();
+		LinkCutTreeNode childA = new LinkCutTreeNode(1);
 		assertEquals(childA, LinkCut.root(childA));
 		
-		LinkCutTreeNode childB = new LinkCutTreeNode();
+		LinkCutTreeNode childB = new LinkCutTreeNode(2);
 		assertEquals(childB, LinkCut.root(childB));
 	
 
@@ -240,10 +240,10 @@ public class LinkCutTest {
 	public void testCutTwo() {
 		// root > child
 		
-		LinkCutTreeNode root = new LinkCutTreeNode();
+		LinkCutTreeNode root = new LinkCutTreeNode(0);
 		assertEquals(root, LinkCut.root(root));
 		
-		LinkCutTreeNode child = new LinkCutTreeNode();
+		LinkCutTreeNode child = new LinkCutTreeNode(1);
 		assertEquals(child, LinkCut.root(child));
 
 		LinkCut.link(child, root);

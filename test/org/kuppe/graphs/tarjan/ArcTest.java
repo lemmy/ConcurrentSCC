@@ -28,6 +28,7 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -35,7 +36,32 @@ import org.junit.Test;
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class ArcTest {
-	
+
+	@Test
+	public void testEmptyArcSet() {
+		final Graph graph = new Graph();
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one);
+		
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertEquals(0, graph.getUntraversedArcs(one).size());
+	}
+
+	@Test
+	public void testOneArcSet() {
+		final Graph graph = new Graph();
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 4711);
+		
+		Assert.assertTrue(graph.hasUntraversedArc(one));
+		Assert.assertEquals(1, graph.getUntraversedArcs(one).size());
+		
+		graph.getUntraversedArc(one).setTraversed();
+		
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertEquals(0, graph.getUntraversedArcs(one).size());
+	}
+		
 	@Test
 	public void testContractionInBCorrectArcSet() {
 		final Graph graph = new Graph();
@@ -56,6 +82,7 @@ public class ArcTest {
 			}
 		}
 		// Check arc to three is still untraversed
+		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 
 		/*test*/
@@ -75,6 +102,8 @@ public class ArcTest {
 
 		one.setParent(two);
 		one.set(Visited.PRE);
+		
+		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 		
 		/*test*/
@@ -103,6 +132,7 @@ public class ArcTest {
 		// contract one with one extra arc
 		one.setParent(two);
 		one.set(Visited.PRE);
+		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 
 		/*test*/
@@ -133,6 +163,7 @@ public class ArcTest {
 		// contract one with one extra arc
 		one.setParent(two);
 		one.set(Visited.PRE);
+		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 
 		/*test*/
@@ -141,5 +172,28 @@ public class ArcTest {
 		
 		// ...one of which is untraversed (including one's selfloop)
 		Assert.assertEquals(1, graph.getUntraversedArcs(two).size());
+	}
+
+	@Test
+	public void testIterateRandom() {
+		final Graph graph = new Graph();
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 1,2,3,4,5,6,7,8,9,10,11,12,13,14);
+		
+		final Random rnd = new Random(15041980);
+		
+		Arc arc = null;
+		while((arc = graph.getUntraversedArc(one)) != null) {
+			if (rnd.nextInt(2) == 1) {
+				arc.setTraversed();
+			} else {
+				// skipping arc now
+			}
+		}
+		
+		Collection<Arc> arcs = graph.getArcs(one);
+		for (Arc a : arcs) {
+			Assert.assertTrue(a.isTraversed());
+		}
 	}
 }

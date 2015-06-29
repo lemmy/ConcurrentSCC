@@ -30,6 +30,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.kuppe.graphs.tarjan.ArcTest;
 import org.kuppe.graphs.tarjan.ConcurrentFastSCCTest;
+import org.kuppe.graphs.tarjan.ConcurrentFastSCCTestFromFile;
 import org.kuppe.graphs.tarjan.ContractionTest;
 import org.kuppe.graphs.tarjan.GraphNodeTest;
 
@@ -37,7 +38,7 @@ import edu.cmu.cs.LinkCutTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ArcTest.class, ConcurrentFastSCCTest.class, ContractionTest.class, GraphNodeTest.class,
-		LinkCutTest.class })
+		LinkCutTest.class, ConcurrentFastSCCTestFromFile.class })
 public class AllTests {
 
 }

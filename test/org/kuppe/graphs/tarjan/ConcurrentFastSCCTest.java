@@ -30,33 +30,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
-public class ConcurrentFastSCCTest {
+public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	
 	private final ConcurrentFastSCC concurrentFastScc = new ConcurrentFastSCC();
-
-	@Rule public TestName name = new TestName();
-
-	@Before
-	public void before() {
-		System.out.println("=================================================================");
-		System.out.println("==================== " + name.getMethodName() + " =========================");
-		System.out.println("=================================================================");
-	}
-
-	@After
-	public void after() {
-		System.out.println("=================================================================");
-		System.out.println("==================== " + name.getMethodName() + " =========================");
-		System.out.println("=================================================================\n\n");
-	}
 	
 	@Test
 	public void testEmpty() {
@@ -64,6 +44,7 @@ public class ConcurrentFastSCCTest {
 		
 		// No vertices at all
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(0, sccs.size());
 	}
 
@@ -75,7 +56,8 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(single, 1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
-		
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+	
 		// All nodes are post-visited
 		Assert.assertTrue(single.is(Visited.POST));
 	
@@ -99,6 +81,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(four, 3);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All arcs have been explored
 		Assert.assertFalse(graph.hasUntraversedArc(one));
@@ -140,6 +123,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(three, 1,2,3);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All nodes are post-visited
 		Assert.assertTrue(one.is(Visited.POST));
@@ -181,6 +165,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(five,2);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All nodes are post-visited
 		Assert.assertTrue(one.is(Visited.POST));
@@ -226,6 +211,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(four, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All nodes are post-visited
 		Assert.assertTrue(one.is(Visited.POST));
@@ -275,6 +261,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(six, 1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All nodes are post-visited
 		Assert.assertTrue(one.is(Visited.POST));
@@ -328,6 +315,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(six,5,1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All nodes are post-visited
 		Assert.assertTrue(one.is(Visited.POST));
@@ -383,6 +371,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(rightBottom, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 
 		// All nodes are post-visited
 		Assert.assertTrue(center.is(Visited.POST));
@@ -424,6 +413,7 @@ public class ConcurrentFastSCCTest {
 		graph.addNode(right, 1);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All nodes are post-visited
 		Assert.assertTrue(left.is(Visited.POST));
@@ -446,36 +436,6 @@ public class ConcurrentFastSCCTest {
 		Assert.assertEquals(expected, sccs);
 	}
 	
-	private String printSCC(Set<GraphNode> scc) {
-		StringBuffer buf = new StringBuffer(scc.size());
-		buf.append("{");
-		for (GraphNode graphNode : scc) {
-			buf.append(graphNode.getId());
-			buf.append(",");
-		}
-		removeIfDangling(buf, ",");
-		buf.append("}");
-		return buf.toString();
-	}
-
-	private void removeIfDangling(StringBuffer buf, String string) {
-		if (buf.lastIndexOf(",") == buf.length() - 1) {
-			buf.setLength(buf.length() - 1);
-		}
-	}
-
-	private String printSCCs(Set<Set<GraphNode>> sccs) {
-		StringBuffer buf = new StringBuffer(sccs.size());
-		buf.append("Found SCCs: [");
-		for (Set<GraphNode> set : sccs) {
-			buf.append(printSCC(set));
-			buf.append(",");
-		}
-		removeIfDangling(buf, ",");
-		buf.append("]");
-		return buf.toString();
-	}
-	
 	@Test
 	public void testVisitedStateChildContraction() {
 		final Graph graph = new Graph();
@@ -488,6 +448,7 @@ public class ConcurrentFastSCCTest {
 		one.setParent(two);
 		one.set(Visited.PRE);
 		try {
+			two.set(Visited.PRE);
 			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 		} catch (AssertionError e) {
 			Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");

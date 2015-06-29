@@ -91,7 +91,9 @@ public class GraphNodeTest {
 	
 	@Test
 	public void testVisitedStateChange() {
-		final GraphNode a = new GraphNode(1);
+		final Graph graph = new Graph();
+		final GraphNode a = new GraphNode(1, graph);
+		graph.addNode(a);
 		assertTrue(a.is(Visited.UN));
 		a.set(Visited.UN);
 		a.set(Visited.PRE);
@@ -103,7 +105,9 @@ public class GraphNodeTest {
 
 	@Test
 	public void testVisitedStateChangeInvalidDowngrade() {
-		final GraphNode a = new GraphNode(1);
+		final Graph graph = new Graph();
+		final GraphNode a = new GraphNode(1, graph);
+		graph.addNode(a);
 		a.set(Visited.PRE);
 		assertTrue(a.is(Visited.PRE));
 		try {
@@ -116,7 +120,9 @@ public class GraphNodeTest {
 
 	@Test
 	public void testVisitedStateChangeInvalidDowngrade2() {
-		final GraphNode a = new GraphNode(1);
+		final Graph graph = new Graph();
+		final GraphNode a = new GraphNode(1, graph);
+		graph.addNode(a);
 		a.set(Visited.POST);
 		assertTrue(a.is(Visited.POST));
 		try {

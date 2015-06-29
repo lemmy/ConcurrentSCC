@@ -222,12 +222,6 @@ public class LinkCut {
 		return into;
 	}
 
-	public static void applyDirectChildren(LinkCutTreeNode p, Function<LinkCutTreeNode, Void> func) {
-		for (LinkCutTreeNode child : p.children) {
-			func.apply(child);
-		}
-	}
-
 	/**
 	 * Returns p's parent/ancestor or null if p is a root of the represented/real tree.
 	 * 
