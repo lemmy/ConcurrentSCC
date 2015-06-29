@@ -30,9 +30,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -95,60 +93,28 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	 */
 	@Test
 	public void testMedium() throws IOException {
-		doTestMedium("mediumDG.txt");
-	}
-	
-	@Test
-	public void testMediumNoDupes() throws IOException {
-		doTestMedium("mediumDGnodupes.txt");
-	}
-	
-	private void doTestMedium(String filename) throws IOException {
 		final Graph graph = new Graph();
-		readFile(graph, filename);
-		testResultFileRead(graph);
+		readFile(graph, "mediumDG.txt");
 
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		testMediumSCCs(graph, sccs);
-		System.out.println(printSCCs(sccs));
 	}
 	
 	@Test
 	public void testMediumLoop() throws IOException {
-		doTestMediumLoop("mediumDG.txt");
-	}
-	
-	@Test
-	public void testMediumLoopNoDupes() throws IOException {
-		doTestMediumLoop("mediumDGnodupes.txt");
-	}
-	
-	private void doTestMediumLoop(String filename) throws IOException {
 		final Graph graph = new Graph();
-		readFile(graph, filename);
-		testResultFileRead(graph);
+		readFile(graph, "mediumDG.txt");
 		
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
 
-		final NoopExecutorService executor = new NoopExecutorService();
 		final Collection<GraphNode> nodes = graph.getStartNodes();
+		final NoopExecutorService executor = new NoopExecutorService();
 		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
 				new SCCWorker(executor, graph, sccs, graphNode).call();
 			}
 		}
 		testMediumSCCs(graph, new HashSet<Set<GraphNode>>(sccs.values()));
-	}
-
-	private void testResultFileRead(final Graph graph) {
-		//Check the graph has correctly been read.
-		int sum = 0;
-		final Collection<GraphNode> startNodes = graph.getStartNodes();
-		for (GraphNode graphNode : startNodes) {
-			sum += graph.getUntraversedArcs(graphNode).size();
-		}
-		Assert.assertEquals(136, sum);
-		Assert.assertEquals(49, startNodes.size());
 	}
 
 	private void testMediumSCCs(final Graph graph, final Set<Set<GraphNode>> sccs) {
@@ -238,51 +204,13 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	}
 	
 	private static void readFile(Graph graph, String filename) throws IOException {
-		
-//		final Set<Integer> irrelevant = new HashSet<>();
-//		
-//		// sources
-//		irrelevant.add(10);
-//		irrelevant.add(0);
-//		irrelevant.add(7);
-//		irrelevant.add(41);
-//
-//		irrelevant.add(1);
-//		irrelevant.add(45);
-//		irrelevant.add(14);
-//
-//		// second scc
-//		irrelevant.add(20);
-//		irrelevant.add(3);
-//		irrelevant.add(36);
-//		irrelevant.add(17);
-//		irrelevant.add(24);
-//		irrelevant.add(4);
-//		irrelevant.add(27);
-//		
-//		// sink
-//		irrelevant.add(21);
-//		
 		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream(filename);
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-			int prev = -1;
 			for(String line = br.readLine(); line != null; line = br.readLine()) {
 				String[] split = line.trim().split("\\s+");
 				int nodeId = Integer.parseInt(split[0]);
 				int arcId = Integer.parseInt(split[1]);
-//				
-//				if (irrelevant.contains(nodeId)) {
-//					continue;
-//				}
-//				
-//				// print for TLC
-//				if (nodeId != prev) {
-//					System.out.print("},{");
-//					prev = nodeId;
-//				}
-//				System.out.print("," + (arcId + 1));
-//				
-				// skip irrelevant nodes
+
 				graph.get(nodeId);
 				graph.addArc(nodeId, arcId);
 			}
