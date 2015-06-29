@@ -72,7 +72,7 @@ public class SCCWorker implements Callable<Void> {
 				}
 				assert !graph.hasUntraversedArc(v);
 				
-				logger.info(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
+				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
 				// my job is already done
 				return null;
 			}
@@ -87,14 +87,14 @@ public class SCCWorker implements Callable<Void> {
 					// All arcs must be traversed
 					assert !graph.hasUntraversedArc(v);
 
-					logger.info(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
+					logger.fine(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
 					graph.unlock(v);
 					return null;
 				}
 				
 				// Skip non-root v
 				if (!v.isRoot()) {
-					logger.info(() -> String.format("%s: Skipping non-root v %s", getId(), v));
+					logger.fine(() -> String.format("%s: Skipping non-root v %s", getId(), v));
 					graph.unlock(v);
 					return null; // A new worker will be scheduled by our tree root. We are a child right now. 
 				}
@@ -123,7 +123,7 @@ public class SCCWorker implements Callable<Void> {
 						arc.setTraversed();
 
 						//TODO self-loop, might check stuttering here
-						logger.info(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
+						logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 						
 						// do nothing
 						graph.unlock(v);
@@ -195,7 +195,7 @@ public class SCCWorker implements Callable<Void> {
 								 */
 
 								// Put SCC in a global set of sccs
-								logger.info(() -> String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
+								logger.fine(() -> String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
 								v.contract(sccs, graph, w);
 								logger.info(() -> String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
 
@@ -257,7 +257,7 @@ public class SCCWorker implements Callable<Void> {
 	}
 
 	private void freeChilds() {
-		logger.info(() -> String.format("%s: Freeing children of v.", getId(), v.getId()));
+		logger.fine(() -> String.format("%s: Freeing children of v.", getId(), v.getId()));
 		
 		// No untraversed arcs left (PRE) or no arcs at all (UN).
 		assert v.isNot(Visited.POST);

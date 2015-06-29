@@ -103,12 +103,12 @@ public class Graph {
 		for (Record graphNode : nodePtrTable.values()) {
 			start.add(graphNode.node);
 		}
-		start.sort(new Comparator<GraphNode>() {
-			@Override
-			public int compare(GraphNode o1, GraphNode o2) {
-				return o1.getId().compareTo(o2.getId());
-			}
-		});
+//		start.sort(new Comparator<GraphNode>() {
+//			@Override
+//			public int compare(GraphNode o1, GraphNode o2) {
+//				return o1.getId().compareTo(o2.getId());
+//			}
+//		});
 		return start;
 	}
 	
@@ -180,10 +180,12 @@ public class Graph {
 	public Arc getUntraversedArc(GraphNode node) {
 		final Record record = this.nodePtrTable.get(node.getId());
 		// 'node' has been contracted already. Thus return no untraversed arcs.
-		if (record.node.getId() != node.getId()) {
+		int id = record.node.getId();
+		if (id != node.getId()) {
 			assert node.is(Visited.POST);
 			return null;
 		}
+		//TODO this is obviously highly inefficient!!!
 		final Iterator<Arc> arcs = record.arcs.iterator();
 		while (arcs.hasNext()) {
 			Arc next = arcs.next();

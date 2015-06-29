@@ -159,6 +159,9 @@ public class GraphNode extends LinkCutTreeNode {
 			// Before unlink/cut, remember parent's parent
 			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
 
+			LinkCut.cut(parent);
+			assert parent.isRoot();
+			
 			// Take copy of parent.children. parent.children is modified by
 			// LinkCut.cut/LinkCut.link which results in a
 			// ConcurrentModificationException otherwise.
@@ -171,10 +174,22 @@ public class GraphNode extends LinkCutTreeNode {
 			// of 3 into 2. But when only cut is done without linking to
 			// this, the previous compaction will have cut 3 loose already.
 			for (LinkCutTreeNode child : children) {
-				LinkCut.cut(child);
-				LinkCut.link(child, this);
+				// This while loop is walking a path from a child to its root
+				// and it obviously has to skip linking the nodes on the path to
+				// the root again. This for loop here is so that childs *not on
+				// the path* are linked to the root.
+				if (!scc.contains(child)) {
+					LinkCut.cut(child);
+					LinkCut.link(child, this);
+				}
 			}
-
+			// Now that the children of parent *who are not on this path* are
+			// linked to the root (this), clear the last remaining child (if
+			// any) which is the one on the path
+			assert parent.children.isEmpty() || parent.children.size() == 1;
+			parent.children.clear();
+			//TODO should be safe to null parent.children
+			
 			// Continue with parent's parent.
 			parent = parentsParent;
 		}
@@ -203,7 +218,7 @@ public class GraphNode extends LinkCutTreeNode {
 		return true;
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 

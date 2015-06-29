@@ -1,7 +1,6 @@
 package edu.cmu.cs;
 
 import java.util.Collection;
-import java.util.function.Function;
 
 public class LinkCut {
 	// rotR and rotL are also known as zig and zag

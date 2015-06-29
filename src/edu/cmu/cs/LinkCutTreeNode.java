@@ -13,7 +13,7 @@ public class LinkCutTreeNode {
 	protected LinkCutTreeNode preferred;
 	protected final int id;
 	
-	protected Set<LinkCutTreeNode> children = new HashSet<LinkCutTreeNode>();
+	protected final Set<LinkCutTreeNode> children = new HashSet<LinkCutTreeNode>();
 	
 	LinkCutTreeNode() {
 		this(-1);
@@ -91,6 +91,7 @@ public class LinkCutTreeNode {
 	}
 
 	public void addChild(LinkCutTreeNode p) {
+		assert p != this;
 		children.add(p);
 	}
 
