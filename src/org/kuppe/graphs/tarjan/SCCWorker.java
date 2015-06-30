@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
@@ -40,8 +38,6 @@ public class SCCWorker implements Callable<Void> {
 	
     private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
-	private static final Lock GLOBAL_LOCK = new ReentrantLock();
-	
 	private final ExecutorService executor;
 	private final Map<GraphNode, Set<GraphNode>> sccs;
 	private final Graph graph;
@@ -55,17 +51,13 @@ public class SCCWorker implements Callable<Void> {
 	}
 	
 	public Void call() {
-		GLOBAL_LOCK.lock();
 		try {
-			
 			// Skip POST-visited v (POST will never transition back to UN,
 			// whereas isRoot() can change between now and when the lock is
 			// acquired in the next line.
 			if (v.is(Visited.POST)) {
-				// If POST, there must not be any children
-				assert !v.hasChildren();
-				// All arcs must be traversed
-				assert !graph.hasUntraversedArc(v);
+				// Note: Not checking if all children are free'ed or if the node has
+				// unprocessed arcs. It could be interleaved with contraction.
 				
 				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
 				// my job is already done
@@ -220,8 +212,6 @@ public class SCCWorker implements Callable<Void> {
 			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage())); 
 			e.printStackTrace();
 			throw e;
-		} finally {
-			GLOBAL_LOCK.unlock();
 		}
 	}
 

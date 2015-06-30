@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -48,23 +49,13 @@ public class Graph {
 	private class Record {
 		private final GraphNode node;
 		private final List<Integer> arcs;
-//		private final Lock lock;
 		
-		private Record(GraphNode node, List<Integer> arcs, Lock nodeLock) {
-			assert node != null && arcs != null /*&& nodeLock != null*/;
+		private Record(GraphNode node, List<Integer> arcs) {
+			assert node != null && arcs != null;
 			this.node = node;
 			this.arcs = arcs;
-//			this.lock = nodeLock;
 		}
 		
-//		
-//		/**
-//		 * @return the lock
-//		 */
-//		public Lock getLock() {
-//			return lock;
-//		}
-//
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
@@ -76,7 +67,7 @@ public class Graph {
 	
 	private final Map<Integer, Record> nodePtrTable;
 	
-//	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+	private final Lock lock = new ReentrantLock();
 	
 	public Graph() {
 		this.nodePtrTable = new HashMap<Integer, Record>();
@@ -148,64 +139,29 @@ public class Graph {
 		dstRecord.arcs.addAll(replaced.arcs);
 		replaced.arcs.clear();
 		
-		// Replace lock of dst with lock of src
-//		final Lock lock = replaced.getLock();
-//		assert lock != null;
-//		
-//		// lock the lock first to get its monitor...
-//		logger.fine(() -> String.format("Trying unlock of node (%s) due to contraction.", src));
-//		lock.lock();
-//		
-//		// ...now we have the monitor and are free to unlock the lock
-//		lock.unlock();
-//		logger.fine(() -> String.format("Unlocked node (%s) due to contraction.", src));
-		
-		
-		//TODO Probably have to unlock w's tree too
-		
 		assert this.nodePtrTable.get(child.getId()).node == parent;
 	}
 	
 	/* Graph Locking */
 
 	public boolean tryLock(GraphNode node) {
-//		assert nodePtrTable.get(node.getId()) != null;
-//		if (nodePtrTable.get(node.getId()).getLock().tryLock()) {
-//			logger.fine(() -> String.format("%s: Locked node (%s)", node.getId(), node));
-			return true;
-//		} else {
-//			logger.fine(() -> String.format("%s: Failed to acquire lock on node (%s)", node.getId(), node));
-//			return false;
-//		}
+		return lock.tryLock();
 	}
 	
 	public void unlock(GraphNode node) {
-//		assert nodePtrTable.get(node.getId()) != null;
-//		final Lock nodeLock = nodePtrTable.get(node.getId()).getLock();
-//		nodeLock.unlock();
-//		logger.fine(() -> String.format("%s: Unlocked node %s", node.getId(), node));
+		lock.unlock();
 	}
 
 	/* Link cut tree locking */
 	
 	public boolean tryLockTrees(GraphNode w, GraphNode v) {
-//		assert nodePtrTable.get(w.getId()) != null;
-//		if (nodePtrTable.get(w.getId()).lock.tryLock()) {
-//			logger.fine(() -> String.format("%s: Locked v (%s) and w (%s)", v.getId(), v, w));
-//			// Acquired w, lets try to lock both trees
-//			//TODO
-			return true;
-//		} else {
-//			logger.fine(() -> String.format("%s: Locked v (%s), failed acquire w (%s)", v.getId(), v, w));
-//			return false;
-//		}
+		//TODO Use a single lock for the complete forest for now.
+		return true;
 	}
 
 	public void unlockTrees(GraphNode w, GraphNode v) {
-//		assert nodePtrTable.get(w.getId()) != null;
-//		//TODO
-//		nodePtrTable.get(w.getId()).getLock().unlock();
-//		logger.fine(() -> String.format("%s: Unlocked tree node %s", w.getId(), w));
+		//TODO Use a single lock for the complete forest for now.
+		return;
 	}
 
 	/* aux methods for testing */ 
@@ -247,7 +203,6 @@ public class Graph {
 	boolean hasNode(final int id) {
 		return this.nodePtrTable.containsKey(id);
 	}
-
 	
 	// Convenience method for unit tests (see AbstractGraph#addNode)
 	void addNode(GraphNode node, Integer... successors) {
