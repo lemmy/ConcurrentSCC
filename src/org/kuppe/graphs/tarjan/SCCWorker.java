@@ -108,18 +108,12 @@ public class SCCWorker implements Callable<Void> {
 					final GraphNode w = graph.get(arc.getTo());
 					
 					if (w.is(Visited.POST)) {
-						// Mark that we did work and cross out the arc
-						arc.setTraversed();
-
 						graph.unlock(v);
 						executor.submit(this); // Continue with next arc
 						return null;
 					}
 					
 					if (w.equals(v)) {
-						// Mark that we did work and cross out the arc
-						arc.setTraversed();
-
 						//TODO self-loop, might check stuttering here
 						logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 						
@@ -134,8 +128,6 @@ public class SCCWorker implements Callable<Void> {
 						// w happens to be done, just release the lock and move
 						// onto the next arc
 						if (w.is(Visited.POST)) {
-							arc.setTraversed();
-
 							graph.unlock(v);
 							executor.submit(this); // Continue with next arc
 							return null;
@@ -147,8 +139,6 @@ public class SCCWorker implements Callable<Void> {
 							// parent of v and mark w previsited if it is unvisited.
 							v.setParent(w);
 							logger.info(() -> String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(), v.getId()));
-
-							arc.setTraversed();
 
 							// We've potentially just created a new root
 							final GraphNode vOld = v;
@@ -169,7 +159,6 @@ public class SCCWorker implements Callable<Void> {
 								return null;
 							}
 						} else if (!w.equals(v)) {
-								arc.setTraversed();
 								/*
 								 * The other possibility is that w is in the same tree as v. If
 								 * v = w, do nothing. (Self-loops can be created by

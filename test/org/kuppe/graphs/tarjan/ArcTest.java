@@ -26,14 +26,11 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class ArcTest {
 
@@ -56,7 +53,7 @@ public class ArcTest {
 		Assert.assertTrue(graph.hasUntraversedArc(one));
 		Assert.assertEquals(1, graph.getUntraversedArcs(one).size());
 		
-		graph.getUntraversedArc(one).setTraversed();
+		graph.getUntraversedArc(one);
 		
 		Assert.assertFalse(graph.hasUntraversedArc(one));
 		Assert.assertEquals(0, graph.getUntraversedArcs(one).size());
@@ -67,19 +64,12 @@ public class ArcTest {
 		final Graph graph = new Graph();
 
 		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 1,2,3);
+		graph.addNode(one, 1,2);
 		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1,2,3);
 
 		one.setParent(two);
-		// Add redundant unvisited arc to node with arc in visited state:
-		// Set one's arc to three as traversed
-		Collection<Arc> arcs = graph.getArcs(two);
-		for (Arc arc : arcs) {
-			if (arc.getTo() == 3) {
-				arc.setTraversed();
-			}
-		}
+		
 		// Check arc to three is still untraversed
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 
@@ -117,14 +107,6 @@ public class ArcTest {
 		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1,2,3);
 
-		// Mark all arcs of one done except 4
-		Collection<Arc> arcs = graph.getArcs(one);
-		for (Arc arc : arcs) {
-			if (arc.getTo() != 4) {
-				arc.setTraversed();
-			}
-		}
-
 		// contract one with one extra arc
 		one.setParent(two);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
@@ -140,19 +122,13 @@ public class ArcTest {
 		final Graph graph = new Graph();
 
 		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 1,2,3,4);
+		graph.addNode(one, 1);
 		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1,2,3);
 
-		// Mark all arcs of one done except self loop 1
-		Collection<Arc> arcs = graph.getArcs(one);
-		for (Arc arc : arcs) {
-			if (arc.getTo() != 1) {
-				arc.setTraversed();
-			}
-		}
+
 		// Mark all arcs of two done
-		graph.getArcs(two).forEach((arc) -> {arc.setTraversed();});
+		graph.getArcs(two).clear();
 
 		// contract one with one extra arc
 		one.setParent(two);
@@ -164,28 +140,5 @@ public class ArcTest {
 		
 		// ...one of which is untraversed (including one's selfloop)
 		Assert.assertEquals(1, graph.getUntraversedArcs(two).size());
-	}
-
-	@Test
-	public void testIterateRandom() {
-		final Graph graph = new Graph();
-		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 1,2,3,4,5,6,7,8,9,10,11,12,13,14);
-		
-		final Random rnd = new Random(15041980);
-		
-		Arc arc = null;
-		while((arc = graph.getUntraversedArc(one)) != null) {
-			if (rnd.nextInt(2) == 1) {
-				arc.setTraversed();
-			} else {
-				// skipping arc now
-			}
-		}
-		
-		Collection<Arc> arcs = graph.getArcs(one);
-		for (Arc a : arcs) {
-			Assert.assertTrue(a.isTraversed());
-		}
 	}
 }

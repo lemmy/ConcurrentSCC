@@ -29,24 +29,9 @@ package org.kuppe.graphs.tarjan;
 public class Arc {
 
 	private final int to;
-	
-	private boolean traversed = false;
 
 	public Arc(int integer) {
 		this.to = integer;
-	}
-
-	/**
-	 * @return the traversed
-	 */
-	public boolean isTraversed() {
-		return traversed;
-	}
-
-	/**
-	 */
-	public void setTraversed() {
-		this.traversed = true;
 	}
 
 	/**
@@ -61,7 +46,7 @@ public class Arc {
 	 */
 	@Override
 	public String toString() {
-		return "Arc [to=" + to + ", traversed=" + traversed + "]";
+		return "Arc [to=" + to + "]";
 	}
 
 	/* (non-Javadoc)

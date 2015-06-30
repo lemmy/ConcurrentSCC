@@ -28,11 +28,8 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +37,6 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 //import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -156,10 +152,8 @@ public class Graph {
 				return false;
 			}
 			Collection<Arc> arcs = record.arcs;
-			for (Arc arc : arcs) {
-				if (!arc.isTraversed()) {
-					return false;
-				}
+			if (!arcs.isEmpty()) {
+				return false;
 			}
 		}
 		for (Record record : this.allReplaced) {
@@ -167,10 +161,8 @@ public class Graph {
 				return false;
 			}
 			Collection<Arc> arcs = record.arcs;
-			for (Arc arc : arcs) {
-				if (!arc.isTraversed()) {
-					return false;
-				}
+			if (!arcs.isEmpty()) {
+				return false;
 			}
 		}
 		return true;
@@ -221,14 +213,7 @@ public class Graph {
 		if (record.node.getId() != node.getId()) {
 			return new ArrayList<Arc>();
 		}
-		final Collection<Arc> res = new HashSet<>(record.arcs.size());
-		final Collection<Arc> arcs = record.arcs;
-		for (Arc arc2 : arcs) {
-			if (!arc2.isTraversed()) {
-				res.add(arc2);
-			}
-		}
-		return res;
+		return new HashSet<>(record.arcs);
 	}
 	
 	/* contraction */
