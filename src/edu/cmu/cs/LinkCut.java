@@ -12,8 +12,6 @@ public class LinkCut {
 	static void rotR(LinkCutTreeNode p) {
 		LinkCutTreeNode q = p.preferred;
 		LinkCutTreeNode r = q.preferred;
-		q.normalize();
-		p.normalize();
 		if ((q.left = p.right) != null) {
 			q.left.preferred = q;
 		}
@@ -26,14 +24,11 @@ public class LinkCut {
 				r.right = p;
 			}
 		}
-		q.update();
 	}
 
 	static void rotL(LinkCutTreeNode p) {
 		LinkCutTreeNode q = p.preferred;
 		LinkCutTreeNode r = q.preferred;
-		q.normalize();
-		p.normalize();
 		if ((q.right = p.left) != null) {
 			q.right.preferred = q;
 		}
@@ -46,7 +41,6 @@ public class LinkCut {
 				r.right = p;
 			}
 		}
-		q.update();
 	}
 
 	static void splay(LinkCutTreeNode p) {
@@ -79,8 +73,6 @@ public class LinkCut {
 				}
 			}
 		}
-		p.normalize(); // only useful if p was already a root.
-		p.update(); // only useful if p was not already a root
 	}
 
 	/*
@@ -97,7 +89,6 @@ public class LinkCut {
 		for (LinkCutTreeNode p = q; p != null; p = p.preferred) {
 			splay(p);
 			p.left = r;
-			p.update();
 			r = p;
 		}
 		;
@@ -122,19 +113,6 @@ public class LinkCut {
 		// Hack: Store child of represented tree to reconstruct the set of
 		// children (even unpreferred paths) later (see children(..)).
 		q.addChild(p);
-	}
-
-	/*
-	 * Toggle all the edges on the path from p to the root return the count
-	 * after - count before
-	 */
-	static int toggle(LinkCutTreeNode p) {
-		expose(p);
-		int before = p.on;
-		p.flip = !p.flip;
-		p.normalize();
-		int after = p.on;
-		return after - before;
 	}
 
 	/**
@@ -204,16 +182,6 @@ public class LinkCut {
 	 * Added by mku
 	 */
 	public static Collection<LinkCutTreeNode> children(LinkCutTreeNode p, Collection<LinkCutTreeNode> into) {
-//		throw new UnsupportedOperationException(
-//				"Not implemented");
-		// Not sure this can possibly be implemented, as subtrees can be
-		// disconnected when they are not on the preferred path. Generally,
-		// Link/Cut allows to go from a vertex up to its root. On the
-		// other hand, the children of a root are not reachable from the
-		// root unless they are on the current preferred path. They are
-		// made the preferred path by calling expose() on the child.
-		//
-		//
 		into.add(p);
 		for (LinkCutTreeNode child : p.children) {
 			children(child, into);
