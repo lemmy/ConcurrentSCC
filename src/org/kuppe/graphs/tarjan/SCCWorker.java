@@ -109,7 +109,6 @@ public class SCCWorker implements Callable<Void> {
 					
 					if (w.is(Visited.POST)) {
 						// Mark that we did work and cross out the arc
-						v.set(Visited.PRE);
 						arc.setTraversed();
 
 						graph.unlock(v);
@@ -119,7 +118,6 @@ public class SCCWorker implements Callable<Void> {
 					
 					if (w.equals(v)) {
 						// Mark that we did work and cross out the arc
-						v.set(Visited.PRE);
 						arc.setTraversed();
 
 						//TODO self-loop, might check stuttering here
@@ -132,10 +130,6 @@ public class SCCWorker implements Callable<Void> {
 					}
 					
 					if (graph.tryLockTrees(w, v)) {
-						// We now have v and w locked, lets start doing work with it
-						// Mark the vertex visited (PRE)
-						v.set(Visited.PRE);
-
 						
 						// w happens to be done, just release the lock and move
 						// onto the next arc
@@ -153,8 +147,6 @@ public class SCCWorker implements Callable<Void> {
 							// parent of v and mark w previsited if it is unvisited.
 							v.setParent(w);
 							logger.info(() -> String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(), v.getId()));
-
-							w.set(Visited.PRE);
 
 							arc.setTraversed();
 

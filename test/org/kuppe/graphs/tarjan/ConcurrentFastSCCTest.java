@@ -446,9 +446,7 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		graph.addNode(two, 1,2);
 		
 		one.setParent(two);
-		one.set(Visited.PRE);
 		try {
-			two.set(Visited.PRE);
 			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 		} catch (AssertionError e) {
 			Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");

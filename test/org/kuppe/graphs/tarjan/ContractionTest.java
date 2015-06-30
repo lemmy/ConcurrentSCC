@@ -51,12 +51,13 @@ public class ContractionTest {
 		graph.addNode(two, 1,2);
 		
 		one.setParent(two);
+		one.visited = Visited.POST;
 		try {
 			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 		} catch (AssertionError e) {
 			return;
 		}
-		Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");
+		Assert.fail("A node has to be UN-visited if its contracted into its root (or assertions \"-ea\" disabled)");
 	}
 	
 	@Test
@@ -112,13 +113,9 @@ public class ContractionTest {
 		
 		// One possible permutation of child>parent relationships in the tree
 		one.setParent(three);
-		one.set(Visited.PRE);
 		five.setParent(two);
-		five.set(Visited.PRE);
 		three.setParent(four);
-		three.set(Visited.PRE);
 		two.setParent(three);
-		two.set(Visited.PRE);
 		// 4 <- 3 <- 1
 		// 4 <- 3 <- 2 <- 5 
 
@@ -130,7 +127,6 @@ public class ContractionTest {
 		Assert.assertTrue(graph.hasUntraversedArc(five));
 
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
-		four.set(Visited.PRE);
 		four.contract(sccs, graph, one);
 		Assert.assertTrue(one.is(Visited.POST));
 		Assert.assertTrue(three.is(Visited.POST));
@@ -185,23 +181,17 @@ public class ContractionTest {
 
 		// Contract two into one
 		two.setParent(one);
-		two.set(Visited.PRE);
-		one.set(Visited.PRE);
 		one.contract(sccs, graph, two);
 		Assert.assertTrue(graph.get(two.getId()) == one);
 		
 		// contract one into five
 		one.setParent(five);
-		one.set(Visited.PRE);
-		five.set(Visited.PRE);
 		five.contract(sccs, graph, one);
 		Assert.assertTrue(graph.get(two.getId()) == five);
 		Assert.assertTrue(graph.get(one.getId()) == five);
 
 		// contract five into four
 		five.setParent(four);
-		five.set(Visited.PRE);
-		four.set(Visited.PRE);
 		four.contract(sccs, graph, five);
 		Assert.assertTrue(graph.get(two.getId()) == four);
 		Assert.assertTrue(graph.get(one.getId()) == four);
@@ -209,8 +199,6 @@ public class ContractionTest {
 		
 		// contract four into three
 		four.setParent(three);
-		four.set(Visited.PRE);
-		three.set(Visited.PRE);
 		three.contract(sccs, graph, four);
 		Assert.assertTrue(graph.get(two.getId()) == three);
 		Assert.assertTrue(graph.get(one.getId()) == three);
@@ -259,8 +247,6 @@ public class ContractionTest {
 
 		// Contract two into one
 		ten.setParent(nine);
-		ten.set(Visited.PRE);
-		nine.set(Visited.PRE);
 		nine.contract(sccs, graph, ten);
 		Assert.assertTrue(graph.get(zero.getId()) == zero);
 		Assert.assertTrue(graph.get(one.getId()) == one);
@@ -276,8 +262,6 @@ public class ContractionTest {
 		
 		// contract one into zero
 		one.setParent(zero);
-		one.set(Visited.PRE);
-		zero.set(Visited.PRE);
 		zero.contract(sccs, graph, one);
 		Assert.assertTrue(graph.get(zero.getId()) == zero);
 		Assert.assertTrue(graph.get(one.getId()) == zero);
@@ -293,8 +277,6 @@ public class ContractionTest {
 
 		// contract eight into four
 		eight.setParent(four);
-		eight.set(Visited.PRE);
-		four.set(Visited.PRE);
 		four.contract(sccs, graph, eight);
 		Assert.assertTrue(graph.get(zero.getId()) == zero);
 		Assert.assertTrue(graph.get(one.getId()) == zero);
@@ -310,8 +292,6 @@ public class ContractionTest {
 		
 		// contract seven into three
 		seven.setParent(three);
-		seven.set(Visited.PRE);
-		three.set(Visited.PRE);
 		three.contract(sccs, graph, seven);
 		Assert.assertTrue(graph.get(zero.getId()) == zero);
 		Assert.assertTrue(graph.get(one.getId()) == zero);
@@ -327,8 +307,6 @@ public class ContractionTest {
 		
 		// contract nine into three
 		nine.setParent(three);
-		nine.set(Visited.PRE);
-		three.set(Visited.PRE);
 		three.contract(sccs, graph, nine);
 		Assert.assertTrue(graph.get(zero.getId()) == zero);
 		Assert.assertTrue(graph.get(one.getId()) == zero);
@@ -344,8 +322,6 @@ public class ContractionTest {
 		
 		// 3 into 0
 		three.setParent(zero);
-		three.set(Visited.PRE);
-		zero.set(Visited.PRE);
 		zero.contract(sccs, graph, three);
 		Assert.assertTrue(graph.get(zero.getId()) == zero);
 		Assert.assertTrue(graph.get(one.getId()) == zero);
@@ -361,8 +337,6 @@ public class ContractionTest {
 		
 		// 4 into 0
 		four.setParent(zero);
-		four.set(Visited.PRE);
-		zero.set(Visited.PRE);
 		zero.contract(sccs, graph, four);
 		Assert.assertTrue(graph.get(zero.getId()) == zero);
 		Assert.assertTrue(graph.get(one.getId()) == zero);
@@ -406,12 +380,9 @@ public class ContractionTest {
 		
 		// The SCC in F
 		five.setParent(three);
-		five.set(Visited.PRE);
 		one.setParent(four);
-		one.set(Visited.PRE);
 		// one is root at this
 		three.setParent(one);
-		three.set(Visited.PRE);
 		// one is not at root at this point
 
 		Assert.assertTrue(!one.isRoot());
@@ -419,14 +390,13 @@ public class ContractionTest {
 		// one has outgoing arcs
 		Assert.assertTrue(graph.hasUntraversedArc(one));
 		
-		Assert.assertTrue(one.is(Visited.PRE));
+		Assert.assertTrue(one.isNot(Visited.POST));
 		
 		// Roots: (2), (4)
 		// Untraversed arcs: 1:5
 		//
 		// Once (4) gets explored, it is found that it has no children and its
 		// child (1) must be cut loose.
-		four.set(Visited.PRE);
 		new SCCWorker(noopExecutor, graph, sccs, four).call();
 		Assert.assertTrue(four.is(Visited.POST));
 		

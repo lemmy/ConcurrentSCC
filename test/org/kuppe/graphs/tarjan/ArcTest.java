@@ -72,7 +72,6 @@ public class ArcTest {
 		graph.addNode(two, 1,2,3);
 
 		one.setParent(two);
-		one.set(Visited.PRE);
 		// Add redundant unvisited arc to node with arc in visited state:
 		// Set one's arc to three as traversed
 		Collection<Arc> arcs = graph.getArcs(two);
@@ -82,7 +81,6 @@ public class ArcTest {
 			}
 		}
 		// Check arc to three is still untraversed
-		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 
 		/*test*/
@@ -101,9 +99,7 @@ public class ArcTest {
 		graph.addNode(two, 1,2,3);
 
 		one.setParent(two);
-		one.set(Visited.PRE);
 		
-		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 		
 		/*test*/
@@ -131,8 +127,6 @@ public class ArcTest {
 
 		// contract one with one extra arc
 		one.setParent(two);
-		one.set(Visited.PRE);
-		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 
 		/*test*/
@@ -162,8 +156,6 @@ public class ArcTest {
 
 		// contract one with one extra arc
 		one.setParent(two);
-		one.set(Visited.PRE);
-		two.set(Visited.PRE);
 		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
 
 		/*test*/

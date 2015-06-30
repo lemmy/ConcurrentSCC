@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.kuppe.graphs.tarjan.GraphNode.Visited;
+
 import edu.cmu.cs.LinkCut;
 import edu.cmu.cs.LinkCutTreeNode;
 
@@ -39,11 +41,11 @@ public class GraphNode extends LinkCutTreeNode {
 
 	public enum Visited {
 		// This also constitutes an order (see ordinal)
-		UN, PRE, POST;
+		UN, POST;
 	};
 	
 	private Graph graph;
-	private volatile Visited visited = Visited.UN;
+	public volatile Visited visited = Visited.UN;
 
 	public GraphNode(final int anId) {
 		super(anId);
@@ -143,8 +145,7 @@ public class GraphNode extends LinkCutTreeNode {
 				scc.add(parent);
 			}
 
-			// Mark parent done
-			assert parent.is(Visited.PRE);
+			assert parent.isNot(Visited.POST);
 			// This should be the only place where visited is accessed directly
 			// (except to its setter). It is done, to skip the pre-condition,
 			// that all of parents outgoing arcs are traversed. Here we merge
@@ -196,8 +197,8 @@ public class GraphNode extends LinkCutTreeNode {
 
 		// We remain a root in the tree.
 		assert this.isRoot();
-		// Must not be UN or POST-visited now
-		assert this.is(Visited.PRE);
+		// Must not be POST-visited now
+		assert this.isNot(Visited.POST);
 	}
 	
 	private Set<GraphNode> getNewScc() {

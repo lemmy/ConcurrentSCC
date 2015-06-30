@@ -96,9 +96,7 @@ public class GraphNodeTest {
 		graph.addNode(a);
 		assertTrue(a.is(Visited.UN));
 		a.set(Visited.UN);
-		a.set(Visited.PRE);
-		assertTrue(a.is(Visited.PRE));
-		a.set(Visited.PRE);
+		assertTrue(a.isNot(Visited.POST));
 		a.set(Visited.POST);
 		assertTrue(a.is(Visited.POST));
 	}
@@ -108,28 +106,13 @@ public class GraphNodeTest {
 		final Graph graph = new Graph();
 		final GraphNode a = new GraphNode(1, graph);
 		graph.addNode(a);
-		a.set(Visited.PRE);
-		assertTrue(a.is(Visited.PRE));
+		a.set(Visited.POST);
+		assertTrue(a.is(Visited.POST));
 		try {
 			a.set(Visited.UN);
 		} catch (AssertionError e) {
 			return;
 		}
-		fail("Invalid state downgrade PRE > UN");
-	}
-
-	@Test
-	public void testVisitedStateChangeInvalidDowngrade2() {
-		final Graph graph = new Graph();
-		final GraphNode a = new GraphNode(1, graph);
-		graph.addNode(a);
-		a.set(Visited.POST);
-		assertTrue(a.is(Visited.POST));
-		try {
-			a.set(Visited.PRE);
-		} catch (AssertionError e) {
-			return;
-		}
-		fail("Invalid state downgrade PRE > UN");
+		fail("Invalid state downgrade POST > UN");
 	}
 }
