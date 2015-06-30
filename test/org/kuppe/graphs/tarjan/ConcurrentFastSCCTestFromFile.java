@@ -255,7 +255,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				if (graph.hasNode(nodeId)) {
 					graph.addArc(nodeId, arcId);
 				} else {
-					graph.addNode(new GraphNode(nodeId), arcId);
+					graph.addNode(new GraphNode(nodeId, graph), arcId);
 				}
 			}
 		}

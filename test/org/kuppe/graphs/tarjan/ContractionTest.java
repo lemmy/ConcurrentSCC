@@ -45,9 +45,9 @@ public class ContractionTest {
 	public void testInvalidVisitedStateChildContraction() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 1,2);
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 1,2);
 		
 		one.setParent(two);
@@ -65,19 +65,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 2,4,5);
 		
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 2);
 		
-		final GraphNode three = new GraphNode(3);
+		final GraphNode three = new GraphNode(3, graph);
 		graph.addNode(three, 1);
 		
-		final GraphNode four = new GraphNode(4);
+		final GraphNode four = new GraphNode(4, graph);
 		graph.addNode(four,4);
 		
-		final GraphNode five = new GraphNode(5);
+		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 3);
 		
 		// The SCC in F
@@ -100,15 +100,15 @@ public class ContractionTest {
 	public void testContractionsInC() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one,3);
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two,3);
-		final GraphNode three = new GraphNode(3);
+		final GraphNode three = new GraphNode(3, graph);
 		graph.addNode(three,4,5);
-		final GraphNode four = new GraphNode(4);
+		final GraphNode four = new GraphNode(4, graph);
 		graph.addNode(four,1);
-		final GraphNode five = new GraphNode(5);
+		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five,2);
 		
 		// One possible permutation of child>parent relationships in the tree
@@ -162,19 +162,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a unidirectional loop
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 2);
 		
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 3);
 		
-		final GraphNode three = new GraphNode(3);
+		final GraphNode three = new GraphNode(3, graph);
 		graph.addNode(three, 4);
 		
-		final GraphNode four = new GraphNode(4);
+		final GraphNode four = new GraphNode(4, graph);
 		graph.addNode(four,5);
 		
-		final GraphNode five = new GraphNode(5);
+		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 1);
 
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
@@ -210,37 +210,37 @@ public class ContractionTest {
 	public void testNestedContractionWithSplitNode() {
 		final Graph graph = new Graph();
 
-		final GraphNode zero = new GraphNode(0);
+		final GraphNode zero = new GraphNode(0, graph);
 		graph.addNode(zero);
 		
 		// 1 splits into 3 nodes
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 1);
 		
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 1);
-		final GraphNode three = new GraphNode(3);
+		final GraphNode three = new GraphNode(3, graph);
 		graph.addNode(three, 1);
-		final GraphNode four = new GraphNode(4);
+		final GraphNode four = new GraphNode(4, graph);
 		graph.addNode(four, 1);
 		
 		// 2 has two childs
-		final GraphNode five = new GraphNode(5);
+		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 2);
-		final GraphNode six = new GraphNode(6);
+		final GraphNode six = new GraphNode(6, graph);
 		graph.addNode(six, 2);
 
 		// 3 has one child (with childs)
-		final GraphNode seven = new GraphNode(7);
+		final GraphNode seven = new GraphNode(7, graph);
 		graph.addNode(seven, 3);
 
-		final GraphNode nine = new GraphNode(9);
+		final GraphNode nine = new GraphNode(9, graph);
 		graph.addNode(nine, 7);
-		final GraphNode ten = new GraphNode(10);
+		final GraphNode ten = new GraphNode(10, graph);
 		graph.addNode(ten, 9);
 		
 		// four has one child
-		final GraphNode eight = new GraphNode(8);
+		final GraphNode eight = new GraphNode(8, graph);
 		graph.addNode(eight, 4);
 		
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
@@ -361,19 +361,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 2,4,5);
 		
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 2);
 		
-		final GraphNode three = new GraphNode(3);
+		final GraphNode three = new GraphNode(3, graph);
 		graph.addNode(three, 1);
 		
-		final GraphNode four = new GraphNode(4);
+		final GraphNode four = new GraphNode(4, graph);
 		graph.addNode(four,4);
 		
-		final GraphNode five = new GraphNode(5);
+		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 3);
 
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
@@ -420,19 +420,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 2,4,5);
 		
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 2);
 		
-		final GraphNode three = new GraphNode(3);
+		final GraphNode three = new GraphNode(3, graph);
 		graph.addNode(three, 1);
 		
-		final GraphNode four = new GraphNode(4);
+		final GraphNode four = new GraphNode(4, graph);
 		graph.addNode(four,4);
 		
-		final GraphNode five = new GraphNode(5);
+		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 3);
 
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);

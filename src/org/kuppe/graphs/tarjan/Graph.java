@@ -226,8 +226,7 @@ public class Graph {
 	}
 
 	Collection<Integer> getArcs(GraphNode node) {
-		Record record = this.nodePtrTable.get(node.getId());
-		return record.arcs;
+		return this.nodePtrTable.get(node.getId()).arcs;
 	}
 	
 	boolean checkPostCondition() {
@@ -260,9 +259,6 @@ public class Graph {
 			s.add(integer);
 		}
 		
-		node.setGraph(this);
-		
-		Record r = new Record(node, s, /*new ReentrantLock()*/ null);
-		this.nodePtrTable.put(node.getId(), r);
+		this.nodePtrTable.put(node.getId(), new Record(node, s));
 	}
 }

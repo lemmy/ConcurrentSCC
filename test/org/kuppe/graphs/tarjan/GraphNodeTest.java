@@ -37,12 +37,13 @@ public class GraphNodeTest {
 
 	@Test
 	public void testIsInSameTree() {
-		final GraphNode root = new GraphNode(0);
+		final Graph graph = new Graph();
+		final GraphNode root = new GraphNode(0, graph);
 		
-		final GraphNode left = new GraphNode(1);
+		final GraphNode left = new GraphNode(1, graph);
 		left.setParent(root);
 
-		final GraphNode right = new GraphNode(2);
+		final GraphNode right = new GraphNode(2, graph);
 		right.setParent(root);
 		
 		assertTrue(root.isInSameTree(root));
@@ -62,8 +63,9 @@ public class GraphNodeTest {
 	
 	@Test
 	public void testInDifferentTrees() {
-		final GraphNode A = new GraphNode(1);
-		final GraphNode B = new GraphNode(2);
+		final Graph graph = new Graph();
+		final GraphNode A = new GraphNode(1, graph);
+		final GraphNode B = new GraphNode(2, graph);
 
 		assertTrue(A.isInSameTree(A));
 		assertFalse(A.isInSameTree(B));
@@ -74,8 +76,9 @@ public class GraphNodeTest {
 	
 	@Test
 	public void testRoot() {
-		final GraphNode a = new GraphNode(1);
-		final GraphNode b = new GraphNode(2);
+		final Graph graph = new Graph();
+		final GraphNode a = new GraphNode(1, graph);
+		final GraphNode b = new GraphNode(2, graph);
 
 		assertTrue(a.isRoot());
 		assertTrue(b.isRoot());

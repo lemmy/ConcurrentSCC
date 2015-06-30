@@ -43,19 +43,11 @@ public class GraphNode extends LinkCutTreeNode {
 		UN, POST;
 	};
 	
-	private Graph graph;
+	private final Graph graph;
 	public volatile Visited visited = Visited.UN;
 
-	public GraphNode(final int anId) {
-		super(anId);
-	}
-
 	public GraphNode(int id, Graph graph) {
-		this(id);
-		this.graph = graph;
-	}
-
-	void setGraph(Graph graph) {
+		super(id);
 		this.graph = graph;
 	}
 
@@ -188,7 +180,6 @@ public class GraphNode extends LinkCutTreeNode {
 			// any) which is the one on the path
 			assert parent.children.isEmpty() || parent.children.size() == 1;
 			parent.children.clear();
-			//TODO should be safe to null parent.children
 			
 			// Continue with parent's parent.
 			parent = parentsParent;

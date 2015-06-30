@@ -37,7 +37,7 @@ public class ArcTest {
 	@Test
 	public void testEmptyArcSet() {
 		final Graph graph = new Graph();
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one);
 		
 		Assert.assertFalse(graph.hasUntraversedArc(one));
@@ -47,7 +47,7 @@ public class ArcTest {
 	@Test
 	public void testOneArcSet() {
 		final Graph graph = new Graph();
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 4711);
 		
 		Assert.assertTrue(graph.hasUntraversedArc(one));
@@ -63,9 +63,9 @@ public class ArcTest {
 	public void testContractionInBCorrectArcSet() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 1,2);
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 1,2,3);
 
 		one.setParent(two);
@@ -83,9 +83,9 @@ public class ArcTest {
 	public void testContractionInBCorrectArcSet2() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 1,2,3,4);
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 1,2,3);
 
 		one.setParent(two);
@@ -102,9 +102,9 @@ public class ArcTest {
 	public void testContractionInBCorrectArcSet3() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 1,2,3,4);
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 1,2,3);
 
 		// contract one with one extra arc
@@ -121,9 +121,9 @@ public class ArcTest {
 	public void testContractionInBNewSelfLoop() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1);
+		final GraphNode one = new GraphNode(1, graph);
 		graph.addNode(one, 1);
-		final GraphNode two = new GraphNode(2);
+		final GraphNode two = new GraphNode(2, graph);
 		graph.addNode(two, 1,2,3);
 
 
