@@ -41,7 +41,6 @@ public class SCCWorker implements Callable<Void> {
     private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private static final Lock GLOBAL_LOCK = new ReentrantLock();
-//	private static final Random rnd = new Random(1541980);
 	
 	private final ExecutorService executor;
 	private final Map<GraphNode, Set<GraphNode>> sccs;
@@ -66,9 +65,6 @@ public class SCCWorker implements Callable<Void> {
 				// If POST, there must not be any children
 				assert v.getChildren().isEmpty();
 				// All arcs must be traversed
-				if (graph.hasUntraversedArc(v)) {
-					assert Boolean.FALSE;
-				}
 				assert !graph.hasUntraversedArc(v);
 				
 				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
@@ -209,12 +205,6 @@ public class SCCWorker implements Callable<Void> {
 								}
 							}
 						}
-//					} else {
-//						// We couldn't acquire lock on w, try again later.
-////							Thread.sleep(rnd.nextInt(50) + 1L);
-//						executor.submit(this);
-//						return null;
-//					}
 				} else {
 					// No arcs left, become post-visited and free childs
 					freeChilds();
@@ -222,7 +212,6 @@ public class SCCWorker implements Callable<Void> {
 				}
 			} else {
 				// Cannot acquire lock, try later
-//				Thread.sleep(rnd.nextInt(50) + 1L);
 				executor.submit(this);
 				return null;
 			}

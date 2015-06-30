@@ -28,11 +28,6 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-
 public abstract class AbstractConcurrentFastSCCTest {
 
 //	@Rule public TestName name = new TestName();

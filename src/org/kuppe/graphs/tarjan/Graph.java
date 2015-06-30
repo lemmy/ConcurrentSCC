@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
-//import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -44,29 +42,21 @@ import org.kuppe.graphs.tarjan.GraphNode.Visited;
  * Abstraction of TLC's NodePtrTable.
  */
 public class Graph {
-	
-    private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	public static final int NO_ARC = -1;
 
 	private class Record {
 		private final GraphNode node;
 		private final List<Integer> arcs;
-		private final Lock lock;
+//		private final Lock lock;
 		
 		private Record(GraphNode node, List<Integer> arcs, Lock nodeLock) {
 			assert node != null && arcs != null /*&& nodeLock != null*/;
 			this.node = node;
 			this.arcs = arcs;
-			this.lock = nodeLock;
+//			this.lock = nodeLock;
 		}
 		
-		/**
-		 * @return the lock
-		 */
-		public Lock getLock() {
-			return lock;
-		}
 //		
 //		/**
 //		 * @return the lock
@@ -98,16 +88,10 @@ public class Graph {
 	 * @return The initial nodes?!
 	 */
 	public Collection<GraphNode> getStartNodes() {
-		List<GraphNode> start = new ArrayList<GraphNode>(this.nodePtrTable.size());
+		final List<GraphNode> start = new ArrayList<GraphNode>(this.nodePtrTable.size());
 		for (Record graphNode : nodePtrTable.values()) {
 			start.add(graphNode.node);
 		}
-//		start.sort(new Comparator<GraphNode>() {
-//			@Override
-//			public int compare(GraphNode o1, GraphNode o2) {
-//				return o1.getId().compareTo(o2.getId());
-//			}
-//		});
 		return start;
 	}
 	

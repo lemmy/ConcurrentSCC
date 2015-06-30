@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.kuppe.graphs.tarjan.GraphNode.Visited;
-
 import edu.cmu.cs.LinkCut;
 import edu.cmu.cs.LinkCutTreeNode;
 
