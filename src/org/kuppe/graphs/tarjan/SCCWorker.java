@@ -63,7 +63,7 @@ public class SCCWorker implements Callable<Void> {
 			// acquired in the next line.
 			if (v.is(Visited.POST)) {
 				// If POST, there must not be any children
-				assert v.getChildren().isEmpty();
+				assert !v.hasChildren();
 				// All arcs must be traversed
 				assert !graph.hasUntraversedArc(v);
 				
@@ -78,7 +78,7 @@ public class SCCWorker implements Callable<Void> {
 				// Skip POST-visited v
 				if (v.is(Visited.POST)) {
 					// If POST, there must not be any children
-					assert v.getChildren().isEmpty();
+					assert !v.hasChildren();
 					// All arcs must be traversed
 					assert !graph.hasUntraversedArc(v);
 
@@ -285,7 +285,7 @@ public class SCCWorker implements Callable<Void> {
 		}
 		
 		// All our children must in fact be cut loose
-		assert v.getChildren().isEmpty();
+		assert !v.hasChildren();
 	}
 
 	public int getId() {

@@ -26,6 +26,7 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
@@ -231,7 +232,8 @@ public class GraphNode extends LinkCutTreeNode {
 	public Set<GraphNode> cutChildren() {
 		// CUT EACH CHILD FROM ITS PARENT
 		final Set<GraphNode> children = new HashSet<GraphNode>();
-		for (LinkCutTreeNode linkCutTreeNode : LinkCut.directChildren(this, new HashSet<LinkCutTreeNode>())) {
+		final Collection<LinkCutTreeNode> directChildren = LinkCut.directChildren(this, new HashSet<LinkCutTreeNode>());
+		for (LinkCutTreeNode linkCutTreeNode : directChildren) {
 			GraphNode child = (GraphNode) linkCutTreeNode;
 			if (child.isNot(Visited.POST)) {
 				children.add(child);
@@ -241,7 +243,7 @@ public class GraphNode extends LinkCutTreeNode {
 		return children;
 	}
 
-	public Set<LinkCutTreeNode> getChildren() {
-		return this.children;
+	public boolean hasChildren() {
+		return !this.children.isEmpty();
 	}
 }
