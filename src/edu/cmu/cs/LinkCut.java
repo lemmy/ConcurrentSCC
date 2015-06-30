@@ -2,6 +2,11 @@ package edu.cmu.cs;
 
 import java.util.Collection;
 
+/**
+ * Taken from http://www.cs.cmu.edu/~avrim/451f12/lectures/lect1009-linkcut.txt
+ * 
+ * https://youtu.be/cyx63EI_jbo (MIT opencourseware) has an introduction to LC trees.
+ */
 public class LinkCut {
 	// rotR and rotL are also known as zig and zag
 	static void rotR(LinkCutTreeNode p) {
