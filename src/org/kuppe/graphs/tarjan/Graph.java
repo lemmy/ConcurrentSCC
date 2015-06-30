@@ -47,12 +47,14 @@ public class Graph {
 	
     private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
+	public static final int NO_ARC = -1;
+
 	private class Record {
 		private final GraphNode node;
-		private final List<Arc> arcs;
+		private final List<Integer> arcs;
 		private final Lock lock;
 		
-		private Record(GraphNode node, List<Arc> arcs, Lock nodeLock) {
+		private Record(GraphNode node, List<Integer> arcs, Lock nodeLock) {
 			assert node != null && arcs != null /*&& nodeLock != null*/;
 			this.node = node;
 			this.arcs = arcs;
@@ -113,7 +115,7 @@ public class Graph {
 	public void addArc(int nodeId, int arcId) {
 		assert this.nodePtrTable.containsKey(nodeId);
 		Record record = this.nodePtrTable.get(nodeId);
-		record.arcs.add(new Arc(arcId));
+		record.arcs.add(arcId);
 	}
 
 	// Convenience method for unit tests (see AbstractGraph#addNode)
@@ -121,9 +123,9 @@ public class Graph {
 		assert !this.nodePtrTable.containsKey(node.getId());
 
 		// Create the entry in the nodePtrTable
-		final List<Arc> s = new LinkedList<Arc>();
+		final List<Integer> s = new LinkedList<Integer>();
 		for (Integer integer : successors) {
-			s.add(new Arc(integer));
+			s.add(integer);
 		}
 		
 		node.setGraph(this);
@@ -135,7 +137,7 @@ public class Graph {
 	public GraphNode get(int id) {
 		Record record = this.nodePtrTable.get(id);
 		if (record == null) {
-			record = new Record(new GraphNode(id, this), new LinkedList<Arc>(), /*new ReentrantLock()*/ null);
+			record = new Record(new GraphNode(id, this), new LinkedList<Integer>(), /*new ReentrantLock()*/ null);
 			this.nodePtrTable.put(id, record);
 		}
 		return record.node;
@@ -151,7 +153,7 @@ public class Graph {
 			if (record.node.isNot(Visited.POST)) {
 				return false;
 			}
-			Collection<Arc> arcs = record.arcs;
+			Collection<Integer> arcs = record.arcs;
 			if (!arcs.isEmpty()) {
 				return false;
 			}
@@ -160,7 +162,7 @@ public class Graph {
 			if (record.node.isNot(Visited.POST)) {
 				return false;
 			}
-			Collection<Arc> arcs = record.arcs;
+			Collection<Integer> arcs = record.arcs;
 			if (!arcs.isEmpty()) {
 				return false;
 			}
@@ -170,14 +172,14 @@ public class Graph {
 
 	/* (outgoing) arcs */
 
-	public Arc getUntraversedArc(GraphNode node) {
+	public int getUntraversedArc(GraphNode node) {
 		final Record record = this.nodePtrTable.get(node.getId());
 		// 'node' has been contracted already. Thus return no untraversed arcs.
 		if (isContracted(record, node)) {
-			return null;
+			return NO_ARC;
 		}
 		if (record.arcs.isEmpty()) {
-			return null;
+			return NO_ARC;
 		}
 		return record.arcs.remove(0);
 	}
@@ -202,16 +204,16 @@ public class Graph {
 		return false;
 	}
 
-	public Collection<Arc> getArcs(GraphNode node) {
+	public Collection<Integer> getArcs(GraphNode node) {
 		Record record = this.nodePtrTable.get(node.getId());
 		return record.arcs;
 	}
 	
-	public Collection<Arc> getUntraversedArcs(GraphNode node) {
+	public Collection<Integer> getUntraversedArcs(GraphNode node) {
 		final Record record = this.nodePtrTable.get(node.getId());
 		// 'node' has been contracted already. Thus return no untraversed arcs.
 		if (record.node.getId() != node.getId()) {
-			return new ArrayList<Arc>();
+			return new ArrayList<Integer>();
 		}
 		return new HashSet<>(record.arcs);
 	}

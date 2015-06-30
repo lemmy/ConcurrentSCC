@@ -57,7 +57,6 @@ public class SCCWorker implements Callable<Void> {
 	
 	public Void call() {
 		GLOBAL_LOCK.lock();
-//		logger.info(() -> "----------- " + this.getId()+ " ----------------");
 		try {
 			
 			// Skip POST-visited v (POST will never transition back to PRE,
@@ -102,10 +101,10 @@ public class SCCWorker implements Callable<Void> {
 				/*
 				 * Then traverse the next outgoing untraversed arc;
 				 */
-				Arc arc = graph.getUntraversedArc(v);
-				if (arc != null) {
+				int arc = graph.getUntraversedArc(v);
+				if (arc != Graph.NO_ARC) {
 					// To traverse an arc (v, w), if w is postvisited do nothing.
-					final GraphNode w = graph.get(arc.getTo());
+					final GraphNode w = graph.get(arc);
 					
 					if (w.is(Visited.POST)) {
 						graph.unlock(v);
