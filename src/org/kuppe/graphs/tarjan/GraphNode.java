@@ -26,14 +26,10 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
-import edu.cmu.cs.LinkCut;
 import edu.cmu.cs.LinkCutTreeNode;
 
 public class GraphNode extends LinkCutTreeNode {
@@ -87,54 +83,37 @@ public class GraphNode extends LinkCutTreeNode {
 				+ "]";
 	}
 
-	public void setParent(GraphNode parent) {
+	public void setParent(final GraphNode parent) {
 		assert this.isNot(Visited.POST);
-		LinkCut.link(this, parent);
+		link(parent);
 	}
 
-	public boolean isInSameTree(GraphNode other) {
-		return LinkCut.root(this) == LinkCut.root(other);
+	public boolean isInSameTree(final GraphNode other) {
+		return this.getRoot() == other.getRoot();
 	}
 		
 	public void contract(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, final GraphNode graphNode) {
 		// We have to be a root in the tree...
 		assert this.isRoot();
 		// ...and the other has to be in our tree
-		assert LinkCut.root(graphNode) == this;
+		assert this.isRootTo(graphNode);
 
 		// Get the subset SCCs (if any) which has been contracted into this
 		// before.
 		Set<GraphNode> scc = sccs.get(this);
 		if (scc == null) {
 			// No previous scc for this node
-			scc = getNewScc();
+			scc = new HashSet<GraphNode>(); // TODO We need a stack here for liveness checking!
 			scc.add(this);
 			sccs.put(this, scc);
 		}
-
 		
 		// Traverse GraphNode's tree up to the root which is us/this.
 		GraphNode parent = graphNode;
 		while (parent != this) {
-			// Merge the others subset scc into this new one and remove it
-			// from the set of sccs.
-			final Set<GraphNode> parentsSubset = sccs.remove(parent);
-			if (parentsSubset != null) {
-				// Correct all 'id to node' mappings for the previous contracted
-				// nodes. Otherwise, if an arc is later explored
-				// going to one node in parentsSubset "t", it will be skipped as
-				// "t" is post-visited. It has to be pre-visited though, which
-				// is this' visited state after contraction.
-				for (GraphNode s : parentsSubset) {
-					// s' mapping will be updated down below
-					if (s != parent) {
-						graph.contract(this, s);
-					}
-				}
-				scc.addAll(parentsSubset);
-			} else {
-				scc.add(parent);
-			}
+			// Merge the other's subset SCC (if any) into this new one and
+			// remove it from the set of sccs.
+			mergeSubSetSCC(sccs, graph, scc, parent);
 
 			assert parent.isNot(Visited.POST);
 			// This should be the only place where visited is accessed directly
@@ -149,37 +128,15 @@ public class GraphNode extends LinkCutTreeNode {
 			assert !graph.hasUntraversedArc(parent);
 			
 			// Before unlink/cut, remember parent's parent
-			GraphNode parentsParent = (GraphNode) LinkCut.parent(parent);
+			final GraphNode parentsParent = (GraphNode) parent.getParent();
 
-			LinkCut.cut(parent);
+			// Unlink the parent from the path so that it can be gc'ed
+			parent.cut();
 			assert parent.isRoot();
 			
-			// Take copy of parent.children. parent.children is modified by
-			// LinkCut.cut/LinkCut.link which results in a
-			// ConcurrentModificationException otherwise.
-			final Set<LinkCutTreeNode> children = new HashSet<>(parent.children);
-			
-			// Unlink/Cut children of parent from parent and link them to
-			// us/this node.
-			// E.g. for test B when {2,1} form a contraction and tree being:
-			// {2,1} < 3 exploring the arc {2,3} has to trigger compaction
-			// of 3 into 2. But when only cut is done without linking to
-			// this, the previous compaction will have cut 3 loose already.
-			for (LinkCutTreeNode child : children) {
-				// This while loop is walking a path from a child to its root
-				// and it obviously has to skip linking the nodes on the path to
-				// the root again. This for loop here is so that childs *not on
-				// the path* are linked to the root.
-				if (!scc.contains(child)) {
-					LinkCut.cut(child);
-					LinkCut.link(child, this);
-				}
-			}
-			// Now that the children of parent *who are not on this path* are
-			// linked to the root (this), clear the last remaining child (if
-			// any) which is the one on the path
-			assert parent.children.isEmpty() || parent.children.size() == 1;
-			parent.children.clear();
+			// Link parent's children to us except for the ones that are part of
+			// the SCC. Those are done now and don't need to be re-linked.
+			parent.reLinkChildren(this, scc);
 			
 			// Continue with parent's parent.
 			parent = parentsParent;
@@ -190,22 +147,31 @@ public class GraphNode extends LinkCutTreeNode {
 		// Must not be POST-visited now
 		assert this.isNot(Visited.POST);
 	}
-	
-	private Set<GraphNode> getNewScc() {
-		// TODO Do we need a stack here? A set will do to check liveness as by
-		// definition of SCC, each vertex can reach every other one.
-		final Set<GraphNode> scc = new TreeSet<GraphNode>(new Comparator<GraphNode>() {
-			public int compare(GraphNode o1, GraphNode o2) {
-				// want a stable order of the nodes inside the SCC for the moment
-				// (to better test if the correct SCC has been found)
-				return Integer.compare(o1.id, o2.id);
+
+	private void mergeSubSetSCC(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, Set<GraphNode> scc, final GraphNode parent) {
+		final Set<GraphNode> parentsSubset = sccs.remove(parent);
+		if (parentsSubset != null) {
+			// Correct all 'id to node' mappings for the previous contracted
+			// nodes. Otherwise, if an arc is later explored
+			// going to one node in parentsSubset "t", it will be skipped as
+			// "t" is post-visited. It has to be pre-visited though, which
+			// is this' visited state after contraction.
+			for (GraphNode s : parentsSubset) {
+				// s' mapping will be updated down below
+				if (s != parent) {
+					graph.contract(this, s);
+				}
 			}
-		});
-		return scc;
+			scc.addAll(parentsSubset);
+		} else {
+			scc.add(parent);
+		}
 	}
 
 	public boolean checkSCC() {
-		//TODO check liveness here
+		// TODO Check liveness here. However, this can also be done while the
+		// nodes are contracted into the root. Best is though, if it's done
+		// without holding any locks on the graph/tree nodes.
 		return true;
 	}
 
@@ -213,28 +179,22 @@ public class GraphNode extends LinkCutTreeNode {
 		return id;
 	}
 
-	public boolean isRoot() {
-		return LinkCut.root(this) == this;
-	}
-
 	/**
 	 * Cuts off the direct tree children. 
 	 */
 	public Set<GraphNode> cutChildren() {
-		// CUT EACH CHILD FROM ITS PARENT
-		final Set<GraphNode> children = new HashSet<GraphNode>();
-		final Collection<LinkCutTreeNode> directChildren = LinkCut.directChildren(this, new HashSet<LinkCutTreeNode>());
-		for (LinkCutTreeNode linkCutTreeNode : directChildren) {
-			GraphNode child = (GraphNode) linkCutTreeNode;
-			if (child.isNot(Visited.POST)) {
-				children.add(child);
-			}
-			LinkCut.cut(child);
-		}
-		return children;
-	}
+		// A subset of our children which are still unprocessed.
+		final Set<GraphNode> unprocessedChildren = new HashSet<GraphNode>();
 
-	public boolean hasChildren() {
-		return !this.children.isEmpty();
+		final Set<LinkCutTreeNode> directChildren = getChildren();
+		for (LinkCutTreeNode linkCutTreeNode : directChildren) {
+			final GraphNode child = (GraphNode) linkCutTreeNode;
+			if (child.isNot(Visited.POST)) {
+				unprocessedChildren.add(child);
+			}
+			child.cut();
+		}
+		
+		return unprocessedChildren;
 	}
 }
