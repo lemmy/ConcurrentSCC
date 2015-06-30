@@ -40,7 +40,9 @@ public class GraphNode extends LinkCutTreeNode {
 	};
 	
 	private final Graph graph;
-	public volatile Visited visited = Visited.UN;
+	
+	// package protected for unit tests only
+	volatile Visited visited = Visited.UN;
 
 	public GraphNode(int id, Graph graph) {
 		super(id);
