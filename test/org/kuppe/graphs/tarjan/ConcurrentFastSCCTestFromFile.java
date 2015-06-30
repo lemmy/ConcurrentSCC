@@ -237,9 +237,27 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition(1000000));
 		Assert.assertEquals(25, sccs.size());
+		
+		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
+		
+		// Read the file with the correct SCCs
+		final Set<Set<Integer>> expectedSCCs = new HashSet<>(25);
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("largeDGsccs.txt");
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+			for(String line = br.readLine(); line != null; line = br.readLine()) {
+				final Set<Integer> hashSet = new HashSet<Integer>();
+				final String[] ints = line.trim().split("\\s+");
+				for (String string : ints) {
+					hashSet.add(Integer.parseInt(string));
+				}
+				expectedSCCs.add(hashSet);
+			}
+		}
+		
+		Assert.assertEquals(expectedSCCs, convertedSCCs);
 	}	
 	
-//	@Test
+//	@Test // This most certainly dies with a stack overflow.
 	public void testLargeLoop() throws IOException {
 		final Graph graph = new Graph();
 		readFile(graph, "largeDG.txt");

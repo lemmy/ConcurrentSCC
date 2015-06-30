@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,10 +53,10 @@ public class Graph {
 
 	private class Record {
 		private final GraphNode node;
-		private final Collection<Arc> arcs;
+		private final List<Arc> arcs;
 		private final Lock lock;
 		
-		private Record(GraphNode node, Collection<Arc> arcs, Lock nodeLock) {
+		private Record(GraphNode node, List<Arc> arcs, Lock nodeLock) {
 			assert node != null && arcs != null /*&& nodeLock != null*/;
 			this.node = node;
 			this.arcs = arcs;
@@ -124,7 +125,7 @@ public class Graph {
 		assert !this.nodePtrTable.containsKey(node.getId());
 
 		// Create the entry in the nodePtrTable
-		final List<Arc> s = new ArrayList<Arc>();
+		final List<Arc> s = new LinkedList<Arc>();
 		for (Integer integer : successors) {
 			s.add(new Arc(integer));
 		}
@@ -138,7 +139,7 @@ public class Graph {
 	public GraphNode get(int id) {
 		Record record = this.nodePtrTable.get(id);
 		if (record == null) {
-			record = new Record(new GraphNode(id, this), new ArrayList<Arc>(), /*new ReentrantLock()*/ null);
+			record = new Record(new GraphNode(id, this), new LinkedList<Arc>(), /*new ReentrantLock()*/ null);
 			this.nodePtrTable.put(id, record);
 		}
 		return record.node;
@@ -180,28 +181,38 @@ public class Graph {
 	public Arc getUntraversedArc(GraphNode node) {
 		final Record record = this.nodePtrTable.get(node.getId());
 		// 'node' has been contracted already. Thus return no untraversed arcs.
+		if (isContracted(record, node)) {
+			return null;
+		}
+		if (record.arcs.isEmpty()) {
+			return null;
+		}
+		return record.arcs.remove(0);
+	}
+
+	public boolean hasUntraversedArc(GraphNode node) {
+		final Record record = this.nodePtrTable.get(node.getId());
+		// If this node has been replaced by one into which it was contracted,
+		// there will obviously be arcs in the set. Thus, check if it's indeed
+		// replaced.
+		if (isContracted(record, node)) {
+			return false;
+		}
+		return !record.arcs.isEmpty();
+	}
+
+	private boolean isContracted(Record record, GraphNode node) {
 		int id = record.node.getId();
 		if (id != node.getId()) {
 			assert node.is(Visited.POST);
-			return null;
+			return true;
 		}
-		//TODO this is obviously highly inefficient!!!
-		final Iterator<Arc> arcs = record.arcs.iterator();
-		while (arcs.hasNext()) {
-			Arc next = arcs.next();
-			if (!next.isTraversed()) {
-				return next;
-			}
-		}
-		return null;
-	}
-
-	public boolean hasUntraversedArc(GraphNode v) {
-		return getUntraversedArc(v) != null;
+		return false;
 	}
 
 	public Collection<Arc> getArcs(GraphNode node) {
-		return this.nodePtrTable.get(node.getId()).arcs;
+		Record record = this.nodePtrTable.get(node.getId());
+		return record.arcs;
 	}
 	
 	public Collection<Arc> getUntraversedArcs(GraphNode node) {
