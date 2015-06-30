@@ -33,15 +33,12 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.google.common.collect.Collections2;
 
 public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest {
 
@@ -57,7 +54,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		readFile(graph, "tinyDG.txt");
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
-		Assert.assertTrue(graph.checkPostCondition(13));
+		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(printSCCs(sccs), 3, sccs.size());
 		
 		testTinySCCs(graph, sccs);
@@ -72,35 +69,12 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
-		while (!graph.checkPostCondition(13)) {
+		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
 				new SCCWorker(executor, graph, sccs, graphNode).call();
 			}
 		}
 		testTinySCCs(graph, new HashSet<Set<GraphNode>>(sccs.values()));
-	}	
-	
-//	@Test
-	public void testTinyLoopAllPermutations() throws IOException {
-		final Graph graph = new Graph();
-		readFile(graph, "tinyDG.txt");
-		
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
-
-		final NoopExecutorService executor = new NoopExecutorService();
-
-		int i = 0;
-		final Collection<List<GraphNode>> permutations = Collections2.permutations(graph.getStartNodes());
-		for (Collection<GraphNode> permutation : permutations) {
-			if (i++ % 1000000 == 0)
-				System.out.println(String.format("Checking %s permutation of %s of start nodes", i, permutations.size()));
-			while (!graph.checkPostCondition(13)) {
-				for (GraphNode graphNode : permutation) {
-					new SCCWorker(executor, graph, sccs, graphNode).call();
-				}
-			}
-			testTinySCCs(graph, new HashSet<Set<GraphNode>>(sccs.values()));
-		}
 	}	
 	
 	private void testTinySCCs(final Graph graph, final Set<Set<GraphNode>> sccs) {
@@ -159,7 +133,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
-		while (!graph.checkPostCondition(50)) {
+		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
 				new SCCWorker(executor, graph, sccs, graphNode).call();
 			}
@@ -168,7 +142,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	}
 
 	private void testMediumSCCs(final Graph graph, final Set<Set<GraphNode>> sccs) {
-		Assert.assertTrue(graph.checkPostCondition(50));
+		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 	
 		final Set<Set<Integer>> converted = convertToInts(sccs);
@@ -235,7 +209,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		readFile(graph, "largeDG.txt");
 
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
-		Assert.assertTrue(graph.checkPostCondition(1000000));
+		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(25, sccs.size());
 		
 		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
@@ -256,28 +230,6 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		
 		Assert.assertEquals(expectedSCCs, convertedSCCs);
 	}	
-	
-//	@Test // This most certainly dies with a stack overflow.
-	public void testLargeLoop() throws IOException {
-		final Graph graph = new Graph();
-		readFile(graph, "largeDG.txt");
-
-		final Map<GraphNode, Set<GraphNode>> mapOfSccs = new HashMap<GraphNode, Set<GraphNode>>(0);
-
-		final Collection<GraphNode> nodes = graph.getStartNodes();
-		final NoopExecutorService executor = new NoopExecutorService();
-		while (!graph.checkPostCondition(1000000)) {
-			for (GraphNode graphNode : nodes) {
-				new SCCWorker(executor, graph, mapOfSccs, graphNode).call();
-			}
-		}
-
-		// convert
-		final Set<Set<GraphNode>> sccs = new HashSet<Set<GraphNode>>(mapOfSccs.values());
-		
-		Assert.assertTrue(graph.checkPostCondition(1000000));
-		Assert.assertEquals(printSCCs(sccs), 25, sccs.size());
-	}	
 
 	// Convert the set of sets of GraphNodes into a set of sets of ints
 	private Set<Set<Integer>> convertToInts(final Set<Set<GraphNode>> sccs) {
@@ -296,12 +248,15 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream(filename);
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 			for(String line = br.readLine(); line != null; line = br.readLine()) {
-				String[] split = line.trim().split("\\s+");
-				int nodeId = Integer.parseInt(split[0]);
-				int arcId = Integer.parseInt(split[1]);
+				final String[] split = line.trim().split("\\s+");
+				final int nodeId = Integer.parseInt(split[0]);
+				final int arcId = Integer.parseInt(split[1]);
 
-				graph.get(nodeId);
-				graph.addArc(nodeId, arcId);
+				if (graph.hasNode(nodeId)) {
+					graph.addArc(nodeId, arcId);
+				} else {
+					graph.addNode(new GraphNode(nodeId), arcId);
+				}
 			}
 		}
 	}

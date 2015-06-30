@@ -58,7 +58,7 @@ public class SCCWorker implements Callable<Void> {
 		GLOBAL_LOCK.lock();
 		try {
 			
-			// Skip POST-visited v (POST will never transition back to PRE,
+			// Skip POST-visited v (POST will never transition back to UN,
 			// whereas isRoot() can change between now and when the lock is
 			// acquired in the next line.
 			if (v.is(Visited.POST)) {
@@ -97,7 +97,7 @@ public class SCCWorker implements Callable<Void> {
 				/*
 				 * Then traverse the next outgoing untraversed arc;
 				 */
-				int arc = graph.getUntraversedArc(v);
+				final int arc = graph.getUntraversedArc(v);
 				if (arc != Graph.NO_ARC) {
 					// To traverse an arc (v, w), if w is postvisited do nothing.
 					final GraphNode w = graph.get(arc);
@@ -228,7 +228,7 @@ public class SCCWorker implements Callable<Void> {
 	private void freeChilds() {
 		logger.fine(() -> String.format("%s: Freeing children of v.", getId(), v.getId()));
 		
-		// No untraversed arcs left (PRE) or no arcs at all (UN).
+		// No untraversed arcs left (UN) or no arcs at all (UN).
 		assert v.isNot(Visited.POST);
 		
 		// All arcs must be traversed

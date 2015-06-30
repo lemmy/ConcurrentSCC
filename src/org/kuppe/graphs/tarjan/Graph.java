@@ -76,13 +76,13 @@ public class Graph {
 	
 	private final Map<Integer, Record> nodePtrTable;
 	
-	private final Set<Record> allReplaced = new HashSet<>();
-
 //	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 	
 	public Graph() {
 		this.nodePtrTable = new HashMap<Integer, Record>();
 	}
+	
+	/* nodes */
 	
 	/**
 	 * @return The initial nodes?!
@@ -94,64 +94,9 @@ public class Graph {
 		}
 		return start;
 	}
-	
 
-	public void addArc(int nodeId, int arcId) {
-		assert this.nodePtrTable.containsKey(nodeId);
-		Record record = this.nodePtrTable.get(nodeId);
-		record.arcs.add(arcId);
-	}
-
-	// Convenience method for unit tests (see AbstractGraph#addNode)
-	public void addNode(GraphNode node, Integer... successors) {
-		assert !this.nodePtrTable.containsKey(node.getId());
-
-		// Create the entry in the nodePtrTable
-		final List<Integer> s = new LinkedList<Integer>();
-		for (Integer integer : successors) {
-			s.add(integer);
-		}
-		
-		node.setGraph(this);
-		
-		Record r = new Record(node, s, /*new ReentrantLock()*/ null);
-		this.nodePtrTable.put(node.getId(), r);
-	}
-
-	public GraphNode get(int id) {
-		Record record = this.nodePtrTable.get(id);
-		if (record == null) {
-			record = new Record(new GraphNode(id, this), new LinkedList<Integer>(), /*new ReentrantLock()*/ null);
-			this.nodePtrTable.put(id, record);
-		}
-		return record.node;
-	}
-	
-	public boolean checkPostCondition(int totalNodes) {
-		// All arcs of all nodes have to be traversed, all nodes have to be
-		// post-visited.
-		if (totalNodes != new HashSet<Record>(this.nodePtrTable.values()).size() + this.allReplaced.size()) {
-			return false;
-		}
-		for (Record record : this.nodePtrTable.values()) {
-			if (record.node.isNot(Visited.POST)) {
-				return false;
-			}
-			Collection<Integer> arcs = record.arcs;
-			if (!arcs.isEmpty()) {
-				return false;
-			}
-		}
-		for (Record record : this.allReplaced) {
-			if (record.node.isNot(Visited.POST)) {
-				return false;
-			}
-			Collection<Integer> arcs = record.arcs;
-			if (!arcs.isEmpty()) {
-				return false;
-			}
-		}
-		return true;
+	public GraphNode get(final int id) {
+		return this.nodePtrTable.get(id).node;
 	}
 
 	/* (outgoing) arcs */
@@ -187,20 +132,6 @@ public class Graph {
 		}
 		return false;
 	}
-
-	public Collection<Integer> getArcs(GraphNode node) {
-		Record record = this.nodePtrTable.get(node.getId());
-		return record.arcs;
-	}
-	
-	public Collection<Integer> getUntraversedArcs(GraphNode node) {
-		final Record record = this.nodePtrTable.get(node.getId());
-		// 'node' has been contracted already. Thus return no untraversed arcs.
-		if (record.node.getId() != node.getId()) {
-			return new ArrayList<Integer>();
-		}
-		return new HashSet<>(record.arcs);
-	}
 	
 	/* contraction */
 
@@ -212,8 +143,6 @@ public class Graph {
 		// Globally Replace src with dst
 		final Record replaced = this.nodePtrTable.replace(child.getId(), dstRecord);
 		assert replaced != dstRecord;
-		
-		allReplaced.add(replaced);
 		
 		// add all outgoing arcs to dstRecord
 		dstRecord.arcs.addAll(replaced.arcs);
@@ -277,5 +206,63 @@ public class Graph {
 //		//TODO
 //		nodePtrTable.get(w.getId()).getLock().unlock();
 //		logger.fine(() -> String.format("%s: Unlocked tree node %s", w.getId(), w));
+	}
+
+	/* aux methods for testing */ 
+	
+	void addArc(int nodeId, int arcId) {
+		assert this.nodePtrTable.containsKey(nodeId);
+		Record record = this.nodePtrTable.get(nodeId);
+		record.arcs.add(arcId);
+	}
+	
+	Collection<Integer> getUntraversedArcs(GraphNode node) {
+		final Record record = this.nodePtrTable.get(node.getId());
+		// 'node' has been contracted already. Thus return no untraversed arcs.
+		if (record.node.getId() != node.getId()) {
+			return new ArrayList<Integer>();
+		}
+		return new HashSet<>(record.arcs);
+	}
+
+	Collection<Integer> getArcs(GraphNode node) {
+		Record record = this.nodePtrTable.get(node.getId());
+		return record.arcs;
+	}
+	
+	boolean checkPostCondition() {
+		// All arcs of all nodes have to be traversed, all nodes have to be
+		// post-visited.
+		final Set<Record> records = new HashSet<>(this.nodePtrTable.values());
+		for (Record record : records) {
+			if (record.node.isNot(Visited.POST)) {
+				return false;
+			}
+			if (!record.arcs.isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	boolean hasNode(final int id) {
+		return this.nodePtrTable.containsKey(id);
+	}
+
+	
+	// Convenience method for unit tests (see AbstractGraph#addNode)
+	void addNode(GraphNode node, Integer... successors) {
+		assert !this.nodePtrTable.containsKey(node.getId());
+
+		// Create the entry in the nodePtrTable
+		final List<Integer> s = new LinkedList<Integer>();
+		for (Integer integer : successors) {
+			s.add(integer);
+		}
+		
+		node.setGraph(this);
+		
+		Record r = new Record(node, s, /*new ReentrantLock()*/ null);
+		this.nodePtrTable.put(node.getId(), r);
 	}
 }

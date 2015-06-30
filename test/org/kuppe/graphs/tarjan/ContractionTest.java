@@ -438,7 +438,7 @@ public class ContractionTest {
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
-		while (!graph.checkPostCondition(5)) {
+		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
 				new SCCWorker(noopExecutor, graph, sccs, graphNode).call();
 			}
