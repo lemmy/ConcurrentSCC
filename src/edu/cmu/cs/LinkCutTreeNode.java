@@ -20,6 +20,9 @@ public class LinkCutTreeNode {
 		this.id = id;
 	}
 
+	/**
+	 * @return true iff root of its splay tree, not the root of the LC tree.
+	 */
 	boolean isroot() {
 		return preferred == null || (preferred.left != this && preferred.right != this);
 	}
@@ -29,8 +32,11 @@ public class LinkCutTreeNode {
 		children.add(p);
 	}
 	
+	/**
+	 * @return true iff root of the LC tree.
+	 */
 	public boolean isRoot() {
-		return LinkCut.root(this) == this;
+		return getRoot() == this;
 	}
 	
 	/**
@@ -39,7 +45,7 @@ public class LinkCutTreeNode {
 	 * @return true iff the given {@link LinkCutTreeNode} p is a child of this root.
 	 */
 	public boolean isRootTo(LinkCutTreeNode p) {
-		 return LinkCut.root(p) == this;
+		 return p.getRoot() == this;
 	}
 	
 	public LinkCutTreeNode getRoot() {
