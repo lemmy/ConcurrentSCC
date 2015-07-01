@@ -8,6 +8,7 @@ public class LinkCutTreeNode {
 	LinkCutTreeNode left, right;
 	protected LinkCutTreeNode preferred;
 	protected final int id;
+	//TODO set of children can be replaced by "ternarization" if needed.
 	protected final Set<LinkCutTreeNode> children = new HashSet<LinkCutTreeNode>();
 	
 	// For unit tests only
