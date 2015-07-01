@@ -92,6 +92,12 @@ public class Graph {
 
 	/* (outgoing) arcs */
 
+	public void returnArc(GraphNode node, int arcId) {
+		assert this.nodePtrTable.containsKey(node.getId());
+		Record record = this.nodePtrTable.get(node.getId());
+		record.arcs.add(arcId);
+	}
+
 	public int getUntraversedArc(GraphNode node) {
 		final Record record = this.nodePtrTable.get(node.getId());
 		// 'node' has been contracted already. Thus return no untraversed arcs.

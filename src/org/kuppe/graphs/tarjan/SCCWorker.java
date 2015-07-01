@@ -43,7 +43,8 @@ public class SCCWorker implements Callable<Void> {
 	private final Graph graph;
 	private GraphNode v;
 
-	public SCCWorker(final ExecutorService executor, final Graph graph, Map<GraphNode, Set<GraphNode>> sccs, final GraphNode root) {
+	public SCCWorker(final ExecutorService executor, final Graph graph, Map<GraphNode, Set<GraphNode>> sccs,
+			final GraphNode root) {
 		this.executor = executor;
 		this.graph = graph;
 		this.sccs = sccs;
@@ -56,8 +57,8 @@ public class SCCWorker implements Callable<Void> {
 			// whereas isRoot() can change between now and when the lock is
 			// acquired in the next line.
 			if (v.is(Visited.POST)) {
-				// Note: Not checking if all children are free'ed or if the node has
-				// unprocessed arcs. It could be interleaved with contraction.
+				// Note: Not checking if all children are free'ed or if the node
+				// has unprocessed arcs. It could be interleaved with contraction.
 				
 				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
 				// my job is already done
@@ -83,7 +84,8 @@ public class SCCWorker implements Callable<Void> {
 				if (!v.isRoot()) {
 					logger.fine(() -> String.format("%s: Skipping non-root v %s", getId(), v));
 					graph.unlock(v);
-					return null; // A new worker will be scheduled by our tree root. We are a child right now. 
+					return null; // A new worker will be scheduled by our tree
+								 // root. We are a child right now.
 				}
 
 				/*
@@ -91,7 +93,8 @@ public class SCCWorker implements Callable<Void> {
 				 */
 				final int arc = graph.getUntraversedArc(v);
 				if (arc != Graph.NO_ARC) {
-					// To traverse an arc (v, w), if w is postvisited do nothing.
+					// To traverse an arc (v, w), if w is postvisited do
+					// nothing.
 					final GraphNode w = graph.get(arc);
 					
 					if (w.is(Visited.POST)) {
@@ -123,9 +126,11 @@ public class SCCWorker implements Callable<Void> {
 						// Otherwise...
 						if (!w.isInSameTree(v)) {
 							// If w is in a different tree than v, make w the
-							// parent of v and mark w previsited if it is unvisited.
+							// parent of v and mark w previsited if it is
+							// unvisited.
 							v.setParent(w);
-							logger.info(() -> String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(), v.getId()));
+							logger.info(() -> String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(),
+									v.getId()));
 
 							// We've potentially just created a new root
 							final GraphNode vOld = v;
@@ -136,53 +141,60 @@ public class SCCWorker implements Callable<Void> {
 							graph.unlockTrees(w, v);
 							graph.unlock(vOld);
 							/*
-							 * Since v is now a child, it is not (for the moment) eligible
-							 * for further processing. The thread can switch to an arbitrary
-							 * root, or it can check to see if the root of the tree
-							 * containing v and w is idle, and switch to this root if so.
+							 * Since v is now a child, it is not (for the
+							 * moment) eligible for further processing. The
+							 * thread can switch to an arbitrary root, or it can
+							 * check to see if the root of the tree containing v
+							 * and w is idle, and switch to this root if so.
 							 */
 							if (isRoot) {
 								executor.submit(this); // Continue with w
 								return null;
 							}
 						} else if (!w.equals(v)) {
-								/*
-								 * The other possibility is that w is in the same tree as v. If
-								 * v = w, do nothing. (Self-loops can be created by
-								 * contractions.)
-								 */
-								/*
-								 * If v # w, contract all the ancestors of w into a single
-								 * vertex, which is a root. It may be convenient and
-								 * efficient to view this contraction as contracting all the
-								 * vertices into v, since v is already a root.
-								 * 
-								 * Continue processing this root. (The new root inherits all
-								 * the outgoing un-traversed arcs from the set of contracted
-								 * vertices).
-								 */
+							/*
+							 * The other possibility is that w is in the same
+							 * tree as v. If v = w, do nothing. (Self-loops can
+							 * be created by contractions.)
+							 */
+							/*
+							 * If v # w, contract all the ancestors of w into a
+							 * single vertex, which is a root. It may be
+							 * convenient and efficient to view this contraction
+							 * as contracting all the vertices into v, since v
+							 * is already a root.
+							 * 
+							 * Continue processing this root. (The new root
+							 * inherits all the outgoing un-traversed arcs from
+							 * the set of contracted vertices).
+							 */
 
 								// Put SCC in a global set of sccs
-								logger.fine(() -> String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
+							logger.fine(
+									() -> String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
 								v.contract(sccs, graph, w);
 								logger.info(() -> String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
 
 								// This is when an SCC has been found in v.
 								// TODO SCCs might not be maximal SCCs.
 								// TODO Release any lock we own and work on a copy?
-								// After all, we don't want to block the concurrent fast
-								// SCC search.
+								// After all, we don't want to block the concurrent
+								// fast SCC search.
 								if (v.checkSCC()) {
 									if (!graph.hasUntraversedArc(v)) {
 										freeChilds();
-										// v is a (contracted) root and thus eligible
+										// v is a (contracted) root and thus
+										// eligible
 										// for further processing.	this.v = v;
-										// No need to unlock w, has happened during contraction
+										// No need to unlock w, has happened during
+										// contraction
 										graph.unlock(v);
 									} else {
-										// v is a (contracted) root and thus eligible
-										// for further processing.	this.v = v;
-										// No need to unlock w, has happened during contraction
+										// v is a (contracted) root and thus
+										// eligible
+										// for further processing. this.v = v;
+										// No need to unlock w, has happened during
+										// contraction
 										graph.unlock(v);
 										
 										executor.submit(this);
@@ -196,7 +208,14 @@ public class SCCWorker implements Callable<Void> {
 									throw new RuntimeException("SCC violates liveness");
 								}
 							}
-						}
+					} else {
+						// Cannot acquire w's lock, try later. First return
+						// 'unused' arc though.
+						graph.returnArc(v, arc);
+						graph.unlock(v);
+						executor.submit(this);
+						return null;
+					}
 				} else {
 					// No arcs left, become post-visited and free childs
 					freeChilds();
@@ -243,21 +262,20 @@ public class SCCWorker implements Callable<Void> {
 		// 2 and 1 contracted.
 
 		/*
-		 * b) and make all its children idle roots (POST visited children
-		 * are by definition not roots).
+		 * b) and make all its children idle roots (POST visited children are by
+		 * definition not roots).
 		 * 
-		 * TODO Bob's errata note:
-		 * I overlooked one thing in my high-level description of the
-		 * proposed algorithm: when a root runs out of outgoing arcs to be
-		 * traversed and it is marked as post visited, deleting it breaks
-		 * its tree into s number of new trees, one per child. This means
-		 * that one cannot use the disjoint-set data structure to keep track
-		 * of trees, since sets must be broken up as well as combined. There
-		 * are efficient data structures to solve this more-complicated
-		 * problem, notably Euler tour trees, which represent a tree by an
-		 * Euler tour stored in a binary search tree. The time for a query
-		 * is O(logn), as is the time to add an arc (a link) or break an arc
-		 * (a cut).
+		 * TODO Bob's errata note: I overlooked one thing in my high-level
+		 * description of the proposed algorithm: when a root runs out of
+		 * outgoing arcs to be traversed and it is marked as post visited,
+		 * deleting it breaks its tree into s number of new trees, one per
+		 * child. This means that one cannot use the disjoint-set data structure
+		 * to keep track of trees, since sets must be broken up as well as
+		 * combined. There are efficient data structures to solve this
+		 * more-complicated problem, notably Euler tour trees, which represent a
+		 * tree by an Euler tour stored in a binary search tree. The time for a
+		 * query is O(logn), as is the time to add an arc (a link) or break an
+		 * arc (a cut).
 		 */
 		// Cut all children of v in the tree (not graph which are
 		// its arcs). This essentially converts them
