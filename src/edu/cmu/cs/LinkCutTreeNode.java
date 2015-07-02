@@ -36,6 +36,8 @@ public class LinkCutTreeNode {
 	 * @return true iff root of the LC tree.
 	 */
 	public boolean isRoot() {
+		// TODO Could add a flag that indicates if this is a root or not. It
+		// would be flipped when the node is linked or cut.
 		return getRoot() == this;
 	}
 	
