@@ -208,7 +208,9 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Graph graph = new Graph();
 		readFile(graph, "largeDG.txt");
 
+		final long start = System.currentTimeMillis();
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		System.out.println("Seconds: " + (System.currentTimeMillis() - start) / 1000);
 		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(25, sccs.size());
 		
