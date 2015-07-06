@@ -54,7 +54,10 @@ public class ArcTest {
 		Assert.assertEquals(1, graph.getUntraversedArcs(one).size());
 		
 		graph.getUntraversedArc(one);
-		
+		Assert.assertTrue(graph.hasUntraversedArc(one));
+		Assert.assertEquals(1, graph.getUntraversedArcs(one).size());
+
+		graph.removeTraversedArc(one, 4711);
 		Assert.assertFalse(graph.hasUntraversedArc(one));
 		Assert.assertEquals(0, graph.getUntraversedArcs(one).size());
 	}

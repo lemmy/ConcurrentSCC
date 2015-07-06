@@ -28,12 +28,12 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -66,7 +66,7 @@ public class Graph {
 	private final Map<Integer, Record> nodePtrTable;
 
 	public Graph() {
-		this.nodePtrTable = new HashMap<Integer, Record>();
+		this.nodePtrTable = new ConcurrentHashMap<Integer, Record>();
 	}
 	
 	/* nodes */
@@ -88,10 +88,10 @@ public class Graph {
 
 	/* (outgoing) arcs */
 
-	public void returnArc(GraphNode node, int arcId) {
+	public void removeTraversedArc(GraphNode node, int arcId) {
 		assert this.nodePtrTable.containsKey(node.getId());
 		Record record = this.nodePtrTable.get(node.getId());
-		record.arcs.add(arcId);
+		record.arcs.remove((Integer)arcId); // Explicitly cast to Integer to remove the element arcId and not the element at position arcId;
 	}
 
 	public int getUntraversedArc(GraphNode node) {
@@ -103,7 +103,7 @@ public class Graph {
 		if (record.arcs.isEmpty()) {
 			return NO_ARC;
 		}
-		return record.arcs.remove(0);
+		return record.arcs.get(0);
 	}
 
 	public boolean hasUntraversedArc(GraphNode node) {
