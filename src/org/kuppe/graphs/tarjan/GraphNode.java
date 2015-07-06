@@ -29,6 +29,7 @@ package org.kuppe.graphs.tarjan;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class GraphNode extends NaiveTreeNode {
@@ -203,6 +204,15 @@ public class GraphNode extends NaiveTreeNode {
 
 	public boolean tryLock() {
 		return lock.tryLock();
+	}
+
+	public boolean tryLock(long wait, TimeUnit unit) {
+		try {
+			return lock.tryLock(wait, unit);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public void unlock() {
