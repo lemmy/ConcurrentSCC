@@ -35,8 +35,8 @@ import java.util.logging.Logger;
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class SCCWorker implements Callable<Void> {
-	
-    private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
+
+	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private final ExecutorService executor;
 	private final Map<GraphNode, Set<GraphNode>> sccs;
@@ -50,7 +50,7 @@ public class SCCWorker implements Callable<Void> {
 		this.sccs = sccs;
 		this.v = root;
 	}
-	
+
 	public Void call() {
 		try {
 			// Skip POST-visited v (POST will never transition back to UN,
@@ -59,7 +59,7 @@ public class SCCWorker implements Callable<Void> {
 			if (v.is(Visited.POST)) {
 				// Note: Not checking if all children are free'ed or if the node
 				// has unprocessed arcs. It could be interleaved with contraction.
-				
+
 				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
 				// my job is already done
 				return null;
@@ -67,25 +67,25 @@ public class SCCWorker implements Callable<Void> {
 
 			// Get lock of v
 			if (graph.tryLock(v)) {
-				
+
 				// Skip POST-visited v
 				if (v.is(Visited.POST)) {
 					// If POST, there must not be any children
-					assert !v.hasChildren();
+					assert!v.hasChildren();
 					// All arcs must be traversed
-					assert !graph.hasUntraversedArc(v);
+					assert!graph.hasUntraversedArc(v);
 
 					logger.fine(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
 					graph.unlock(v);
 					return null;
 				}
-				
+
 				// Skip non-root v
 				if (!v.isRoot()) {
 					logger.fine(() -> String.format("%s: Skipping non-root v %s", getId(), v));
 					graph.unlock(v);
 					return null; // A new worker will be scheduled by our tree
-								 // root. We are a child right now.
+									// root. We are a child right now.
 				}
 
 				/*
@@ -96,33 +96,34 @@ public class SCCWorker implements Callable<Void> {
 					// To traverse an arc (v, w), if w is postvisited do
 					// nothing.
 					final GraphNode w = graph.get(arc);
-					
+
 					if (w.is(Visited.POST)) {
 						graph.unlock(v);
 						executor.submit(this); // Continue with next arc
 						return null;
 					}
-					
+
 					if (w.equals(v)) {
-						//TODO self-loop, might check stuttering here
+						// TODO self-loop, might check stuttering here
 						logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
-						
+
 						// do nothing
 						graph.unlock(v);
 						executor.submit(this); // Continue with next arc
 						return null;
 					}
-					
+
 					if (graph.tryLockTrees(w, v)) {
-						
+
 						// w happens to be done, just release the lock and move
 						// onto the next arc
 						if (w.is(Visited.POST)) {
+							graph.unlockTrees(w, v);
 							graph.unlock(v);
 							executor.submit(this); // Continue with next arc
 							return null;
 						}
-						
+
 						// Otherwise...
 						if (!w.isInSameTree(v)) {
 							// If w is in a different tree than v, make w the
@@ -135,9 +136,9 @@ public class SCCWorker implements Callable<Void> {
 							// We've potentially just created a new root
 							final GraphNode vOld = v;
 							this.v = w;
-							
+
 							boolean isRoot = w.isRoot();
-							
+
 							graph.unlockTrees(w, v);
 							graph.unlock(vOld);
 							/*
@@ -169,45 +170,45 @@ public class SCCWorker implements Callable<Void> {
 							 * the set of contracted vertices).
 							 */
 
-								// Put SCC in a global set of sccs
+							// Put SCC in a global set of sccs
 							logger.fine(
 									() -> String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
-								v.contract(sccs, graph, w);
-								logger.info(() -> String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
+							v.contract(sccs, graph, w);
+							logger.info(() -> String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
 
-								// This is when an SCC has been found in v.
-								// TODO SCCs might not be maximal SCCs.
-								// TODO Release any lock we own and work on a copy?
-								// After all, we don't want to block the concurrent
-								// fast SCC search.
-								if (v.checkSCC()) {
-									if (!graph.hasUntraversedArc(v)) {
-										freeChilds();
-										// v is a (contracted) root and thus
-										// eligible
-										// for further processing.	this.v = v;
-										// No need to unlock w, has happened during
-										// contraction
-										graph.unlock(v);
-									} else {
-										// v is a (contracted) root and thus
-										// eligible
-										// for further processing. this.v = v;
-										// No need to unlock w, has happened during
-										// contraction
-										graph.unlock(v);
-										
-										executor.submit(this);
-										return null;
-									}
+							// This is when an SCC has been found in v.
+							// TODO SCCs might not be maximal SCCs.
+							// TODO Release any lock we own and work on a copy?
+							// After all, we don't want to block the concurrent
+							// fast SCC search.
+							if (v.checkSCC()) {
+								if (!graph.hasUntraversedArc(v)) {
+									freeChilds();
+									// v is a (contracted) root and thus
+									// eligible
+									// for further processing. this.v = v;
+									// No need to unlock w, has happened during
+									// contraction
+									graph.unlock(v);
 								} else {
-									// All other threads can stop, we've found a
-									// violation.
-									executor.shutdownNow();
-									// TODO Throw something better here
-									throw new RuntimeException("SCC violates liveness");
+									// v is a (contracted) root and thus
+									// eligible
+									// for further processing. this.v = v;
+									// No need to unlock w, has happened during
+									// contraction
+									graph.unlock(v);
+
+									executor.submit(this);
+									return null;
 								}
+							} else {
+								// All other threads can stop, we've found a
+								// violation.
+								executor.shutdownNow();
+								// TODO Throw something better here
+								throw new RuntimeException("SCC violates liveness");
 							}
+						}
 					} else {
 						// Cannot acquire w's lock, try later. First return
 						// 'unused' arc though.
@@ -227,8 +228,8 @@ public class SCCWorker implements Callable<Void> {
 				return null;
 			}
 			return null;
-		} catch (Exception|Error e) {
-			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage())); 
+		} catch (Exception | Error e) {
+			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage()));
 			e.printStackTrace();
 			throw e;
 		}
@@ -236,24 +237,23 @@ public class SCCWorker implements Callable<Void> {
 
 	private void freeChilds() {
 		logger.fine(() -> String.format("%s: Freeing children of v.", getId(), v.getId()));
-		
+
 		// No untraversed arcs left (UN) or no arcs at all (UN).
 		assert v.isNot(Visited.POST);
-		
+
 		// All arcs must be traversed
-		assert !graph.hasUntraversedArc(v);
-		
+		assert!graph.hasUntraversedArc(v);
+
 		/*
 		 * if there is no such arc: a) mark the root postvisited
 		 */
 		v.set(Visited.POST);
 
-		
 		// Cut its remaining direct tree childs loose. This
 		// is i.e. necessary for Graph A, when:
-	    //
+		//
 		// Tree is (with 3&4 contracted):
-		// (3 < 4) < 2 < 1 
+		// (3 < 4) < 2 < 1
 		// and the untraversed arcs are
 		// {{1,1},{2,1}}.
 		//
@@ -291,9 +291,9 @@ public class SCCWorker implements Callable<Void> {
 			logger.info(() -> String.format("%s: Free'ed child (%s)", getId(), child));
 			executor.submit(new SCCWorker(executor, graph, sccs, child));
 		}
-		
+
 		// All our children must in fact be cut loose
-		assert !v.hasChildren();
+		assert!v.hasChildren();
 	}
 
 	public int getId() {
