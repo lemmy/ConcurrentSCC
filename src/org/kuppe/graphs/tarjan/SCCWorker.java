@@ -102,18 +102,18 @@ public class SCCWorker implements Callable<Void> {
 
 						// w happens to be done, just release the lock and move
 						// onto the next arc
-					if (w.is(Visited.POST)) {
+						if (w.is(Visited.POST)) {
 							graph.unlockTrees(w, v);
-						graph.unlock(v);
-						executor.submit(this); // Continue with next arc
-						return null;
-					}
+							graph.unlock(v);
+							executor.submit(this); // Continue with next arc
+							return null;
+						}
 
-					if (w.equals(v)) {
-						// TODO self-loop, might check stuttering here
-						logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
+						if (w.equals(v)) {
+							// TODO self-loop, might check stuttering here
+							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 
-						// do nothing
+							// do nothing
 							graph.unlockTrees(w, v);
 							graph.unlock(v);
 							executor.submit(this); // Continue with next arc
