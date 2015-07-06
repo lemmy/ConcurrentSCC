@@ -34,8 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -66,9 +64,7 @@ public class Graph {
 	}
 	
 	private final Map<Integer, Record> nodePtrTable;
-	
-	private final Lock lock = new ReentrantLock();
-	
+
 	public Graph() {
 		this.nodePtrTable = new HashMap<Integer, Record>();
 	}
@@ -151,23 +147,57 @@ public class Graph {
 	/* Graph Locking */
 
 	public boolean tryLock(GraphNode node) {
-		return lock.tryLock();
+		return node.tryLock();
 	}
 	
 	public void unlock(GraphNode node) {
-		lock.unlock();
+		node.unlock();
 	}
 
 	/* Link cut tree locking */
 	
 	public boolean tryLockTrees(GraphNode w, GraphNode v) {
-		//TODO Use a single lock for the complete forest for now.
+		if (!w.tryLock()) {
+			return false;
+		}
+		// traverse w all the way up to its root
+		final List<GraphNode> lockedNodes = new ArrayList<>(); 
+		GraphNode parent = (GraphNode) w.getParent();
+		while (parent != null) {
+			if (!parent.tryLock()) {
+				// Unlock what's locked so far
+				unlockPartial(w, lockedNodes);
+				return false;
+			}
+			lockedNodes.add(parent);
+			parent = (GraphNode) parent.getParent();
+		}
 		return true;
 	}
 
+	private void unlockPartial(GraphNode node, List<GraphNode> ancestors) {
+		for (int i = ancestors.size() - 1; i >= 0; i--) {
+			GraphNode graphNode = ancestors.get(i);
+			unlock(graphNode);
+		}
+		unlock(node);
+	}
+
 	public void unlockTrees(GraphNode w, GraphNode v) {
-		//TODO Use a single lock for the complete forest for now.
-		return;
+		// do one walk from w to its root to collect the nodes...
+		final List<GraphNode> ancestors = new ArrayList<>(); 
+		GraphNode parent = (GraphNode) w.getParent();
+		while (parent != null) {
+			ancestors.add(parent);
+			parent = (GraphNode) parent.getParent();
+		}
+		
+		//... and then release the locks in reverse order
+		for (int i = ancestors.size() - 1; i >= 0; i--) {
+			GraphNode graphNode = ancestors.get(i);
+			unlock(graphNode);
+		}
+		unlock(w);
 	}
 
 	/* aux methods for testing */ 

@@ -29,6 +29,7 @@ package org.kuppe.graphs.tarjan;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class GraphNode extends NaiveTreeNode {
 
@@ -196,5 +197,18 @@ public class GraphNode extends NaiveTreeNode {
 		}
 		
 		return unprocessedChildren;
+	}
+
+	private final ReentrantLock lock = new ReentrantLock();
+
+	public boolean tryLock() {
+		return lock.tryLock();
+	}
+
+	public void unlock() {
+		int holdCount = lock.getHoldCount();
+		for (int i = 0; i < holdCount; i++) {
+			lock.unlock();
+		}
 	}
 }
