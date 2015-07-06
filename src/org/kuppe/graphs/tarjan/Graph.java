@@ -156,9 +156,9 @@ public class Graph {
 
 	/* Link cut tree locking */
 	
-	public boolean tryLockTrees(GraphNode w, GraphNode v) {
+	public GraphNode tryLockTrees(GraphNode w, GraphNode v) {
 		if (!w.tryLock()) {
-			return false;
+			return null;
 		}
 		// traverse w all the way up to its root
 		final List<GraphNode> lockedNodes = new ArrayList<>(); 
@@ -167,12 +167,15 @@ public class Graph {
 			if (!parent.tryLock()) {
 				// Unlock what's locked so far
 				unlockPartial(w, lockedNodes);
-				return false;
+				return null;
 			}
 			lockedNodes.add(parent);
+			if (parent.getParent() == null) {
+				return parent;
+			}
 			parent = (GraphNode) parent.getParent();
 		}
-		return true;
+		return w;
 	}
 
 	private void unlockPartial(GraphNode node, List<GraphNode> ancestors) {
