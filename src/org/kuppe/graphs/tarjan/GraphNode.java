@@ -30,9 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import edu.cmu.cs.LinkCutTreeNode;
-
-public class GraphNode extends LinkCutTreeNode {
+public class GraphNode extends NaiveTreeNode {
 
 	public enum Visited {
 		// This also constitutes an order (see ordinal)
@@ -93,7 +91,7 @@ public class GraphNode extends LinkCutTreeNode {
 	public boolean isInSameTree(final GraphNode other) {
 		return this.getRoot() == other.getRoot();
 	}
-		
+
 	public void contract(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, final GraphNode graphNode) {
 		// We have to be a root in the tree...
 		assert this.isRoot();
@@ -188,8 +186,8 @@ public class GraphNode extends LinkCutTreeNode {
 		// A subset of our children which are still unprocessed.
 		final Set<GraphNode> unprocessedChildren = new HashSet<GraphNode>();
 
-		final Set<LinkCutTreeNode> directChildren = getChildren();
-		for (LinkCutTreeNode linkCutTreeNode : directChildren) {
+		final Set<TreeNode> directChildren = getChildren();
+		for (TreeNode linkCutTreeNode : directChildren) {
 			final GraphNode child = (GraphNode) linkCutTreeNode;
 			if (child.isNot(Visited.POST)) {
 				unprocessedChildren.add(child);

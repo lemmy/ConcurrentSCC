@@ -109,6 +109,7 @@ public class LinkCut {
 			throw new RuntimeException("non-root link");
 		}
 		p.preferred = q;
+		p.isRoot = false;
 		
 		// Hack: Store child of represented tree to reconstruct the set of
 		// children (even unpreferred paths) later (see children(..)).
@@ -141,6 +142,7 @@ public class LinkCut {
 			p.right.preferred = null;
 			p.right = null;
 		}
+		p.isRoot = true;
 	}
 	
 	/**
