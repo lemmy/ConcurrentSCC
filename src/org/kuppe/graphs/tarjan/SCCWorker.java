@@ -97,7 +97,13 @@ public class SCCWorker implements Callable<Void> {
 					// nothing.
 					final GraphNode w = graph.get(arc);
 
+					if (graph.tryLockTrees(w, v)) {
+						graph.removeTraversedArc(v, arc);
+
+						// w happens to be done, just release the lock and move
+						// onto the next arc
 					if (w.is(Visited.POST)) {
+							graph.unlockTrees(w, v);
 						graph.unlock(v);
 						executor.submit(this); // Continue with next arc
 						return null;
@@ -108,16 +114,6 @@ public class SCCWorker implements Callable<Void> {
 						logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 
 						// do nothing
-						graph.unlock(v);
-						executor.submit(this); // Continue with next arc
-						return null;
-					}
-
-					if (graph.tryLockTrees(w, v)) {
-
-						// w happens to be done, just release the lock and move
-						// onto the next arc
-						if (w.is(Visited.POST)) {
 							graph.unlockTrees(w, v);
 							graph.unlock(v);
 							executor.submit(this); // Continue with next arc
@@ -210,9 +206,7 @@ public class SCCWorker implements Callable<Void> {
 							}
 						}
 					} else {
-						// Cannot acquire w's lock, try later. First return
-						// 'unused' arc though.
-						graph.returnArc(v, arc);
+						// Cannot acquire w's lock, try later.
 						graph.unlock(v);
 						executor.submit(this);
 						return null;
@@ -223,7 +217,7 @@ public class SCCWorker implements Callable<Void> {
 					graph.unlock(v);
 				}
 			} else {
-				// Cannot acquire lock, try later
+				// Cannot acquire v lock, try later
 				executor.submit(this);
 				return null;
 			}
