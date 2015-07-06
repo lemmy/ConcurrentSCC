@@ -46,6 +46,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public boolean isRoot() {
+		//Lock on this 
 		return parent == null;
 	}
 
@@ -54,6 +55,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public void link(TreeNode parent) {
+		//Lock on this and parent
 		if (this.parent != null) {
 			throw new RuntimeException("non-root link");
 		}
@@ -70,6 +72,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public TreeNode getRoot() {
+		//Lock on path from this to root
 		NaiveTreeNode p = this;
 		while (p != null) {
 			if (p.parent == null) {
@@ -87,6 +90,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public boolean isRootTo(TreeNode aTreeNode) {
+		//Lock on aTreeNode and its path to its root 
 		return aTreeNode.getRoot() == this;
 	}
 
@@ -95,6 +99,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public TreeNode getParent() {
+		//Lock on this 
 		return parent;
 	}
 
@@ -103,6 +108,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public void reLinkChildren(final TreeNode newParent, Set<? extends TreeNode> excludes) {
+		//Lock on this and this children
 		for (TreeNode myChild : getChildren()) { // Take copy of this.children. this.children is modified during loop.
 			if (!excludes.contains(myChild)) {
 				myChild.cut();
@@ -119,6 +125,8 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public void cut() {
+		//Lock on this and parent 
+		
 		// Remove this from parents set of children
 		final NaiveTreeNode naiveParent = (NaiveTreeNode) parent;
 		naiveParent.children.remove(this); 
@@ -131,6 +139,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public Set<TreeNode> getChildren() {
+		//Lock on this
 		return new HashSet<>(children);
 	}
 
@@ -139,6 +148,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public boolean hasChildren() {
+		//Lock on this and children
 		return !children.isEmpty();
 	}
 }
