@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -164,7 +165,9 @@ public class Graph {
 		final List<GraphNode> lockedNodes = new ArrayList<>(); 
 		GraphNode parent = (GraphNode) w.getParent();
 		while (parent != null) {
-			if (!parent.tryLock()) {
+			// The more locks we've managed to acquire, the longer we are
+			// willing to wait for remaining locks to become avilable.
+			if (!parent.tryLock(lockedNodes.size() + 1L, TimeUnit.NANOSECONDS)) {
 				// Unlock what's locked so far
 				unlockPartial(w, lockedNodes);
 				return null;
