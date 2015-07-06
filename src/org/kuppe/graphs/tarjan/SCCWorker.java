@@ -97,7 +97,8 @@ public class SCCWorker implements Callable<Void> {
 					// nothing.
 					final GraphNode w = graph.get(arc);
 
-					if (graph.tryLockTrees(w, v)) {
+					GraphNode root = null;
+					if ((root = graph.tryLockTrees(w, v)) != null) {
 						graph.removeTraversedArc(v, arc);
 
 						// w happens to be done, just release the lock and move
@@ -121,7 +122,7 @@ public class SCCWorker implements Callable<Void> {
 						}
 
 						// Otherwise...
-						if (!w.isInSameTree(v)) {
+						if (root != v) {
 							// If w is in a different tree than v, make w the
 							// parent of v and mark w previsited if it is
 							// unvisited.
