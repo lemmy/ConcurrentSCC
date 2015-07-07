@@ -153,20 +153,24 @@ public class GraphNode extends NaiveTreeNode {
 	private void mergeSubSetSCC(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, Set<GraphNode> scc, final GraphNode parent) {
 		final Set<GraphNode> parentsSubset = sccs.remove(parent);
 		if (parentsSubset != null) {
-			// Correct all 'id to node' mappings for the previous contracted
-			// nodes. Otherwise, if an arc is later explored
-			// going to one node in parentsSubset "t", it will be skipped as
-			// "t" is post-visited. It has to be pre-visited though, which
-			// is this' visited state after contraction.
-			for (GraphNode s : parentsSubset) {
-				// s' mapping will be updated down below
-				if (s != parent) {
-					graph.contract(this, s);
-				}
-			}
+			fixDanglingMappings(graph, parent, parentsSubset);
 			scc.addAll(parentsSubset);
 		} else {
 			scc.add(parent);
+		}
+	}
+
+	private void fixDanglingMappings(final Graph graph, final GraphNode parent, final Set<GraphNode> parentsSubset) {
+		// Correct all 'id to node' mappings for the previous contracted
+		// nodes. Otherwise, if an arc is later explored
+		// going to one node in parentsSubset "t", it will be skipped as
+		// "t" is post-visited. It has to be pre-visited though, which
+		// is this' visited state after contraction.
+		for (GraphNode s : parentsSubset) {
+			// s' mapping will be updated down below
+			if (s != parent) {
+				graph.contract(this, s);
+			}
 		}
 	}
 
