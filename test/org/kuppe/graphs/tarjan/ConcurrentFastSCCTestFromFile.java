@@ -43,13 +43,25 @@ import org.junit.Test;
 public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest {
 
 	@Test
-	public void testTLC() throws IOException {
+	public void testTLCN9() throws IOException {
+		final Graph graph = new Graph();
+		readFile(graph, "tlcn9.txt");
+		
+		final long start = System.currentTimeMillis();
+		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		System.out.println("Seconds testTLCN9: " + (System.currentTimeMillis() - start) / 1000);
+		Assert.assertTrue(graph.checkPostCondition());
+		Assert.assertEquals(1150, sccs.size());
+	}
+
+	@Test
+	public void testTLCN8() throws IOException {
 		final Graph graph = new Graph();
 		readFile(graph, "tlc.txt");
 		
 		final long start = System.currentTimeMillis();
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
-		System.out.println("Seconds testTLC: " + (System.currentTimeMillis() - start) / 1000);
+		System.out.println("Seconds testTLCN8: " + (System.currentTimeMillis() - start) / 1000);
 		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(574, sccs.size());
 		
