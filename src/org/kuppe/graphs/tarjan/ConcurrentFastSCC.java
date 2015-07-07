@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
+import org.kuppe.graphs.tarjan.GraphNode.Visited;
+
 public class ConcurrentFastSCC {
 	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
@@ -43,7 +45,9 @@ public class ConcurrentFastSCC {
 		final Map<GraphNode, Set<GraphNode>> sccs = new ConcurrentHashMap<GraphNode, Set<GraphNode>>(0);
 
 		for (GraphNode graphNode : graph.getStartNodes()) {
+			if (graphNode.isNot(Visited.POST)) {
 			executor.submit(new SCCWorker(executor, graph, sccs, graphNode));
+		}
 		}
 		
 		// Wait until no SCCWorker is running and no SCCWorker is queued.
