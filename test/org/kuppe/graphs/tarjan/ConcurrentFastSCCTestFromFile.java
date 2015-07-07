@@ -42,6 +42,33 @@ import org.junit.Test;
 
 public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest {
 
+	@Test
+	public void testTLC() throws IOException {
+		final Graph graph = new Graph();
+		readFile(graph, "tlc.txt");
+		
+		final long start = System.currentTimeMillis();
+		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		System.out.println("Seconds testTLC: " + (System.currentTimeMillis() - start) / 1000);
+		Assert.assertTrue(graph.checkPostCondition());
+		Assert.assertEquals(574, sccs.size());
+		
+		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
+		
+		// Read the file with the correct SCCs
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("tlcsccs.txt");
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+			for(String line = br.readLine(); line != null; line = br.readLine()) {
+				final Set<Integer> hashSet = new HashSet<Integer>();
+				final String[] ints = line.trim().split("\\s+");
+				for (String string : ints) {
+					hashSet.add(Integer.parseInt(string));
+				}
+				Assert.assertTrue(convertedSCCs.contains(hashSet));
+			}
+		}
+	}
+	
 	/*
 	 * tinyDG.txt has 13 nodes, 22 arcs
 	 * 
@@ -254,12 +281,12 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				final int nodeId = Integer.parseInt(split[0]);
 				final int arcId = Integer.parseInt(split[1]);
 
-				if (graph.hasNode(nodeId)) {
-					graph.addArc(nodeId, arcId);
-				} else {
-					graph.addNode(new GraphNode(nodeId, graph), arcId);
-				}
+			if (graph.hasNode(nodeId)) {
+				graph.addArc(nodeId, arcId);
+			} else {
+				graph.addNode(new GraphNode(nodeId, graph), arcId);
 			}
 		}
 	}
+}
 }
