@@ -284,21 +284,28 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		}
 		return converted;
 	}
-	
+
 	private static void readFile(Graph graph, String filename) throws IOException {
 		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream(filename);
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-			for(String line = br.readLine(); line != null; line = br.readLine()) {
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+			for (String line = br.readLine(); line != null; line = br.readLine()) {
 				final String[] split = line.trim().split("\\s+");
 				final int nodeId = Integer.parseInt(split[0]);
 				final int arcId = Integer.parseInt(split[1]);
 
-			if (graph.hasNode(nodeId)) {
-				graph.addArc(nodeId, arcId);
-			} else {
-				graph.addNode(new GraphNode(nodeId, graph), arcId);
+				// set up the from node
+				if (graph.hasNode(nodeId)) {
+					graph.addArc(nodeId, arcId);
+				} else {
+					graph.addNode(new GraphNode(nodeId, graph), arcId);
+				}
+				
+				// Also create the to node (arcId) in case it's not explicitly
+				// created in a test graph.
+				if (!graph.hasNode(arcId)) {
+					graph.addNode(new GraphNode(arcId, graph));
+				}
 			}
 		}
 	}
-}
 }

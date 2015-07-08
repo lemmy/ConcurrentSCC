@@ -83,16 +83,8 @@ public class Graph {
 		return start;
 	}
 
-	private final List<Integer> empty = new ArrayList<>(0);
-
 	public GraphNode get(final int id) {
-		Record record = this.nodePtrTable.get(id);
-		if (record == null) {
-			GraphNode node = new GraphNode(id, this);
-			this.nodePtrTable.put(id, new Record(node, empty));
-			return node;
-		}
-		return record.node;
+		return this.nodePtrTable.get(id).node;
 	}
 
 	/* (outgoing) arcs */
