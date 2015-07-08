@@ -65,9 +65,19 @@ public class Graph {
 	}
 	
 	private final Map<Integer, Record> nodePtrTable;
+	private final String name;
 
 	public Graph() {
+		this("unknown");
+	}
+	
+	public Graph(final String name) {
+		this.name = name;
 		this.nodePtrTable = new ConcurrentHashMap<Integer, Record>();
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	/* nodes */
@@ -75,7 +85,7 @@ public class Graph {
 	/**
 	 * @return The initial nodes?!
 	 */
-	public Collection<GraphNode> getStartNodes() {
+	public List<GraphNode> getStartNodes() {
 		final List<GraphNode> start = new ArrayList<GraphNode>(this.nodePtrTable.size());
 		for (Record graphNode : nodePtrTable.values()) {
 			start.add(graphNode.node);
