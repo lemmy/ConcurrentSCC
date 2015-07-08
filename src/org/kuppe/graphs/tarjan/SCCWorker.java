@@ -26,6 +26,7 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -292,8 +293,11 @@ public class SCCWorker implements Callable<Void> {
 		// and null all their pointers. The pointer from v to the
 		// will be irrelevant, as v's tree will be garbage
 		// collected.
-		final Set<GraphNode> children = v.cutChildren();
-		for (GraphNode child : children) {
+		//TODO parallelize
+		Iterator<NaiveTreeNode> iterator = v.iterator();
+		while(iterator.hasNext()) {
+			GraphNode child = (GraphNode) iterator.next();
+			child.cut();
 			logger.info(() -> String.format("%s: Free'ed child (%s)", getId(), child));
 			executor.submit(new SCCWorker(executor, graph, sccs, child));
 		}
