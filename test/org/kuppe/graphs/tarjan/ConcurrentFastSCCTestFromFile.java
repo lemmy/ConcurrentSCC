@@ -44,24 +44,20 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 
 	@Test
 	public void testTLCN9() throws IOException {
-		final Graph graph = new Graph();
+		final Graph graph = new Graph("testTLCN9");
 		readFile(graph, "tlcn9.txt");
 		
-		final long start = System.currentTimeMillis();
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
-		System.out.println("Seconds testTLCN9: " + (System.currentTimeMillis() - start) / 1000);
 		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(1150, sccs.size());
 	}
 
 	@Test
 	public void testTLCN8() throws IOException {
-		final Graph graph = new Graph();
+		final Graph graph = new Graph("testTLCN8");
 		readFile(graph, "tlc.txt");
 		
-		final long start = System.currentTimeMillis();
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
-		System.out.println("Seconds testTLCN8: " + (System.currentTimeMillis() - start) / 1000);
 		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(574, sccs.size());
 		
@@ -89,7 +85,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	 */
 	@Test
 	public void testTiny() throws IOException {
-		final Graph graph = new Graph();
+		final Graph graph = new Graph("testTiny");
 		readFile(graph, "tinyDG.txt");
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
@@ -101,7 +97,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	
 	@Test
 	public void testTinyLoop() throws IOException {
-		final Graph graph = new Graph();
+		final Graph graph = new Graph("testTinyLoop");
 		readFile(graph, "tinyDG.txt");
 		
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
@@ -156,7 +152,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	 */
 	@Test
 	public void testMedium() throws IOException {
-		final Graph graph = new Graph();
+		final Graph graph = new Graph("testMedium");
 		readFile(graph, "mediumDG.txt");
 
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
@@ -165,7 +161,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	
 	@Test
 	public void testMediumLoop() throws IOException {
-		final Graph graph = new Graph();
+		final Graph graph = new Graph("testMediumLoop");
 		readFile(graph, "mediumDG.txt");
 		
 		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
@@ -244,12 +240,10 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	 */
 	@Test
 	public void testLarge() throws IOException {
-		final Graph graph = new Graph();
+		final Graph graph = new Graph("testLarge");
 		readFile(graph, "largeDG.txt");
 
-		final long start = System.currentTimeMillis();
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
-		System.out.println("Seconds: " + (System.currentTimeMillis() - start) / 1000);
 		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(25, sccs.size());
 		

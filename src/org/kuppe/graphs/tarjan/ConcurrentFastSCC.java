@@ -26,7 +26,9 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,21 +40,38 @@ import org.kuppe.graphs.tarjan.GraphNode.Visited;
 public class ConcurrentFastSCC {
 	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
-		//TODO Name threads inside executor to aid debugging.
-		// see http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
+		// TODO Name threads inside executor to aid debugging.
+		// see
+		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
 		final ForkJoinPool executor = new ForkJoinPool();
 
-		final Map<GraphNode, Set<GraphNode>> sccs = new ConcurrentHashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, Set<GraphNode>> sccs = new ConcurrentHashMap<GraphNode, Set<GraphNode>>();
 
-		for (GraphNode graphNode : graph.getStartNodes()) {
-			if (graphNode.isNot(Visited.POST)) {
-			executor.submit(new SCCWorker(executor, graph, sccs, graphNode));
-		}
-		}
+		// Shuffle startNodes before submitting workers to make sure that the
+		// jobs don't contend for each other. I.e. most graphs are such that
+		// node 0 has an arc to 1, which has an arc to 2...
+		// Assuming the first thread locks 0, the second 1 and the third 2, it
+		// means 0 cannot succeed because 1 and 2 are locked already. Thus,
+		// try to distribute the workers across the complete graph.
+		final List<GraphNode> startNodes = graph.getStartNodes();
+		Collections.shuffle(startNodes);
 		
+		// Take timestamp of when actual work started
+		final long start = System.currentTimeMillis();
+		
+		for (GraphNode graphNode : startNodes) {
+			if (graphNode.isNot(Visited.POST)) {
+				executor.submit(new SCCWorker(executor, graph, sccs, graphNode));
+			}
+		}
+
 		// Wait until no SCCWorker is running and no SCCWorker is queued.
 		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		executor.shutdown();
+
+		// Print runtime statistics
+		System.out.println(graph.getName() + " : " + (System.currentTimeMillis() - start) / 1000 + " sec");
+
 		
 		// The mapping from GraphNode to its final SCC has become irrelevant
 		// (the caller is just interested in the set of SCCs, not into which
