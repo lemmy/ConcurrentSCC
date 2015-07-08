@@ -27,15 +27,27 @@
 package org.kuppe.graphs.tarjan;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public abstract class NaiveTreeNode implements TreeNode {
 
 	protected final int id;
-	private final Set<TreeNode> children = new HashSet<>();
 	
 	private NaiveTreeNode parent;
 	
+	private NaiveTreeNode leftChild;
+	private NaiveTreeNode rightChild;
+	
+	/**
+	 * null if this is leftmost sibling of parent's child aka parent's leftChild
+	 */
+	private NaiveTreeNode leftSibling;
+	/**
+	 * null if this is rightmost sibling of parent's child aka parent's rightChild
+	 */
+	private NaiveTreeNode rightSibling;
 
 	public NaiveTreeNode(int id) {
 		this.id = id;
@@ -54,17 +66,23 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 * @see org.kuppe.graphs.tarjan.TreeNode#link(org.kuppe.graphs.tarjan.TreeNode)
 	 */
 	@Override
-	public void link(TreeNode parent) {
+	public void link(TreeNode aParent) {
 		//Lock on this and parent
 		if (this.parent != null) {
 			throw new RuntimeException("non-root link");
 		}
 
-		this.parent = (NaiveTreeNode) parent;
+		this.parent = (NaiveTreeNode) aParent;
 
 		// Add this to parent's set of children
-		final NaiveTreeNode naiveParent = (NaiveTreeNode) parent;
-		naiveParent.children.add(this); 
+		if (parent.leftChild == null) {
+			parent.leftChild = this;
+			parent.rightChild = this;
+		} else {
+			this.rightSibling = parent.leftChild;
+			this.rightSibling.leftSibling = this;
+			parent.leftChild = this;
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -94,7 +112,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 		return aTreeNode.getRoot() == this;
 	}
 
-	/* (non-Javadoc)
+	/* (non-Javadoc) 
 	 * @see org.kuppe.graphs.tarjan.TreeNode#getParent()
 	 */
 	@Override
@@ -108,16 +126,35 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public void reLinkChildren(final TreeNode newParent, Set<? extends TreeNode> excludes) {
-		//Lock on this and this children
-		for (TreeNode myChild : getChildren()) { // Take copy of this.children. this.children is modified during loop.
-			if (!excludes.contains(myChild)) {
-				myChild.cut();
-				myChild.link(newParent);
-			}
+		if (this.leftChild == null) {
+			return;
 		}
 		
-		// Clear my own children now that they have been relinked.
-		this.children.clear();
+		//Lock on this and this children
+		final NaiveTreeNode naiveNewParent = (NaiveTreeNode) newParent;
+		
+		// update my childs parent pointers
+		//TODO run in parallel?
+		NaiveTreeNode node = leftChild;
+		while (node != rightChild) {
+			node.parent = naiveNewParent;
+			node = node.rightSibling;
+		}
+		rightChild.parent = naiveNewParent;
+
+		// append my double linked list of children to the new parent's one.
+		this.rightChild.rightSibling = naiveNewParent.leftChild;
+		if (naiveNewParent.leftChild != null) {
+			naiveNewParent.leftChild.leftSibling = this.rightChild;
+		} else {
+			// naiveNewParent has no children yet
+			naiveNewParent.rightChild = this.rightChild;
+		}
+		naiveNewParent.leftChild = this.leftChild;
+		
+		// forget my former children
+		this.rightChild = null;
+		this.leftChild = null;
 	}
 
 	/* (non-Javadoc)
@@ -125,12 +162,31 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 */
 	@Override
 	public void cut() {
-		//Lock on this and parent 
+		//Lock on this and parent
+		if (this.leftSibling == null && this.rightSibling == null) {
+			this.parent.leftChild = null;
+			this.parent.rightChild = null;
+			this.parent = null;
+			return;
+		} 
+		if (this.leftSibling == null) {
+			// Left node:
+			this.rightSibling.leftSibling = null;
+			this.parent.leftChild = this.rightSibling;
+		} else if (this.rightSibling == null) {
+			// Right node: 
+			this.leftSibling.rightSibling = null;
+			this.parent.rightChild = this.leftSibling;	
+		} else {
+			// Middle node: Unlink this from double linked list by directly connecting our
+			// left and right siblings.
+			this.leftSibling.rightSibling = this.rightSibling;
+			this.rightSibling.leftSibling = this.leftSibling;
+		}
+			
+		this.leftSibling = null;
+		this.rightSibling = null;
 		
-		// Remove this from parents set of children
-		final NaiveTreeNode naiveParent = (NaiveTreeNode) parent;
-		naiveParent.children.remove(this); 
-	
 		this.parent = null;
 	}
 
@@ -140,7 +196,38 @@ public abstract class NaiveTreeNode implements TreeNode {
 	@Override
 	public Set<TreeNode> getChildren() {
 		//Lock on this
-		return new HashSet<>(children);
+		final Set<TreeNode> result = new HashSet<>();
+		if (!hasChildren()) {
+			return result;
+		}
+		NaiveTreeNode node = leftChild;
+		while (node != rightChild) {
+			result.add(node);
+			node = node.rightSibling;
+		}
+		result.add(rightChild);
+		return result;
+	}
+	
+	public Iterator<NaiveTreeNode> iterator() {
+		return new Iterator<NaiveTreeNode>() {
+			private NaiveTreeNode node = leftChild;
+			
+			@Override
+			public boolean hasNext() {
+				return node != null;
+			}
+
+			@Override
+			public NaiveTreeNode next() {
+				if (node == null) {
+					throw new NoSuchElementException();
+				}
+				final NaiveTreeNode oldNode = node;
+				node = node.rightSibling;
+				return oldNode;
+			}
+		};
 	}
 
 	/* (non-Javadoc)
@@ -149,6 +236,6 @@ public abstract class NaiveTreeNode implements TreeNode {
 	@Override
 	public boolean hasChildren() {
 		//Lock on this and children
-		return !children.isEmpty();
+		return leftChild != null;
 	}
 }
