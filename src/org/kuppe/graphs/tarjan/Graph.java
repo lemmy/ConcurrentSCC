@@ -149,8 +149,22 @@ public class Graph {
 		assert replaced != dstRecord;
 		
 		// add all outgoing arcs to dstRecord
-		dstRecord.arcs.addAll(replaced.arcs);
-		replaced.arcs.clear();
+		// TODO LinkedList might not be the ideal data structure here:
+		// - Java's implementation doesn't do an O(1) concat but copies the
+		// second list
+		// - List does not discard duplicates and thus causes SCCWorker to
+		// explore arcs multiple times. Since lock acquisition is expensive,
+		// it's probably cheaper to discard duplicate arcs here.
+		// - Explored arcs are also removed from the collection of arcs. That
+		// also adds to re-exploration of arcs even if duplicated of un-explored
+		// arcs would be discarded.
+		// => SCCWorker checks PRIOR to lock acquisition, if the arc's endpoint
+		// node is POST
+		final List<Integer> arcs = replaced.arcs;
+		if (!arcs.isEmpty()) {
+			dstRecord.arcs.addAll(arcs);
+			arcs.clear();
+		}
 		
 		assert this.nodePtrTable.get(child.getId()).node == parent;
 	}
