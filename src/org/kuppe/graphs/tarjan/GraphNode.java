@@ -233,25 +233,6 @@ public class GraphNode extends NaiveTreeNode {
 		return id;
 	}
 
-	/**
-	 * Cuts off the direct tree children. 
-	 */
-	public Set<GraphNode> cutChildren() {
-		// A subset of our children which are still unprocessed.
-		final Set<GraphNode> unprocessedChildren = new HashSet<GraphNode>();
-
-		final Set<TreeNode> directChildren = getChildren();
-		for (TreeNode linkCutTreeNode : directChildren) {
-			final GraphNode child = (GraphNode) linkCutTreeNode;
-			if (child.isNot(Visited.POST)) {
-				unprocessedChildren.add(child);
-			}
-			child.cut();
-		}
-		
-		return unprocessedChildren;
-	}
-
 	private final ReentrantLock lock = new ReentrantLock();
 
 	public boolean tryLock() {

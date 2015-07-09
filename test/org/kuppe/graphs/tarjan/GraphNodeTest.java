@@ -30,6 +30,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Iterator;
+
 import org.junit.Test;
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -88,7 +90,10 @@ public class GraphNodeTest {
 		assertFalse(a.isRoot());
 		assertTrue(b.isRoot());
 		
-		b.cutChildren();
+		Iterator<NaiveTreeNode> iterator = b.iterator();
+		while(iterator.hasNext()) {
+			iterator.next().cut();
+		}
 		assertTrue(a.isRoot());
 	}
 	
