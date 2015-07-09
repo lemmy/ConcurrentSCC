@@ -97,6 +97,17 @@ public class SCCWorker implements Callable<Void> {
 					// nothing.
 					final GraphNode w = graph.get(arc);
 
+					// During contraction, out-arcs of contracted nodes are
+					// merged creating duplicates. As we don't want to pay the
+					// price to discard duplicates during contraction, check if
+					// w is already POST-visited OUTSIDE of lock acquisition.
+					if (w.is(Visited.POST)) {
+						graph.removeTraversedArc(v, arc);
+						graph.unlock(v);
+						executor.submit(this); // Continue with next arc
+						return null;
+					}
+					
 					GraphNode root = null;
 					if ((root = graph.tryLockTrees(w, v)) != null) {
 						graph.removeTraversedArc(v, arc);
