@@ -151,6 +151,9 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	private void mergeSubSetSCC(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, Set<GraphNode> scc, final GraphNode parent) {
+		// TODO Use (custom) LinkedLists instead of Set that can be merged in
+		// O(1). Would also preserve order of nodes and thus the actual path of
+		// the SCC.
 		final Set<GraphNode> parentsSubset = sccs.remove(parent);
 		if (parentsSubset != null) {
 			fixDanglingMappings(graph, parent, parentsSubset);
@@ -161,6 +164,7 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	private void fixDanglingMappings(final Graph graph, final GraphNode parent, final Set<GraphNode> parentsSubset) {
+		//TODO move into Graph.
 		// Correct all 'id to node' mappings for the previous contracted
 		// nodes. Otherwise, if an arc is later explored
 		// going to one node in parentsSubset "t", it will be skipped as
@@ -183,25 +187,6 @@ public class GraphNode extends NaiveTreeNode {
 
 	public int getId() {
 		return id;
-	}
-
-	/**
-	 * Cuts off the direct tree children. 
-	 */
-	public Set<GraphNode> cutChildren() {
-		// A subset of our children which are still unprocessed.
-		final Set<GraphNode> unprocessedChildren = new HashSet<GraphNode>();
-
-		final Set<TreeNode> directChildren = getChildren();
-		for (TreeNode linkCutTreeNode : directChildren) {
-			final GraphNode child = (GraphNode) linkCutTreeNode;
-			if (child.isNot(Visited.POST)) {
-				unprocessedChildren.add(child);
-			}
-			child.cut();
-		}
-		
-		return unprocessedChildren;
 	}
 
 	private final ReentrantLock lock = new ReentrantLock();
