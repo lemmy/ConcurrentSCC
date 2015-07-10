@@ -450,4 +450,172 @@ public class ContractionTest {
 		expected.add(five);
 		Assert.assertEquals(expected, sccs.values().toArray()[0]);
 	}
+	
+	@Test
+	public void testContractionChildren() {
+		final Graph graph = new Graph();
+		
+		final GraphNode zero = new GraphNode(0, graph);
+		graph.addNode(zero);
+		Assert.assertFalse(zero.hasChildren());
+		
+		final GraphNode one = new GraphNode(1, graph);
+		graph.addNode(one);
+		one.setParent(zero);
+		final GraphNode oneChild = new GraphNode(4711, graph);
+		graph.addNode(oneChild);
+		oneChild.setParent(one);
+		final GraphNode two = new GraphNode(2, graph);
+		graph.addNode(two);
+		two.setParent(zero);
+		final GraphNode three = new GraphNode(3, graph);
+		graph.addNode(three);
+		three.setParent(zero);
+		Assert.assertTrue(zero.hasChildren());
+		Assert.assertTrue(one.hasChildren());
+		Assert.assertFalse(two.hasChildren());
+		Assert.assertFalse(three.hasChildren());
+		Assert.assertEquals(3, zero.getChildren().size());
+		Assert.assertTrue(zero.getChildren().contains(one));
+		Assert.assertTrue(zero.getChildren().contains(two));
+		Assert.assertTrue(zero.getChildren().contains(three));
+		Assert.assertEquals(zero, one.getParent());
+		Assert.assertEquals(zero, two.getParent());
+		
+		final GraphNode four = new GraphNode(4, graph);
+		graph.addNode(four);
+		four.setParent(three);
+		final GraphNode five = new GraphNode(5, graph);
+		graph.addNode(five);
+		five.setParent(three);
+		final GraphNode six = new GraphNode(6, graph);
+		graph.addNode(six);
+		six.setParent(three);
+		Assert.assertTrue(zero.hasChildren());
+		Assert.assertTrue(one.hasChildren());
+		Assert.assertFalse(two.hasChildren());
+		Assert.assertTrue(three.hasChildren());
+		Assert.assertFalse(four.hasChildren());
+		Assert.assertFalse(five.hasChildren());
+		Assert.assertFalse(six.hasChildren());
+		Assert.assertEquals(3, zero.getChildren().size());
+		Assert.assertTrue(zero.getChildren().contains(one));
+		Assert.assertTrue(zero.getChildren().contains(two));
+		Assert.assertTrue(zero.getChildren().contains(three));
+		Assert.assertEquals(3, three.getChildren().size());
+		Assert.assertTrue(three.getChildren().contains(four));
+		Assert.assertTrue(three.getChildren().contains(five));
+		Assert.assertTrue(three.getChildren().contains(six));
+		Assert.assertEquals(zero, one.getParent());
+		Assert.assertEquals(zero, two.getParent());
+		Assert.assertEquals(three, five.getParent());
+		Assert.assertEquals(three, six.getParent());
+		
+		final GraphNode seven = new GraphNode(7, graph);
+		graph.addNode(seven);
+		seven.setParent(four);
+		final GraphNode sevenChildA = new GraphNode(815, graph);
+		graph.addNode(sevenChildA);
+		sevenChildA.setParent(seven);
+		final GraphNode sevenChildB = new GraphNode(42, graph);
+		graph.addNode(sevenChildB);
+		sevenChildB.setParent(seven);
+		final GraphNode eight = new GraphNode(8, graph);
+		graph.addNode(eight);
+		eight.setParent(four);
+		final GraphNode nine = new GraphNode(9, graph);
+		graph.addNode(nine);
+		nine.setParent(four);
+		Assert.assertTrue(zero.hasChildren());
+		Assert.assertTrue(one.hasChildren());
+		Assert.assertFalse(two.hasChildren());
+		Assert.assertTrue(three.hasChildren());
+		Assert.assertTrue(four.hasChildren());
+		Assert.assertFalse(five.hasChildren());
+		Assert.assertFalse(six.hasChildren());
+		Assert.assertTrue(seven.hasChildren());
+		Assert.assertFalse(eight.hasChildren());
+		Assert.assertFalse(nine.hasChildren());
+		Assert.assertEquals(3, zero.getChildren().size());
+		Assert.assertTrue(zero.getChildren().contains(one));
+		Assert.assertTrue(zero.getChildren().contains(two));
+		Assert.assertTrue(zero.getChildren().contains(three));
+		Assert.assertEquals(3, three.getChildren().size());
+		Assert.assertTrue(three.getChildren().contains(four));
+		Assert.assertTrue(three.getChildren().contains(five));
+		Assert.assertTrue(three.getChildren().contains(six));
+		Assert.assertEquals(3, four.getChildren().size());
+		Assert.assertTrue(four.getChildren().contains(seven));
+		Assert.assertTrue(four.getChildren().contains(eight));
+		Assert.assertTrue(four.getChildren().contains(nine));
+		Assert.assertEquals(zero, one.getParent());
+		Assert.assertEquals(zero, two.getParent());
+		Assert.assertEquals(three, five.getParent());
+		Assert.assertEquals(three, six.getParent());
+		Assert.assertEquals(three, five.getParent());
+		Assert.assertEquals(three, six.getParent());
+		
+		final GraphNode ten = new GraphNode(10, graph);
+		graph.addNode(ten);
+		ten.setParent(eight);
+		final GraphNode tenChildA = new GraphNode(23, graph);
+		graph.addNode(tenChildA);
+		tenChildA.setParent(ten);
+		final GraphNode tenChildB = new GraphNode(666, graph);
+		graph.addNode(tenChildB);
+		tenChildB.setParent(ten);
+		final GraphNode eleven = new GraphNode(11, graph);
+		graph.addNode(eleven);
+		eleven.setParent(eight);
+		Assert.assertTrue(zero.hasChildren());
+		Assert.assertTrue(one.hasChildren());
+		Assert.assertFalse(two.hasChildren());
+		Assert.assertTrue(three.hasChildren());
+		Assert.assertTrue(four.hasChildren());
+		Assert.assertFalse(five.hasChildren());
+		Assert.assertFalse(six.hasChildren());
+		Assert.assertTrue(seven.hasChildren());
+		Assert.assertTrue(eight.hasChildren());
+		Assert.assertFalse(nine.hasChildren());
+		Assert.assertTrue(ten.hasChildren());
+		Assert.assertEquals(2, ten.getChildren().size());
+		Assert.assertFalse(eleven.hasChildren());
+		Assert.assertEquals(3, zero.getChildren().size());
+		Assert.assertTrue(zero.getChildren().contains(one));
+		Assert.assertTrue(zero.getChildren().contains(two));
+		Assert.assertTrue(zero.getChildren().contains(three));
+		Assert.assertEquals(3, three.getChildren().size());
+		Assert.assertTrue(three.getChildren().contains(four));
+		Assert.assertTrue(three.getChildren().contains(five));
+		Assert.assertTrue(three.getChildren().contains(six));
+		Assert.assertEquals(3, four.getChildren().size());
+		Assert.assertTrue(four.getChildren().contains(seven));
+		Assert.assertTrue(four.getChildren().contains(eight));
+		Assert.assertTrue(four.getChildren().contains(nine));
+		Assert.assertEquals(2, eight.getChildren().size());
+		Assert.assertTrue(eight.getChildren().contains(ten));
+		Assert.assertTrue(eight.getChildren().contains(eleven));
+	
+		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		zero.contract(sccs, graph, eight);
+		
+		Assert.assertEquals(8, zero.getChildren().size());
+		for (TreeNode child : zero.getChildren()) {
+			Assert.assertEquals(zero, child.getParent());
+		}
+		
+		Assert.assertEquals(1, one.getChildren().size());
+		Assert.assertTrue(one.getChildren().contains(oneChild));
+		one.getChildren().forEach((child) -> Assert.assertEquals(one, child.getParent()));
+		
+		Assert.assertEquals(2, seven.getChildren().size());
+		Assert.assertTrue(seven.getChildren().contains(sevenChildA));
+		Assert.assertTrue(seven.getChildren().contains(sevenChildB));
+		seven.getChildren().forEach((child) -> Assert.assertEquals(seven, child.getParent()));
+
+		Assert.assertEquals(2, ten.getChildren().size());
+		Assert.assertTrue(ten.getChildren().contains(tenChildA));
+		Assert.assertTrue(ten.getChildren().contains(tenChildB));
+		ten.getChildren().forEach((child) -> Assert.assertEquals(ten, child.getParent()));
+	}
 }
