@@ -27,6 +27,7 @@
 package org.kuppe.graphs.tarjan;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,8 @@ public class GraphNode extends NaiveTreeNode {
 	
 	// package protected for unit tests only
 	volatile Visited visited = Visited.UN;
+
+	private List<Integer> arcs;
 
 	public GraphNode(int id, Graph graph) {
 		super(id);
@@ -66,6 +69,40 @@ public class GraphNode extends NaiveTreeNode {
 		assert visited != Visited.POST || !graph.hasUntraversedArc(this);
 
 		this.visited = visited;
+	}
+
+	public void setArcs(List<Integer> arcs) {
+		this.arcs = arcs;
+	}
+	
+	public List<Integer> getArcs() {
+		return this.arcs;
+	}
+	
+	public boolean hasArcs() {
+		if (arcs == null) {
+			return false;
+		}
+		return !this.arcs.isEmpty();
+	}
+
+	public void removeArc(Integer arcId) {
+		// has to be Integer (not int) to remove the element and not element at
+		// position.
+		this.arcs.remove(arcId);
+	}
+
+	public void addArcs(List<Integer> other) {
+		this.arcs.addAll(other);
+	}
+
+	public void clearArcs() {
+		this.arcs.clear();
+		this.arcs = null;
+	}
+
+	public int getArc() {
+		return this.arcs.get(0);
 	}
 
 	/* (non-Javadoc)

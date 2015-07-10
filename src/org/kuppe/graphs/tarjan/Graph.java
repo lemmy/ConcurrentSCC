@@ -45,26 +45,7 @@ public class Graph {
 
 	public static final int NO_ARC = -1;
 
-	private class Record {
-		private final GraphNode node;
-		private final List<Integer> arcs;
-		
-		private Record(GraphNode node, List<Integer> arcs) {
-			assert node != null && arcs != null;
-			this.node = node;
-			this.arcs = arcs;
-		}
-		
-		/* (non-Javadoc)
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return "Record [node=" + node + ", arcs=" + arcs + "]";
-		}
-	}
-	
-	private final Map<Integer, Record> nodePtrTable;
+	private final Map<Integer, GraphNode> nodePtrTable;
 	private final String name;
 
 	public Graph() {
@@ -73,7 +54,7 @@ public class Graph {
 	
 	public Graph(final String name) {
 		this.name = name;
-		this.nodePtrTable = new ConcurrentHashMap<Integer, Record>();
+		this.nodePtrTable = new ConcurrentHashMap<Integer, GraphNode>();
 	}
 	
 	public String getName() {
@@ -87,49 +68,49 @@ public class Graph {
 	 */
 	public List<GraphNode> getStartNodes() {
 		final List<GraphNode> start = new ArrayList<GraphNode>(this.nodePtrTable.size());
-		for (Record graphNode : nodePtrTable.values()) {
-			start.add(graphNode.node);
+		for (GraphNode graphNode : nodePtrTable.values()) {
+			start.add(graphNode);
 		}
 		return start;
 	}
 
 	public GraphNode get(final int id) {
-		return this.nodePtrTable.get(id).node;
+		return this.nodePtrTable.get(id);
 	}
 
 	/* (outgoing) arcs */
 
 	public void removeTraversedArc(GraphNode node, int arcId) {
 		assert this.nodePtrTable.containsKey(node.getId());
-		Record record = this.nodePtrTable.get(node.getId());
-		record.arcs.remove((Integer)arcId); // Explicitly cast to Integer to remove the element arcId and not the element at position arcId;
+		GraphNode graphNode = this.nodePtrTable.get(node.getId());
+		graphNode.removeArc((Integer)arcId); // Explicitly cast to Integer to remove the element arcId and not the element at position arcId;
 	}
 
 	public int getUntraversedArc(GraphNode node) {
-		final Record record = this.nodePtrTable.get(node.getId());
+		final GraphNode record = this.nodePtrTable.get(node.getId());
 		// 'node' has been contracted already. Thus return no untraversed arcs.
 		if (isContracted(record, node)) {
 			return NO_ARC;
 		}
-		if (record.arcs.isEmpty()) {
+		if (!record.hasArcs()) {
 			return NO_ARC;
 		}
-		return record.arcs.get(0);
+		return record.getArc();
 	}
 
 	public boolean hasUntraversedArc(GraphNode node) {
-		final Record record = this.nodePtrTable.get(node.getId());
+		final GraphNode graphNode = this.nodePtrTable.get(node.getId());
 		// If this node has been replaced by one into which it was contracted,
 		// there will obviously be arcs in the set. Thus, check if it's indeed
 		// replaced.
-		if (isContracted(record, node)) {
+		if (isContracted(graphNode, node)) {
 			return false;
 		}
-		return !record.arcs.isEmpty();
+		return graphNode.hasArcs();
 	}
 
-	private boolean isContracted(Record record, GraphNode node) {
-		int id = record.node.getId();
+	private boolean isContracted(GraphNode graphNode, GraphNode node) {
+		int id = graphNode.getId();
 		if (id != node.getId()) {
 			assert node.is(Visited.POST);
 			return true;
@@ -140,12 +121,12 @@ public class Graph {
 	/* contraction */
 
 	public void contract(final GraphNode parent, final GraphNode child) {
-		final Record dstRecord = this.nodePtrTable.get(parent.getId());
-		assert dstRecord.node == parent;
+		final GraphNode dstRecord = this.nodePtrTable.get(parent.getId());
+		assert dstRecord == parent;
 		assert dstRecord != null;
 		
 		// Globally Replace src with dst
-		final Record replaced = this.nodePtrTable.replace(child.getId(), dstRecord);
+		final GraphNode replaced = this.nodePtrTable.replace(child.getId(), dstRecord);
 		assert replaced != dstRecord;
 		
 		// add all outgoing arcs to dstRecord
@@ -160,13 +141,12 @@ public class Graph {
 		// arcs would be discarded.
 		// => SCCWorker checks PRIOR to lock acquisition, if the arc's endpoint
 		// node is POST
-		final List<Integer> arcs = replaced.arcs;
-		if (!arcs.isEmpty()) {
-			dstRecord.arcs.addAll(arcs);
-			arcs.clear();
+		if (replaced.hasArcs()) {
+			dstRecord.addArcs(replaced.getArcs());
+			replaced.clearArcs();
 		}
 		
-		assert this.nodePtrTable.get(child.getId()).node == parent;
+		assert this.nodePtrTable.get(child.getId()) == parent;
 	}
 	
 	/* Graph Locking */
@@ -234,32 +214,32 @@ public class Graph {
 	
 	void addArc(int nodeId, int arcId) {
 		assert this.nodePtrTable.containsKey(nodeId);
-		Record record = this.nodePtrTable.get(nodeId);
-		record.arcs.add(arcId);
+		GraphNode graphNode = this.nodePtrTable.get(nodeId);
+		graphNode.getArcs().add(arcId);
 	}
 	
 	Collection<Integer> getUntraversedArcs(GraphNode node) {
-		final Record record = this.nodePtrTable.get(node.getId());
+		final GraphNode graphNode = this.nodePtrTable.get(node.getId());
 		// 'node' has been contracted already. Thus return no untraversed arcs.
-		if (record.node.getId() != node.getId()) {
+		if (graphNode.getId() != node.getId()) {
 			return new ArrayList<Integer>();
 		}
-		return new HashSet<>(record.arcs);
+		return new HashSet<>(graphNode.getArcs());
 	}
 
 	Collection<Integer> getArcs(GraphNode node) {
-		return this.nodePtrTable.get(node.getId()).arcs;
+		return this.nodePtrTable.get(node.getId()).getArcs();
 	}
 	
 	boolean checkPostCondition() {
 		// All arcs of all nodes have to be traversed, all nodes have to be
 		// post-visited.
-		final Set<Record> records = new HashSet<>(this.nodePtrTable.values());
-		for (Record record : records) {
-			if (record.node.isNot(Visited.POST)) {
+		final Set<GraphNode> graphNodes = new HashSet<>(this.nodePtrTable.values());
+		for (GraphNode graphNode : graphNodes) {
+			if (graphNode.isNot(Visited.POST)) {
 				return false;
 			}
-			if (!record.arcs.isEmpty()) {
+			if (graphNode.hasArcs()) {
 				return false;
 			}
 		}
@@ -279,7 +259,8 @@ public class Graph {
 		for (Integer integer : successors) {
 			s.add(integer);
 		}
+		node.setArcs(s);
 		
-		this.nodePtrTable.put(node.getId(), new Record(node, s));
+		this.nodePtrTable.put(node.getId(), node);
 	}
 }
