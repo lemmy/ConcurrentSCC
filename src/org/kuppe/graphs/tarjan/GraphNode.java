@@ -188,6 +188,9 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	private void mergeSubSetSCC(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, Set<GraphNode> scc, final GraphNode parent) {
+		// TODO Use (custom) LinkedLists instead of Set that can be merged in
+		// O(1). Would also preserve order of nodes and thus the actual path of
+		// the SCC. Reuse parent or sibling pointers for space efficiency reasons.
 		final Set<GraphNode> parentsSubset = sccs.remove(parent);
 		if (parentsSubset != null) {
 			fixDanglingMappings(graph, parent, parentsSubset);
@@ -198,6 +201,7 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	private void fixDanglingMappings(final Graph graph, final GraphNode parent, final Set<GraphNode> parentsSubset) {
+		//TODO move into Graph and do in parallel unless Graph's concurrent map becomes the bottleneck.
 		// Correct all 'id to node' mappings for the previous contracted
 		// nodes. Otherwise, if an arc is later explored
 		// going to one node in parentsSubset "t", it will be skipped as
