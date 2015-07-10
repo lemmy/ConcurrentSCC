@@ -68,7 +68,7 @@ public class Graph {
 	private final String name;
 
 	public Graph() {
-		this("unknown");
+		this(null);
 	}
 	
 	public Graph(final String name) {

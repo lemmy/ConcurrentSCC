@@ -70,8 +70,9 @@ public class ConcurrentFastSCC {
 		executor.shutdown();
 
 		// Print runtime statistics
-		System.out.println(graph.getName() + " : " + (System.currentTimeMillis() - start) / 1000 + " sec");
-
+		if (graph.getName() != null) {
+			System.out.println(graph.getName() + " : " + (System.currentTimeMillis() - start) / 1000 + " sec");
+		}
 		
 		// The mapping from GraphNode to its final SCC has become irrelevant
 		// (the caller is just interested in the set of SCCs, not into which
