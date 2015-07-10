@@ -121,6 +121,10 @@ public class GraphNode extends NaiveTreeNode {
 				+ ", CHILD"
 				+ "]";
 	}
+	
+	public GraphNode getParent() {
+		return null;
+	}
 
 	public void setParent(final GraphNode parent) {
 		assert this.isNot(Visited.POST);
@@ -176,7 +180,12 @@ public class GraphNode extends NaiveTreeNode {
 			// Link parent's children to us except for the ones that are part of
 			// the SCC. Those are done now and don't need to be re-linked.
 			parent.reLinkChildren(this, scc);
-			
+
+			// Now that parent is unlinked/cut from its tree, null the lock so
+			// it can be garbage collected. It can't be done prior to cutting though,
+			// because workers trying 
+			parent.lock = null;
+
 			// Continue with parent's parent.
 			parent = parentsParent;
 		}
@@ -225,14 +234,32 @@ public class GraphNode extends NaiveTreeNode {
 	public int getId() {
 		return id;
 	}
-
-	private final ReentrantLock lock = new ReentrantLock();
+	
+	/* Locking */
+	
+	private ReentrantLock lock = new ReentrantLock();
 
 	public boolean tryLock() {
+		if (lock == null) {
+			// There might still be a scheduled worker in the system for this
+			// GraphNode that wants to lock this node in order to determine its
+			// visited state.
+			assert is(Visited.POST);
+			return true;
+		}
 		return lock.tryLock();
 	}
 
 	public boolean tryLock(long wait, TimeUnit unit) {
+		if (lock == null) {
+			// A worker #1 is trying to lock a tree from w to its root r.
+			// Concurrently, an ancestor a of w is being contracted by another
+			// worker #2 into r. Worker #1 reads the pointer from w to a but the
+			// lock is replaced by worker #2 with null before #1 acquires the
+			// lock.
+			assert is(Visited.POST);
+			return true;
+		}
 		try {
 			return lock.tryLock(wait, unit);
 		} catch (InterruptedException e) {
@@ -242,9 +269,15 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public void unlock() {
-		int holdCount = lock.getHoldCount();
-		for (int i = 0; i < holdCount; i++) {
-			lock.unlock();
+		if (lock == null) {
+			// There might still be workers in the system that need to unlock
+			// this node after determining its visited state.
+			assert is(Visited.POST);
+		} else {
+			int holdCount = lock.getHoldCount();
+			for (int i = 0; i < holdCount; i++) {
+				lock.unlock();
+			}
 		}
 	}
 }

@@ -168,7 +168,7 @@ public class Graph {
 		// traverse w all the way up to its root
 		final List<GraphNode> lockedNodes = new ArrayList<>(); 
 		GraphNode parent = (GraphNode) w.getParent();
-		while (parent != null) {
+		LOOP : while (parent != null) {
 			// The more locks we've managed to acquire, the longer we are
 			// willing to wait for remaining locks to become avilable.
 			if (!parent.tryLock(lockedNodes.size() + 1L, TimeUnit.NANOSECONDS)) {
@@ -176,6 +176,25 @@ public class Graph {
 				unlockPartial(w, lockedNodes);
 				return null;
 			}
+			if (parent.is(Visited.POST)) {
+				// parent got contracted during our attempt to acquire its lock
+				// (we read the parent pointer and concurrently, the parent got
+				// contracted before we could acquire the lock - reading parent
+				// and lock acquisition is *not* atomic).
+				// Rewind our path by one and get its parent again which now
+				// points to the new contracted node. Unless there is no node to
+				// rewind to (meaning w itself got contracted). In this case just
+				// give up.
+				// TODO Can we be sure that the POST state is immediately
+				// visible to us? Otherwise it might be better to re-parent
+				// contracted nodes to the one they got contracted into.
+				if (lockedNodes.isEmpty()) {
+					return null;
+				}
+				parent = lockedNodes.get(lockedNodes.size() - 1);
+				continue LOOP;
+			}
+			assert parent.isNot(Visited.POST);
 			lockedNodes.add(parent);
 			if (parent.getParent() == null) {
 				return parent;

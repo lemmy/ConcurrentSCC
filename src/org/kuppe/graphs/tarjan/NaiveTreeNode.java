@@ -125,7 +125,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 	 * @see org.kuppe.graphs.tarjan.TreeNode#reLinkChildren(org.kuppe.graphs.tarjan.TreeNode, java.util.Set)
 	 */
 	@Override
-	public void reLinkChildren(final TreeNode newParent, Set<? extends TreeNode> excludes) {
+	public void reLinkChildren(final TreeNode newParent, Set<? extends TreeNode> ignored) {
 		if (this.leftChild == null) {
 			return;
 		}
