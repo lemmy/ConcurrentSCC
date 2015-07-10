@@ -39,7 +39,7 @@ public class GraphNode extends NaiveTreeNode {
 		UN, POST;
 	};
 	
-	private final Graph graph;
+	protected final Graph graph;
 	
 	// package protected for unit tests only
 	volatile Visited visited = Visited.UN;
@@ -110,6 +110,12 @@ public class GraphNode extends NaiveTreeNode {
 			sccs.put(this, scc);
 		}
 		
+		// Simply re-creating a new wrapper wouldn't work. We need to find the
+		// wrapper previously used by a subset SCC. Otherwise, we end up with N
+		// wrappers which again all N have to be updated and found in the set of
+		// subset scc nodes.
+		final GraphNode wrapper = new GraphNodeWrapper(this);
+		
 		// Traverse GraphNode's tree up to the root which is us/this.
 		GraphNode parent = graphNode;
 		while (parent != this) {
@@ -125,7 +131,7 @@ public class GraphNode extends NaiveTreeNode {
 			parent.visited = Visited.POST;
 
 			// Logically replace parent with this GraphNode in the Graph.
-			graph.contract(this, parent);
+			graph.contract(this, wrapper, parent);
 			// parent's arcs should have been contracted into this now.
 			assert !graph.hasUntraversedArc(parent);
 			
@@ -170,10 +176,15 @@ public class GraphNode extends NaiveTreeNode {
 		// going to one node in parentsSubset "t", it will be skipped as
 		// "t" is post-visited. It has to be pre-visited though, which
 		// is this' visited state after contraction.
+		//
+		// With GraphNodeWrapper it suffices to update the wrapper of one
+		// member of the parentsSubset. All other members will be updated
+		// automatically.
 		for (GraphNode s : parentsSubset) {
 			// s' mapping will be updated down below
 			if (s != parent) {
-				graph.contract(this, s);
+				graph.contract(this, this, s);
+				return;
 			}
 		}
 	}
@@ -188,6 +199,36 @@ public class GraphNode extends NaiveTreeNode {
 	public int getId() {
 		return id;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof GraphNode))
+			return false;
+		GraphNode other = (GraphNode) obj;
+		if (getId() != other.getId())
+			return false;
+		return true;
+	}
+
+	/* locking */
 
 	private final ReentrantLock lock = new ReentrantLock();
 

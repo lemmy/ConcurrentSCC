@@ -55,6 +55,11 @@ public class Graph {
 			this.arcs = arcs;
 		}
 		
+		public Record(GraphNode parentWrapper) {
+			this.node = parentWrapper;
+			this.arcs = null;
+		}
+
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
@@ -66,6 +71,7 @@ public class Graph {
 	
 	private final Map<Integer, Record> nodePtrTable;
 	private final String name;
+	private final List<GraphNode> initNodes = new ArrayList<>();
 
 	public Graph() {
 		this("unknown");
@@ -86,11 +92,13 @@ public class Graph {
 	 * @return The initial nodes?!
 	 */
 	public List<GraphNode> getStartNodes() {
-		final List<GraphNode> start = new ArrayList<GraphNode>(this.nodePtrTable.size());
-		for (Record graphNode : nodePtrTable.values()) {
-			start.add(graphNode.node);
+		if (initNodes.isEmpty()) {
+			// If no initial nodes are set, all nodes are considered initial.
+			for (Record graphNode : nodePtrTable.values()) {
+				initNodes.add(graphNode.node);
+			}
 		}
-		return start;
+		return initNodes;
 	}
 
 	public GraphNode get(final int id) {
@@ -139,34 +147,39 @@ public class Graph {
 	
 	/* contraction */
 
-	public void contract(final GraphNode parent, final GraphNode child) {
+	public void contract(final GraphNode parent, final GraphNode parentWrapper, final GraphNode child) {
 		final Record dstRecord = this.nodePtrTable.get(parent.getId());
 		assert dstRecord.node == parent;
 		assert dstRecord != null;
 		
 		// Globally Replace src with dst
-		final Record replaced = this.nodePtrTable.replace(child.getId(), dstRecord);
-		assert replaced != dstRecord;
-		
-		// add all outgoing arcs to dstRecord
-		// TODO LinkedList might not be the ideal data structure here:
-		// - Java's implementation doesn't do an O(1) concat but copies the
-		// second list
-		// - List does not discard duplicates and thus causes SCCWorker to
-		// explore arcs multiple times. Since lock acquisition is expensive,
-		// it's probably cheaper to discard duplicate arcs here.
-		// - Explored arcs are also removed from the collection of arcs. That
-		// also adds to re-exploration of arcs even if duplicated of un-explored
-		// arcs would be discarded.
-		// => SCCWorker checks PRIOR to lock acquisition, if the arc's endpoint
-		// node is POST
-		final List<Integer> arcs = replaced.arcs;
-		if (!arcs.isEmpty()) {
-			dstRecord.arcs.addAll(arcs);
-			arcs.clear();
+		final Record toBeReplaced = this.nodePtrTable.get(child.getId());
+		if (toBeReplaced.node instanceof GraphNodeWrapper) {
+			final GraphNodeWrapper wrapper = (GraphNodeWrapper) toBeReplaced.node;
+			wrapper.setWrapped(parent);
+		} else {
+			final Record replaced = this.nodePtrTable.replace(child.getId(), new Record(parentWrapper));
+			assert replaced != dstRecord;
+			
+			// add all outgoing arcs to dstRecord
+			// TODO LinkedList might not be the ideal data structure here:
+			// - Java's implementation doesn't do an O(1) concat but copies the
+			// second list
+			// - List does not discard duplicates and thus causes SCCWorker to
+			// explore arcs multiple times. Since lock acquisition is expensive,
+			// it's probably cheaper to discard duplicate arcs here.
+			// - Explored arcs are also removed from the collection of arcs. That
+			// also adds to re-exploration of arcs even if duplicated of un-explored
+			// arcs would be discarded.
+			// => SCCWorker checks PRIOR to lock acquisition, if the arc's endpoint
+			// node is POST
+			final List<Integer> arcs = replaced.arcs;
+			if (!arcs.isEmpty()) {
+				dstRecord.arcs.addAll(arcs);
+				arcs.clear();
+			}
 		}
-		
-		assert this.nodePtrTable.get(child.getId()).node == parent;
+		assert this.nodePtrTable.get(child.getId()).node.equals(parent);
 	}
 	
 	/* Graph Locking */
@@ -259,7 +272,7 @@ public class Graph {
 			if (record.node.isNot(Visited.POST)) {
 				return false;
 			}
-			if (!record.arcs.isEmpty()) {
+			if (record.arcs != null && !record.arcs.isEmpty()) {
 				return false;
 			}
 		}
@@ -281,5 +294,9 @@ public class Graph {
 		}
 		
 		this.nodePtrTable.put(node.getId(), new Record(node, s));
+	}
+
+	void setInit(final int nodeId) {
+		initNodes.add(get(nodeId));
 	}
 }

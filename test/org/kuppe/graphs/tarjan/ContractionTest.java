@@ -182,28 +182,37 @@ public class ContractionTest {
 		// Contract two into one
 		two.setParent(one);
 		one.contract(sccs, graph, two);
-		Assert.assertTrue(graph.get(two.getId()) == one);
+		Assert.assertTrue(graph.get(two.getId()) instanceof GraphNodeWrapper);
+		Assert.assertEquals(one, graph.get(two.getId()));
 		
 		// contract one into five
 		one.setParent(five);
 		five.contract(sccs, graph, one);
-		Assert.assertTrue(graph.get(two.getId()) == five);
-		Assert.assertTrue(graph.get(one.getId()) == five);
+		Assert.assertTrue(graph.get(two.getId()) instanceof GraphNodeWrapper);
+		Assert.assertTrue(graph.get(one.getId()) instanceof GraphNodeWrapper);
+		Assert.assertEquals(five, graph.get(two.getId()));
+		Assert.assertEquals(five, graph.get(one.getId()));
+		Assert.assertTrue("Wrappers have to be identical", graph.get(one.getId()) == graph.get(two.getId()));
 
 		// contract five into four
 		five.setParent(four);
 		four.contract(sccs, graph, five);
-		Assert.assertTrue(graph.get(two.getId()) == four);
-		Assert.assertTrue(graph.get(one.getId()) == four);
-		Assert.assertTrue(graph.get(five.getId()) == four);
+		Assert.assertTrue(graph.get(two.getId()) instanceof GraphNodeWrapper);
+		Assert.assertEquals(four, graph.get(two.getId()));
+		Assert.assertTrue("Wrappers have to be identical", graph.get(one.getId()) == graph.get(two.getId()));
+		Assert.assertTrue(graph.get(one.getId()) instanceof GraphNodeWrapper);
+		Assert.assertEquals(four, graph.get(one.getId()));
+		Assert.assertTrue(graph.get(five.getId()) instanceof GraphNodeWrapper);
+		Assert.assertTrue("Wrappers have to be identical", graph.get(one.getId()) == graph.get(five.getId()));
+		Assert.assertEquals(four, graph.get(five.getId()));
 		
 		// contract four into three
 		four.setParent(three);
 		three.contract(sccs, graph, four);
-		Assert.assertTrue(graph.get(two.getId()) == three);
-		Assert.assertTrue(graph.get(one.getId()) == three);
-		Assert.assertTrue(graph.get(five.getId()) == three);
-		Assert.assertTrue(graph.get(four.getId()) == three);
+		Assert.assertEquals(three, graph.get(two.getId()));
+		Assert.assertEquals(three, graph.get(one.getId()));
+		Assert.assertEquals(three, graph.get(five.getId()));
+		Assert.assertEquals(three, graph.get(four.getId()));
 	}
 	
 	@Test
@@ -248,107 +257,107 @@ public class ContractionTest {
 		// Contract two into one
 		ten.setParent(nine);
 		nine.contract(sccs, graph, ten);
-		Assert.assertTrue(graph.get(zero.getId()) == zero);
-		Assert.assertTrue(graph.get(one.getId()) == one);
-		Assert.assertTrue(graph.get(two.getId()) == two);
-		Assert.assertTrue(graph.get(three.getId()) == three);
-		Assert.assertTrue(graph.get(four.getId()) == four);
-		Assert.assertTrue(graph.get(five.getId()) == five);
-		Assert.assertTrue(graph.get(six.getId()) == six);
-		Assert.assertTrue(graph.get(seven.getId()) == seven);
-		Assert.assertTrue(graph.get(eight.getId()) == eight);
-		Assert.assertTrue(graph.get(nine.getId()) == nine);
-		Assert.assertTrue(graph.get(ten.getId()) == nine);
+		Assert.assertEquals(zero, graph.get(zero.getId()));
+		Assert.assertEquals(one, graph.get(one.getId()));
+		Assert.assertEquals(two, graph.get(two.getId()));
+		Assert.assertEquals(three, graph.get(three.getId()));
+		Assert.assertEquals(four, graph.get(four.getId()));
+		Assert.assertEquals(five, graph.get(five.getId()));
+		Assert.assertEquals(six, graph.get(six.getId()));
+		Assert.assertEquals(seven, graph.get(seven.getId()));
+		Assert.assertEquals(eight, graph.get(eight.getId()));
+		Assert.assertEquals(nine, graph.get(nine.getId()));
+		Assert.assertEquals(nine, graph.get(ten.getId()));
 		
 		// contract one into zero
 		one.setParent(zero);
 		zero.contract(sccs, graph, one);
-		Assert.assertTrue(graph.get(zero.getId()) == zero);
-		Assert.assertTrue(graph.get(one.getId()) == zero);
-		Assert.assertTrue(graph.get(two.getId()) == two);
-		Assert.assertTrue(graph.get(three.getId()) == three);
-		Assert.assertTrue(graph.get(four.getId()) == four);
-		Assert.assertTrue(graph.get(five.getId()) == five);
-		Assert.assertTrue(graph.get(six.getId()) == six);
-		Assert.assertTrue(graph.get(seven.getId()) == seven);
-		Assert.assertTrue(graph.get(eight.getId()) == eight);
-		Assert.assertTrue(graph.get(nine.getId()) == nine);
-		Assert.assertTrue(graph.get(ten.getId()) == nine);
+		Assert.assertEquals(zero, graph.get(zero.getId()));
+		Assert.assertEquals(zero, graph.get(one.getId()));
+		Assert.assertEquals(two, graph.get(two.getId()));
+		Assert.assertEquals(three, graph.get(three.getId()));
+		Assert.assertEquals(four, graph.get(four.getId()));
+		Assert.assertEquals(five, graph.get(five.getId()));
+		Assert.assertEquals(six, graph.get(six.getId()));
+		Assert.assertEquals(seven, graph.get(seven.getId()));
+		Assert.assertEquals(eight, graph.get(eight.getId()));
+		Assert.assertEquals(nine, graph.get(nine.getId()));
+		Assert.assertEquals(nine, graph.get(ten.getId()));
 
 		// contract eight into four
 		eight.setParent(four);
 		four.contract(sccs, graph, eight);
-		Assert.assertTrue(graph.get(zero.getId()) == zero);
-		Assert.assertTrue(graph.get(one.getId()) == zero);
-		Assert.assertTrue(graph.get(two.getId()) == two);
-		Assert.assertTrue(graph.get(three.getId()) == three);
-		Assert.assertTrue(graph.get(four.getId()) == four);
-		Assert.assertTrue(graph.get(five.getId()) == five);
-		Assert.assertTrue(graph.get(six.getId()) == six);
-		Assert.assertTrue(graph.get(seven.getId()) == seven);
-		Assert.assertTrue(graph.get(eight.getId()) == four);
-		Assert.assertTrue(graph.get(nine.getId()) == nine);
-		Assert.assertTrue(graph.get(ten.getId()) == nine);
+		Assert.assertEquals(zero, graph.get(zero.getId()));
+		Assert.assertEquals(zero, graph.get(one.getId()));
+		Assert.assertEquals(two, graph.get(two.getId()));
+		Assert.assertEquals(three, graph.get(three.getId()));
+		Assert.assertEquals(four, graph.get(four.getId()));
+		Assert.assertEquals(five, graph.get(five.getId()));
+		Assert.assertEquals(six, graph.get(six.getId()));
+		Assert.assertEquals(seven, graph.get(seven.getId()));
+		Assert.assertEquals(four, graph.get(eight.getId()));
+		Assert.assertEquals(nine, graph.get(nine.getId()));
+		Assert.assertEquals(nine, graph.get(ten.getId()));
 		
 		// contract seven into three
 		seven.setParent(three);
 		three.contract(sccs, graph, seven);
-		Assert.assertTrue(graph.get(zero.getId()) == zero);
-		Assert.assertTrue(graph.get(one.getId()) == zero);
-		Assert.assertTrue(graph.get(two.getId()) == two);
-		Assert.assertTrue(graph.get(three.getId()) == three);
-		Assert.assertTrue(graph.get(four.getId()) == four);
-		Assert.assertTrue(graph.get(five.getId()) == five);
-		Assert.assertTrue(graph.get(six.getId()) == six);
-		Assert.assertTrue(graph.get(seven.getId()) == three);
-		Assert.assertTrue(graph.get(eight.getId()) == four);
-		Assert.assertTrue(graph.get(nine.getId()) == nine);
-		Assert.assertTrue(graph.get(ten.getId()) == nine);
+		Assert.assertEquals(zero, graph.get(zero.getId()));
+		Assert.assertEquals(zero, graph.get(one.getId()));
+		Assert.assertEquals(two, graph.get(two.getId()));
+		Assert.assertEquals(three, graph.get(three.getId()));
+		Assert.assertEquals(four, graph.get(four.getId()));
+		Assert.assertEquals(five, graph.get(five.getId()));
+		Assert.assertEquals(six, graph.get(six.getId()));
+		Assert.assertEquals(three, graph.get(seven.getId()));
+		Assert.assertEquals(four, graph.get(eight.getId()));
+		Assert.assertEquals(nine, graph.get(nine.getId()));
+		Assert.assertEquals(nine, graph.get(ten.getId()));
 		
 		// contract nine into three
 		nine.setParent(three);
 		three.contract(sccs, graph, nine);
-		Assert.assertTrue(graph.get(zero.getId()) == zero);
-		Assert.assertTrue(graph.get(one.getId()) == zero);
-		Assert.assertTrue(graph.get(two.getId()) == two);
-		Assert.assertTrue(graph.get(three.getId()) == three);
-		Assert.assertTrue(graph.get(four.getId()) == four);
-		Assert.assertTrue(graph.get(five.getId()) == five);
-		Assert.assertTrue(graph.get(six.getId()) == six);
-		Assert.assertTrue(graph.get(seven.getId()) == three);
-		Assert.assertTrue(graph.get(eight.getId()) == four);
-		Assert.assertTrue(graph.get(nine.getId()) == three);
-		Assert.assertTrue(graph.get(ten.getId()) == three);
+		Assert.assertEquals(zero, graph.get(zero.getId()));
+		Assert.assertEquals(zero, graph.get(one.getId()));
+		Assert.assertEquals(two, graph.get(two.getId()));
+		Assert.assertEquals(three, graph.get(three.getId()));
+		Assert.assertEquals(four, graph.get(four.getId()));
+		Assert.assertEquals(five, graph.get(five.getId()));
+		Assert.assertEquals(six, graph.get(six.getId()));
+		Assert.assertEquals(three, graph.get(seven.getId()));
+		Assert.assertEquals(four, graph.get(eight.getId()));
+		Assert.assertEquals(three, graph.get(nine.getId()));
+		Assert.assertEquals(three, graph.get(ten.getId()));
 		
 		// 3 into 0
 		three.setParent(zero);
 		zero.contract(sccs, graph, three);
-		Assert.assertTrue(graph.get(zero.getId()) == zero);
-		Assert.assertTrue(graph.get(one.getId()) == zero);
-		Assert.assertTrue(graph.get(two.getId()) == two);
-		Assert.assertTrue(graph.get(three.getId()) == zero);
-		Assert.assertTrue(graph.get(four.getId()) == four);
-		Assert.assertTrue(graph.get(five.getId()) == five);
-		Assert.assertTrue(graph.get(six.getId()) == six);
-		Assert.assertTrue(graph.get(seven.getId()) == zero);
-		Assert.assertTrue(graph.get(eight.getId()) == four);
-		Assert.assertTrue(graph.get(nine.getId()) == zero);
-		Assert.assertTrue(graph.get(ten.getId()) == zero);
+		Assert.assertEquals(zero, graph.get(zero.getId()));
+		Assert.assertEquals(zero, graph.get(one.getId()));
+		Assert.assertEquals(two, graph.get(two.getId()));
+		Assert.assertEquals(zero, graph.get(three.getId()));
+		Assert.assertEquals(four, graph.get(four.getId()));
+		Assert.assertEquals(five, graph.get(five.getId()));
+		Assert.assertEquals(six, graph.get(six.getId()));
+		Assert.assertEquals(zero, graph.get(seven.getId()));
+		Assert.assertEquals(four, graph.get(eight.getId()));
+		Assert.assertEquals(zero, graph.get(nine.getId()));
+		Assert.assertEquals(zero, graph.get(ten.getId()));
 		
 		// 4 into 0
 		four.setParent(zero);
 		zero.contract(sccs, graph, four);
-		Assert.assertTrue(graph.get(zero.getId()) == zero);
-		Assert.assertTrue(graph.get(one.getId()) == zero);
-		Assert.assertTrue(graph.get(two.getId()) == two);
-		Assert.assertTrue(graph.get(three.getId()) == zero);
-		Assert.assertTrue(graph.get(four.getId()) == zero);
-		Assert.assertTrue(graph.get(five.getId()) == five);
-		Assert.assertTrue(graph.get(six.getId()) == six);
-		Assert.assertTrue(graph.get(seven.getId()) == zero);
-		Assert.assertTrue(graph.get(eight.getId()) == zero);
-		Assert.assertTrue(graph.get(nine.getId()) == zero);
-		Assert.assertTrue(graph.get(ten.getId()) == zero);
+		Assert.assertEquals(zero, graph.get(zero.getId()));
+		Assert.assertEquals(zero, graph.get(one.getId()));
+		Assert.assertEquals(two, graph.get(two.getId()));
+		Assert.assertEquals(zero, graph.get(three.getId()));
+		Assert.assertEquals(zero, graph.get(four.getId()));
+		Assert.assertEquals(five, graph.get(five.getId()));
+		Assert.assertEquals(six, graph.get(six.getId()));
+		Assert.assertEquals(zero, graph.get(seven.getId()));
+		Assert.assertEquals(zero, graph.get(eight.getId()));
+		Assert.assertEquals(zero, graph.get(nine.getId()));
+		Assert.assertEquals(zero, graph.get(ten.getId()));
 		
 		Assert.assertEquals(1, sccs.size());
 		Collection<Set<GraphNode>> values = sccs.values();

@@ -56,6 +56,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	public void testTLCN8() throws IOException {
 		final Graph graph = new Graph("testTLCN8");
 		readFile(graph, "tlc.txt");
+		readInits(graph, "tlcinits.txt");
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
@@ -299,6 +300,16 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				if (!graph.hasNode(arcId)) {
 					graph.addNode(new GraphNode(arcId, graph));
 				}
+			}
+		}
+	}
+	
+	private static void readInits(Graph graph, String filename) throws IOException {
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream(filename);
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+			for (String line = br.readLine(); line != null; line = br.readLine()) {
+				final int nodeId = Integer.parseInt(line.trim());
+				graph.setInit(nodeId);
 			}
 		}
 	}
