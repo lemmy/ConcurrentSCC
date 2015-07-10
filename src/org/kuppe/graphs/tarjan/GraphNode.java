@@ -126,6 +126,13 @@ public class GraphNode extends NaiveTreeNode {
 		assert this.isNot(Visited.POST);
 		link(parent);
 	}
+	
+	public GraphNode getParent() {
+		if (lock.tryLock()) {
+			return (GraphNode) super.getParent();
+		}
+		return null;
+	}
 
 	public boolean isInSameTree(final GraphNode other) {
 		return this.getRoot() == other.getRoot();

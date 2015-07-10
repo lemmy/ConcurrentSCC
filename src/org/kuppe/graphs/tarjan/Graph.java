@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -167,23 +166,20 @@ public class Graph {
 		}
 		// traverse w all the way up to its root
 		final List<GraphNode> lockedNodes = new ArrayList<>(); 
-		GraphNode parent = (GraphNode) w.getParent();
-		while (parent != null) {
-			// The more locks we've managed to acquire, the longer we are
-			// willing to wait for remaining locks to become avilable.
-			if (!parent.tryLock(lockedNodes.size() + 1L, TimeUnit.NANOSECONDS)) {
+		GraphNode parent = w;
+		while (!parent.isRoot()) {
+			// getParent acquires parent's lock
+			parent = (GraphNode) parent.getParent();
+			if (parent == null) {
+				// Failed to acquire the lock.
 				// Unlock what's locked so far
 				unlockPartial(w, lockedNodes);
 				return null;
 			}
 			assert parent.isNot(Visited.POST);
 			lockedNodes.add(parent);
-			if (parent.getParent() == null) {
-				return parent;
-			}
-			parent = (GraphNode) parent.getParent();
 		}
-		return w;
+		return parent;
 	}
 
 	private void unlockPartial(GraphNode node, List<GraphNode> ancestors) {
