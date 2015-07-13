@@ -127,9 +127,16 @@ public class GraphNode extends NaiveTreeNode {
 		link(parent);
 	}
 	
+	/**
+	 * Locks parent if there is one. The parent might not be a root anymore or
+	 * could have transitioned into POST once the lock is acquired.
+	 */
 	public GraphNode getParent() {
-		if (lock.tryLock()) {
-			return (GraphNode) super.getParent();
+		final GraphNode parent = (GraphNode) super.getParent();
+		if (parent != null) {
+			if (parent.tryLock()) {
+				return parent;
+			}
 		}
 		return null;
 	}
@@ -157,6 +164,13 @@ public class GraphNode extends NaiveTreeNode {
 		// Traverse GraphNode's tree up to the root which is us/this.
 		GraphNode parent = graphNode;
 		while (parent != this) {
+			// Acquire parent's lock so that I cannot be change concurrently by
+			// SCCWorker either as v or w. Since we know that we own the root
+			// of w (which is v), we can wait for parent. Other threads trying
+			// to acquire w's root (v) will eventually give up.
+			//TODO Change lock to be fair
+			parent.lock.lock();
+			
 			// Merge the other's subset SCC (if any) into this new one and
 			// remove it from the set of sccs.
 			mergeSubSetSCC(sccs, graph, scc, parent);
@@ -173,18 +187,25 @@ public class GraphNode extends NaiveTreeNode {
 			// parent's arcs should have been contracted into this now.
 			assert !graph.hasUntraversedArc(parent);
 			
-			// Before unlink/cut, remember parent's parent
-			final GraphNode parentsParent = (GraphNode) parent.getParent();
-
-			// Unlink the parent from the path so that it can be gc'ed
-			parent.cut();
-			assert parent.isRoot();
+			// Before unlink/cut, remember parent's parent. Don't use getParent
+			// though, which might return null if lock acquisition fails.
+			// However, we don't need to acquire parent's lock, because we know
+			// that we hold the root lock. The other thread holding parent's
+			// lock will abort when it gets to the root and fails to acquire its
+			// lock.
+			final GraphNode parentsParent = (GraphNode) parent.parent;
 			
 			// Link parent's children to us except for the ones that are part of
 			// the SCC. Those are done now and don't need to be re-linked.
 			parent.reLinkChildren(this, scc);
+			assert !parent.hasChildren();
+			
+			// Unlink the parent from the path so that it can be gc'ed
+			parent.cut();
+			assert parent.isRoot();
 			
 			// Continue with parent's parent.
+			parent.unlock();
 			parent = parentsParent;
 		}
 

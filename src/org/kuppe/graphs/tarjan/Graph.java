@@ -162,48 +162,45 @@ public class Graph {
 	
 	public GraphNode tryLockTrees(GraphNode w, GraphNode v) {
 		if (!w.tryLock()) {
+			// Nothing is locked
 			return null;
 		}
-		// traverse w all the way up to its root
-		final List<GraphNode> lockedNodes = new ArrayList<>(); 
-		GraphNode parent = w;
-		while (!parent.isRoot()) {
-			// getParent acquires parent's lock
-			parent = (GraphNode) parent.getParent();
-			if (parent == null) {
-				// Failed to acquire the lock.
-				// Unlock what's locked so far
-				unlockPartial(w, lockedNodes);
-				return null;
-			}
-			assert parent.isNot(Visited.POST);
-			lockedNodes.add(parent);
-		}
-		return parent;
-	}
-
-	private void unlockPartial(GraphNode node, List<GraphNode> ancestors) {
-		for (int i = ancestors.size() - 1; i >= 0; i--) {
-			GraphNode graphNode = ancestors.get(i);
-			unlock(graphNode);
-		}
-		unlock(node);
-	}
-
-	public void unlockTrees(GraphNode w, GraphNode v) {
-		// do one walk from w to its root to collect the nodes...
-		final List<GraphNode> ancestors = new ArrayList<>(); 
-		GraphNode parent = (GraphNode) w.getParent();
-		while (parent != null) {
-			ancestors.add(parent);
-			parent = (GraphNode) parent.getParent();
+		
+		if (w.isRoot()) {
+			return w;
 		}
 		
-		//... and then release the locks in reverse order
-		for (int i = ancestors.size() - 1; i >= 0; i--) {
-			GraphNode graphNode = ancestors.get(i);
-			unlock(graphNode);
+		// w is locked from here on and not a root
+		
+		// traverse w all the way up to its root
+		GraphNode parent = w.getParent();
+		while (parent != null) {
+			if (parent.is(Visited.POST)) {
+				parent.unlock();
+				w.unlock();
+				return null;
+			}
+			if (parent.isRoot()) {
+				if (parent.isRootTo(w)) {
+					return parent;
+				} else {
+					parent.unlock();
+					w.unlock();
+					return null;
+				}
+			}
+			// getParent acquires parent's lock
+			GraphNode oldparent = parent;
+			parent = (GraphNode) parent.getParent();
+			oldparent.unlock();
 		}
+		w.unlock();
+		return null;
+	}
+
+	public void unlockTrees(GraphNode w, GraphNode wRoot) {
+		// do one walk from w to its root to collect the nodes...
+		unlock(wRoot);
 		unlock(w);
 	}
 

@@ -71,7 +71,7 @@ public class SCCWorker implements Callable<Void> {
 
 				// Skip POST-visited v
 				if (v.is(Visited.POST)) {
-					// If POST, there must not be any children
+					// If POST, there must not be any children. 
 					assert!v.hasChildren();
 					// All arcs must be traversed
 					assert!graph.hasUntraversedArc(v);
@@ -116,7 +116,7 @@ public class SCCWorker implements Callable<Void> {
 						// w happens to be done, just release the lock and move
 						// onto the next arc
 						if (w.is(Visited.POST)) {
-							graph.unlockTrees(w, v);
+							graph.unlockTrees(w, root);
 							graph.unlock(v);
 							executor.submit(this); // Continue with next arc
 							return null;
@@ -127,7 +127,7 @@ public class SCCWorker implements Callable<Void> {
 							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 
 							// do nothing
-							graph.unlockTrees(w, v);
+							graph.unlockTrees(w, root);
 							graph.unlock(v);
 							executor.submit(this); // Continue with next arc
 							return null;
@@ -148,7 +148,7 @@ public class SCCWorker implements Callable<Void> {
 
 							boolean isRoot = w.isRoot();
 
-							graph.unlockTrees(w, v);
+							graph.unlockTrees(w, root);
 							graph.unlock(vOld);
 							/*
 							 * Since v is now a child, it is not (for the
@@ -294,10 +294,11 @@ public class SCCWorker implements Callable<Void> {
 		// will be irrelevant, as v's tree will be garbage
 		// collected.
 		//TODO parallelize
-		Iterator<NaiveTreeNode> iterator = v.iterator();
+		final Iterator<NaiveTreeNode> iterator = v.iterator();
 		while(iterator.hasNext()) {
-			GraphNode child = (GraphNode) iterator.next();
+			final GraphNode child = (GraphNode) iterator.next();
 			child.cut();
+			// Now that the child is free, it's a root again.
 			logger.info(() -> String.format("%s: Free'ed child (%s)", getId(), child));
 			executor.submit(new SCCWorker(executor, graph, sccs, child));
 		}

@@ -35,7 +35,7 @@ public abstract class NaiveTreeNode implements TreeNode {
 
 	protected final int id;
 	
-	private NaiveTreeNode parent;
+	protected volatile NaiveTreeNode parent;
 	
 	private NaiveTreeNode leftChild;
 	private NaiveTreeNode rightChild;
