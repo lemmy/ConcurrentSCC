@@ -134,7 +134,7 @@ public class SCCWorker implements Callable<Void> {
 						}
 
 						// Otherwise...
-						if (root != v) {
+						if (!root.equals(v)) { // No need to findroot(v). v is by definition a root, thus compare w's root with v => O(n) * 1
 							// If w is in a different tree than v, make w the
 							// parent of v and mark w previsited if it is
 							// unvisited.
