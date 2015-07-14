@@ -107,7 +107,11 @@ public class LinkCutTreeNode implements TreeNode {
 
 	@Override
 	public void link(TreeNode parent) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("not implemented");
+	}
+
+	@Override
+	public void reLinkChildren(TreeNode newParent) {
+		throw new UnsupportedOperationException("not implemented");
 	}
 }

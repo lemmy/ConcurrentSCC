@@ -26,7 +26,6 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -434,22 +433,5 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		anSCC.add(right);
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
-	}
-	
-	@Test
-	public void testVisitedStateChildContraction() {
-		final Graph graph = new Graph();
-
-		final GraphNode one = new GraphNode(1, graph);
-		graph.addNode(one, 1,2);
-		final GraphNode two = new GraphNode(2, graph);
-		graph.addNode(two, 1,2);
-		
-		one.setParent(two);
-		try {
-			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
-		} catch (AssertionError e) {
-			Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");
-		}
 	}
 }

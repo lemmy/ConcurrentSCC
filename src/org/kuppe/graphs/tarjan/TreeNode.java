@@ -67,9 +67,8 @@ public interface TreeNode {
 	/**
 	 * Disconnects the children of this node from this and makes them children of the newParent.
 	 * @param newParent The new parent for my children
-	 * @param excludes Exclude the nodes in this set from the reLinkChildren operation.
 	 */
-	void reLinkChildren(TreeNode newParent, Set<? extends TreeNode> excludes);
+	void reLinkChildren(TreeNode newParent);
 
 	/**
 	 * Cuts this node off of its tree parent. It becomes a root. Afterwards,

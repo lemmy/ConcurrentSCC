@@ -37,17 +37,17 @@ public abstract class NaiveTreeNode implements TreeNode {
 	
 	protected volatile NaiveTreeNode parent;
 	
-	private NaiveTreeNode leftChild;
-	private NaiveTreeNode rightChild;
+	protected NaiveTreeNode leftChild;
+	protected NaiveTreeNode rightChild;
 	
 	/**
 	 * null if this is leftmost sibling of parent's child aka parent's leftChild
 	 */
-	private NaiveTreeNode leftSibling;
+	protected NaiveTreeNode leftSibling;
 	/**
 	 * null if this is rightmost sibling of parent's child aka parent's rightChild
 	 */
-	private NaiveTreeNode rightSibling;
+	protected NaiveTreeNode rightSibling;
 
 	public NaiveTreeNode(int id) {
 		this.id = id;
@@ -122,10 +122,10 @@ public abstract class NaiveTreeNode implements TreeNode {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.kuppe.graphs.tarjan.TreeNode#reLinkChildren(org.kuppe.graphs.tarjan.TreeNode, java.util.Set)
+	 * @see org.kuppe.graphs.tarjan.TreeNode#reLinkChildren(org.kuppe.graphs.tarjan.TreeNode)
 	 */
 	@Override
-	public void reLinkChildren(final TreeNode newParent, Set<? extends TreeNode> excludes) {
+	public void reLinkChildren(final TreeNode newParent) {
 		if (this.leftChild == null) {
 			return;
 		}

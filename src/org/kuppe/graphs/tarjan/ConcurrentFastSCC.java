@@ -45,7 +45,7 @@ public class ConcurrentFastSCC {
 		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
 		final ForkJoinPool executor = new ForkJoinPool();
 
-		final Map<GraphNode, Set<GraphNode>> sccs = new ConcurrentHashMap<GraphNode, Set<GraphNode>>();
+		final Map<GraphNode, GraphNode> sccs = new ConcurrentHashMap<GraphNode, GraphNode>();
 
 		// Shuffle startNodes before submitting workers to make sure that the
 		// jobs don't contend for each other. I.e. most graphs are such that
@@ -74,9 +74,10 @@ public class ConcurrentFastSCC {
 			System.out.println(graph.getName() + " : " + (System.currentTimeMillis() - start) / 1000 + " sec");
 		}
 		
-		// The mapping from GraphNode to its final SCC has become irrelevant
-		// (the caller is just interested in the set of SCCs, not into which
-		// node SCCs have been contracted).
-		return new HashSet<Set<GraphNode>>(sccs.values());
+		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
+		for (GraphNode graphNode : sccs.values()) {
+			result.add(graphNode.getSCC());
+		}
+		return result;
 	}
 }

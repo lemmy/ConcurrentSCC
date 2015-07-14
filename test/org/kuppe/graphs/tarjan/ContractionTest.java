@@ -53,7 +53,7 @@ public class ContractionTest {
 		one.setParent(two);
 		one.visited = Visited.POST;
 		try {
-			two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
+			two.contract(new HashMap<GraphNode, GraphNode>(0), graph, one);
 		} catch (AssertionError e) {
 			return;
 		}
@@ -126,7 +126,7 @@ public class ContractionTest {
 		Assert.assertTrue(graph.hasUntraversedArc(four));
 		Assert.assertTrue(graph.hasUntraversedArc(five));
 
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 		four.contract(sccs, graph, one);
 		Assert.assertTrue(one.is(Visited.POST));
 		Assert.assertTrue(three.is(Visited.POST));
@@ -153,8 +153,8 @@ public class ContractionTest {
 		expected.add(three);
 		expected.add(four);
 		expected.add(five);
-		Set<GraphNode> actual = sccs.get(four);
-		Assert.assertEquals(expected, actual);
+
+		Assert.assertEquals(expected, sccs.get(four).getSCC());
 	}
 	
 	@Test
@@ -177,7 +177,7 @@ public class ContractionTest {
 		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 1);
 
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
 		// Contract two into one
 		two.setParent(one);
@@ -243,7 +243,7 @@ public class ContractionTest {
 		final GraphNode eight = new GraphNode(8, graph);
 		graph.addNode(eight, 4);
 		
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
 		// Contract two into one
 		ten.setParent(nine);
@@ -351,9 +351,8 @@ public class ContractionTest {
 		Assert.assertTrue(graph.get(ten.getId()) == zero);
 		
 		Assert.assertEquals(1, sccs.size());
-		Collection<Set<GraphNode>> values = sccs.values();
-		Assert.assertEquals(1, values.size());
-		values.forEach((e) -> Assert.assertEquals(8, e.size()));
+		GraphNode values = (GraphNode) sccs.values().toArray()[0];
+		Assert.assertEquals(8, values.getSCC().size());
 	}
 	
 	@Test
@@ -376,7 +375,7 @@ public class ContractionTest {
 		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 3);
 
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 		
 		// The SCC in F
 		five.setParent(three);
@@ -412,7 +411,7 @@ public class ContractionTest {
 		expected.add(one);
 		expected.add(three);
 		expected.add(five);
-		Assert.assertEquals(expected, sccs.get(one));
+		Assert.assertEquals(expected, sccs.get(one).getSCC());
 	}
 	
 	@Test
@@ -435,7 +434,7 @@ public class ContractionTest {
 		final GraphNode five = new GraphNode(5, graph);
 		graph.addNode(five, 3);
 
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		while (!graph.checkPostCondition()) {
@@ -448,8 +447,65 @@ public class ContractionTest {
 		expected.add(one);
 		expected.add(three);
 		expected.add(five);
-		Assert.assertEquals(expected, sccs.values().toArray()[0]);
+		GraphNode actual = (GraphNode) sccs.values().toArray()[0];
+		Assert.assertEquals(expected, actual.getSCC());
 	}
+	
+	@Test
+	public void testEBiDirectionalLoop() {
+		final Graph graph = new Graph();
+
+		// a ring with bi-directional edges
+		final GraphNode one = new GraphNode(1, graph);
+		graph.addNode(one, 2,6);
+		final GraphNode two = new GraphNode(2, graph);
+		graph.addNode(two,1,3);
+		final GraphNode three = new GraphNode(3, graph);
+		graph.addNode(three,2,4);
+		final GraphNode four = new GraphNode(4, graph);
+		graph.addNode(four,3,5);
+		final GraphNode five = new GraphNode(5, graph);
+		graph.addNode(five,4,6);
+		final GraphNode six = new GraphNode(6, graph);
+		graph.addNode(six,5,1);
+
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
+
+		final Collection<GraphNode> nodes = graph.getStartNodes();
+		while (!graph.checkPostCondition()) {
+			for (GraphNode graphNode : nodes) {
+				new SCCWorker(noopExecutor, graph, sccs, graphNode).call();
+			}
+		}
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
+		Assert.assertTrue(five.is(Visited.POST));
+		Assert.assertTrue(six.is(Visited.POST));
+		
+		// All arcs have been explored
+		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(graph.hasUntraversedArc(two));
+		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(graph.hasUntraversedArc(four));
+		Assert.assertFalse(graph.hasUntraversedArc(five));
+		Assert.assertFalse(graph.hasUntraversedArc(six));
+		
+		Assert.assertEquals(1, sccs.size());
+		GraphNode actual = (GraphNode) sccs.values().toArray()[0];
+		Set<GraphNode> expected = new HashSet<GraphNode>();
+		expected.add(six);
+		expected.add(three);
+		expected.add(five);
+		expected.add(four);
+		expected.add(one);
+		expected.add(two);
+		Assert.assertEquals(expected, actual.getSCC());
+	}
+
 	
 	@Test
 	public void testContractionChildren() {
@@ -596,7 +652,7 @@ public class ContractionTest {
 		Assert.assertTrue(eight.getChildren().contains(ten));
 		Assert.assertTrue(eight.getChildren().contains(eleven));
 	
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 		zero.contract(sccs, graph, eight);
 		
 		Assert.assertEquals(8, zero.getChildren().size());
@@ -617,5 +673,22 @@ public class ContractionTest {
 		Assert.assertTrue(ten.getChildren().contains(tenChildA));
 		Assert.assertTrue(ten.getChildren().contains(tenChildB));
 		ten.getChildren().forEach((child) -> Assert.assertEquals(ten, child.getParent()));
+	}
+	
+	@Test
+	public void testVisitedStateChildContraction() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1, graph);
+		graph.addNode(one, 1,2);
+		final GraphNode two = new GraphNode(2, graph);
+		graph.addNode(two, 1,2);
+		
+		one.setParent(two);
+		try {
+			two.contract(new HashMap<GraphNode, GraphNode>(0), graph, one);
+		} catch (AssertionError e) {
+			Assert.fail("A node has to be PRE-visited if its contracted into its root (or assertions \"-ea\" disabled)");
+		}
 	}
 }

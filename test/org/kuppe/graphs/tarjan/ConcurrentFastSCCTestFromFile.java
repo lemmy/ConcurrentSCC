@@ -100,7 +100,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Graph graph = new Graph("testTinyLoop");
 		readFile(graph, "tinyDG.txt");
 		
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
@@ -109,7 +109,12 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				new SCCWorker(executor, graph, sccs, graphNode).call();
 			}
 		}
-		testTinySCCs(graph, new HashSet<Set<GraphNode>>(sccs.values()));
+		
+		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
+		for (GraphNode graphNode : sccs.values()) {
+			result.add(graphNode.getSCC());
+		}
+		testTinySCCs(graph, result);
 	}	
 	
 	private void testTinySCCs(final Graph graph, final Set<Set<GraphNode>> sccs) {
@@ -164,7 +169,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Graph graph = new Graph("testMediumLoop");
 		readFile(graph, "mediumDG.txt");
 		
-		final Map<GraphNode, Set<GraphNode>> sccs = new HashMap<GraphNode, Set<GraphNode>>(0);
+		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
@@ -173,7 +178,11 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				new SCCWorker(executor, graph, sccs, graphNode).call();
 			}
 		}
-		testMediumSCCs(graph, new HashSet<Set<GraphNode>>(sccs.values()));
+		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
+		for (GraphNode graphNode : sccs.values()) {
+			result.add(graphNode.getSCC());
+		}
+		testMediumSCCs(graph, result);
 	}
 
 	private void testMediumSCCs(final Graph graph, final Set<Set<GraphNode>> sccs) {

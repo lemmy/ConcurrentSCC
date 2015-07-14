@@ -28,7 +28,6 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -40,11 +39,11 @@ public class SCCWorker implements Callable<Void> {
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private final ExecutorService executor;
-	private final Map<GraphNode, Set<GraphNode>> sccs;
+	private final Map<GraphNode, GraphNode> sccs;
 	private final Graph graph;
 	private GraphNode v;
 
-	public SCCWorker(final ExecutorService executor, final Graph graph, Map<GraphNode, Set<GraphNode>> sccs,
+	public SCCWorker(final ExecutorService executor, final Graph graph, Map<GraphNode, GraphNode> sccs,
 			final GraphNode root) {
 		this.executor = executor;
 		this.graph = graph;

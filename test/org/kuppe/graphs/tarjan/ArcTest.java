@@ -27,7 +27,6 @@
 package org.kuppe.graphs.tarjan;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -74,7 +73,7 @@ public class ArcTest {
 		one.setParent(two);
 		
 		// Check arc to three is still untraversed
-		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
+		two.contract(new HashMap<GraphNode, GraphNode>(0), graph, one);
 
 		/*test*/
 
@@ -93,7 +92,7 @@ public class ArcTest {
 
 		one.setParent(two);
 		
-		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
+		two.contract(new HashMap<GraphNode, GraphNode>(0), graph, one);
 		
 		/*test*/
 		
@@ -112,7 +111,7 @@ public class ArcTest {
 
 		// contract one with one extra arc
 		one.setParent(two);
-		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
+		two.contract(new HashMap<GraphNode, GraphNode>(0), graph, one);
 
 		/*test*/
 
@@ -135,7 +134,7 @@ public class ArcTest {
 
 		// contract one with one extra arc
 		one.setParent(two);
-		two.contract(new HashMap<GraphNode, Set<GraphNode>>(0), graph, one);
+		two.contract(new HashMap<GraphNode, GraphNode>(0), graph, one);
 
 		/*test*/
 		

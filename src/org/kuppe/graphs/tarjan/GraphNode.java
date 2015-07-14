@@ -27,6 +27,7 @@
 package org.kuppe.graphs.tarjan;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class GraphNode extends NaiveTreeNode {
 
+	private static final int SCC_NODE = -23;
+	
 	public enum Visited {
 		// This also constitutes an order (see ordinal)
 		UN, POST;
@@ -144,8 +147,28 @@ public class GraphNode extends NaiveTreeNode {
 	public boolean isInSameTree(final GraphNode other) {
 		return this.getRoot() == other.getRoot();
 	}
+	
+	public Set<GraphNode> getSCC() {
+		assert this.getId() == SCC_NODE;
+		final Set<GraphNode> result = new HashSet<>();
+		result.add((GraphNode) this.parent);
+		if (!hasChildren()) {
+			return result;
+		}
+		GraphNode node = (GraphNode) leftChild;
+		while (node != rightChild) {
+			if (node.id == SCC_NODE) {
+				result.addAll(node.getSCC());
+			} else {
+				result.add(node);
+			}
+			node = (GraphNode) node.rightSibling;
+		}
+		result.add((GraphNode) rightChild);
+		return result;
+	}
 
-	public void contract(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, final GraphNode graphNode) {
+	public void contract(final Map<GraphNode, GraphNode> sccs, final Graph graph, final GraphNode graphNode) {
 		// We have to be a root in the tree...
 		assert this.isRoot();
 		// ...and the other has to be in our tree
@@ -153,12 +176,12 @@ public class GraphNode extends NaiveTreeNode {
 
 		// Get the subset SCCs (if any) which has been contracted into this
 		// before.
-		Set<GraphNode> scc = sccs.get(this);
-		if (scc == null) {
-			// No previous scc for this node
-			scc = new HashSet<GraphNode>(); // TODO We need a stack here for liveness checking!
-			scc.add(this);
-			sccs.put(this, scc);
+		GraphNode head = sccs.get(this);
+		if (head == null) {
+			// No previous scc for this node, create a new graphNode as new head
+			head = new GraphNode(SCC_NODE, graph);
+			head.parent = this;
+			sccs.put(this, head);
 		}
 		
 		// Traverse GraphNode's tree up to the root which is us/this.
@@ -170,10 +193,6 @@ public class GraphNode extends NaiveTreeNode {
 			// to acquire w's root (v) will eventually give up.
 			//TODO Change lock to be fair
 			parent.lock.lock();
-			
-			// Merge the other's subset SCC (if any) into this new one and
-			// remove it from the set of sccs.
-			mergeSubSetSCC(sccs, graph, scc, parent);
 
 			assert parent.isNot(Visited.POST);
 			// This should be the only place where visited is accessed directly
@@ -194,15 +213,18 @@ public class GraphNode extends NaiveTreeNode {
 			// lock will abort when it gets to the root and fails to acquire its
 			// lock.
 			final GraphNode parentsParent = (GraphNode) parent.parent;
-			
-			// Link parent's children to us except for the ones that are part of
-			// the SCC. Those are done now and don't need to be re-linked.
-			parent.reLinkChildren(this, scc);
+
+			// Link parent's children to us.
+			parent.reLinkChildren(this);
 			assert !parent.hasChildren();
 			
 			// Unlink the parent from the path so that it can be gc'ed
 			parent.cut();
 			assert parent.isRoot();
+			
+			// Merge the other's subset SCC (if any) into this new one and
+			// remove it from the set of sccs.
+			mergeSubSetSCC(sccs, graph, head, parent);
 			
 			// Continue with parent's parent.
 			parent.unlock();
@@ -215,30 +237,31 @@ public class GraphNode extends NaiveTreeNode {
 		assert this.isNot(Visited.POST);
 	}
 
-	private void mergeSubSetSCC(final Map<GraphNode, Set<GraphNode>> sccs, final Graph graph, Set<GraphNode> scc, final GraphNode parent) {
+	private void mergeSubSetSCC(final Map<GraphNode, GraphNode> sccs, final Graph graph, GraphNode newHead, final GraphNode node) {
 		// TODO Use (custom) LinkedLists instead of Set that can be merged in
 		// O(1). Would also preserve order of nodes and thus the actual path of
 		// the SCC. Reuse parent or sibling pointers for space efficiency reasons.
-		final Set<GraphNode> parentsSubset = sccs.remove(parent);
-		if (parentsSubset != null) {
-			fixDanglingMappings(graph, parent, parentsSubset);
-			scc.addAll(parentsSubset);
-		} else {
-			scc.add(parent);
+		final GraphNode nodesHead = sccs.remove(node);
+		if (nodesHead != null) {
+			assert nodesHead.getId() == SCC_NODE;
+			fixDanglingMappings(graph, nodesHead);
+			nodesHead.reLinkChildren(newHead);
 		}
+		node.link(newHead);
 	}
 
-	private void fixDanglingMappings(final Graph graph, final GraphNode parent, final Set<GraphNode> parentsSubset) {
+	private void fixDanglingMappings(final Graph graph, final GraphNode head) {
 		//TODO move into Graph and do in parallel unless Graph's concurrent map becomes the bottleneck.
 		// Correct all 'id to node' mappings for the previous contracted
 		// nodes. Otherwise, if an arc is later explored
 		// going to one node in parentsSubset "t", it will be skipped as
 		// "t" is post-visited. It has to be pre-visited though, which
 		// is this' visited state after contraction.
-		for (GraphNode s : parentsSubset) {
-			// s' mapping will be updated down below
-			if (s != parent) {
-				graph.contract(this, s);
+		Iterator<NaiveTreeNode> iterator = head.iterator();
+		while(iterator.hasNext()) {
+			GraphNode child = (GraphNode) iterator.next();
+			if (child.getId() != SCC_NODE) {
+				graph.contract(this, child);
 			}
 		}
 	}
@@ -274,5 +297,9 @@ public class GraphNode extends NaiveTreeNode {
 		for (int i = 0; i < holdCount; i++) {
 			lock.unlock();
 		}
+	}
+
+	public boolean isLocked() {
+		return this.lock.isLocked();
 	}
 }
