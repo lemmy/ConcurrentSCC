@@ -294,8 +294,14 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public void unlock() {
+		// Ideally it would use the stronger precondition that the calling
+		// thread is the current thread. However, some unit tests don't use the
+		// scheduler but call SCCWorker#call recursively. Thus, a lock is
+		// acquired multiple times during recursion but completely unlocked upon
+		// the first invocation. Subsequent unlocks would fail.
 		int holdCount = lock.getHoldCount();
 		for (int i = 0; i < holdCount; i++) {
+			assert lock.isHeldByCurrentThread();
 			lock.unlock();
 		}
 	}
