@@ -236,6 +236,15 @@ public class Graph {
 			if (graphNode.hasArcs()) {
 				return false;
 			}
+			if (graphNode.hasChildren()) {
+				return false;
+			}
+			if (!graphNode.isRoot()) {
+				return false;
+			}
+			if (graphNode.isLocked()) {
+				return false;
+			}
 		}
 		return true;
 	}
