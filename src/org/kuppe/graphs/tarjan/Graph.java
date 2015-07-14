@@ -199,8 +199,10 @@ public class Graph {
 	}
 
 	public void unlockTrees(GraphNode w, GraphNode wRoot) {
-		// do one walk from w to its root to collect the nodes...
+		// do not unlock w twice if w's root is w itself.
+		if (w != wRoot) {
 		unlock(wRoot);
+		}
 		unlock(w);
 	}
 
