@@ -259,7 +259,6 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
 		
 		// Read the file with the correct SCCs
-		final Set<Set<Integer>> expectedSCCs = new HashSet<>(25);
 		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("largeDGsccs.txt");
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 			for(String line = br.readLine(); line != null; line = br.readLine()) {
@@ -268,11 +267,9 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				for (String string : ints) {
 					hashSet.add(Integer.parseInt(string));
 				}
-				expectedSCCs.add(hashSet);
+				Assert.assertTrue(convertedSCCs.contains(hashSet));
 			}
 		}
-		
-		Assert.assertEquals(expectedSCCs, convertedSCCs);
 	}	
 
 	// Convert the set of sets of GraphNodes into a set of sets of ints
