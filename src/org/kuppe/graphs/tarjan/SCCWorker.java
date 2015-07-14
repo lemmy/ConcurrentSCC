@@ -158,8 +158,8 @@ public class SCCWorker implements Callable<Void> {
 							 */
 							if (isRoot) {
 								executor.submit(this); // Continue with w
-								return null;
 							}
+							return null;
 						} else if (!w.equals(v)) {
 							/*
 							 * The other possibility is that w is in the same
@@ -198,6 +198,7 @@ public class SCCWorker implements Callable<Void> {
 									// No need to unlock w, has happened during
 									// contraction
 									graph.unlock(v);
+									return null;
 								} else {
 									// v is a (contracted) root and thus
 									// eligible
@@ -227,6 +228,7 @@ public class SCCWorker implements Callable<Void> {
 					// No arcs left, become post-visited and free childs
 					freeChilds();
 					graph.unlock(v);
+					return null;
 				}
 			} else {
 				// Cannot acquire v lock, try later
