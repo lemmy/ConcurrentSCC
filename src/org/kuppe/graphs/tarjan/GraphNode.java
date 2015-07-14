@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class GraphNode extends NaiveTreeNode {
@@ -75,6 +74,7 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public void setArcs(List<Integer> arcs) {
+		assert isNot(Visited.POST);
 		this.arcs = arcs;
 	}
 	
@@ -96,6 +96,7 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public void addArcs(List<Integer> other) {
+		assert isNot(Visited.POST);
 		this.arcs.addAll(other);
 	}
 
@@ -105,6 +106,7 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public int getArc() {
+		assert isNot(Visited.POST);
 		return this.arcs.get(0);
 	}
 
@@ -149,6 +151,7 @@ public class GraphNode extends NaiveTreeNode {
 	}
 	
 	public Set<GraphNode> getSCC() {
+		assert is(Visited.POST);
 		assert this.getId() == SCC_NODE;
 		final Set<GraphNode> result = new HashSet<>();
 		result.add((GraphNode) this.parent);
@@ -169,6 +172,8 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public void contract(final Map<GraphNode, GraphNode> sccs, final Graph graph, final GraphNode graphNode) {
+		assert isNot(Visited.POST);
+
 		// We have to be a root in the tree...
 		assert this.isRoot();
 		// ...and the other has to be in our tree
@@ -180,6 +185,7 @@ public class GraphNode extends NaiveTreeNode {
 		if (head == null) {
 			// No previous scc for this node, create a new graphNode as new head
 			head = new GraphNode(SCC_NODE, graph);
+			head.visited = Visited.POST;
 			head.parent = this;
 			sccs.put(this, head);
 		}
@@ -260,6 +266,7 @@ public class GraphNode extends NaiveTreeNode {
 		Iterator<NaiveTreeNode> iterator = head.iterator();
 		while(iterator.hasNext()) {
 			GraphNode child = (GraphNode) iterator.next();
+			assert child.is(Visited.POST);
 			if (child.getId() != SCC_NODE) {
 				graph.contract(this, child);
 			}
@@ -281,15 +288,6 @@ public class GraphNode extends NaiveTreeNode {
 
 	public boolean tryLock() {
 		return lock.tryLock();
-	}
-
-	public boolean tryLock(long wait, TimeUnit unit) {
-		try {
-			return lock.tryLock(wait, unit);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 
 	public void unlock() {
