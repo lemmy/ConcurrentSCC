@@ -112,20 +112,20 @@ public class SCCWorker implements Callable<Void> {
 					if ((root = graph.tryLockTrees(w)) != null) {
 						graph.removeTraversedArc(v, arc);
 
-						// w happens to be done, just release the lock and move
-						// onto the next arc
-						if (w.is(Visited.POST)) {
-							graph.unlockTrees(w, root);
-							graph.unlock(v);
-							executor.submit(this); // Continue with next arc
-							return null;
-						}
-
 						if (w.equals(v)) {
 							// TODO self-loop, might check stuttering here
 							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 
 							// do nothing
+							graph.unlock(v); // w = v and v is - by def - a root, thus unlock v suffices.
+							executor.submit(this); // Continue with next arc
+							return null;
+						}
+
+						// w happens to be done, just release the lock and move
+						// onto the next arc
+						if (w.is(Visited.POST)) {
+							// v # w (due to previous check)
 							graph.unlockTrees(w, root);
 							graph.unlock(v);
 							executor.submit(this); // Continue with next arc
