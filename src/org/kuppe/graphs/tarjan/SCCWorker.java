@@ -109,7 +109,7 @@ public class SCCWorker implements Callable<Void> {
 					}
 					
 					GraphNode root = null;
-					if ((root = graph.tryLockTrees(w, v)) != null) {
+					if ((root = graph.tryLockTrees(w)) != null) {
 						graph.removeTraversedArc(v, arc);
 
 						// w happens to be done, just release the lock and move

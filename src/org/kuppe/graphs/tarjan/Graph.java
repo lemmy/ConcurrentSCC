@@ -160,7 +160,7 @@ public class Graph {
 
 	/* Link cut tree locking */
 	
-	public GraphNode tryLockTrees(GraphNode w, GraphNode v) {
+	public GraphNode tryLockTrees(final GraphNode w) {
 		if (!w.tryLock()) {
 			// Nothing is locked
 			return null;
