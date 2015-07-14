@@ -232,8 +232,11 @@ public class GraphNode extends NaiveTreeNode {
 			// remove it from the set of sccs.
 			mergeSubSetSCC(sccs, graph, head, parent);
 			
-			// Continue with parent's parent.
+			// parent is potentially locked more than once (e.g. if it is w in
+			// SCCWorker). Thus, release all locks.
 			parent.unlock();
+			
+			// Continue with parent's parent.
 			parent = parentsParent;
 		}
 
