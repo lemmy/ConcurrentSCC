@@ -101,21 +101,24 @@ public class SCCWorker implements Callable<Void> {
 					// merged creating duplicates. As we don't want to pay the
 					// price to discard duplicates during contraction, check if
 					// w is already POST-visited OUTSIDE of lock acquisition.
-					if (w.is(Visited.POST)) {
-						graph.removeTraversedArc(v, arc);
-						graph.unlock(v);
-						executor.submit(this); // Continue with next arc
-						return null;
-					}
+					// However, as it turns out, this cannot be done because it
+					// opens the door to a dirty read when interleaved with w
+					// being contracted.
+//					if (w.is(Visited.POST)) {
+//						graph.removeTraversedArc(v, arc);
+//						graph.unlock(v);
+//						executor.submit(this); // Continue with next arc
+//						return null;
+//					}
 					
 					GraphNode root = null;
 					if ((root = graph.tryLockTrees(w)) != null) {
 						graph.removeTraversedArc(v, arc);
-
+						
 						if (w.equals(v)) {
 							// TODO self-loop, might check stuttering here
 							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
-
+							
 							// do nothing
 							graph.unlock(v); // w = v and v is - by def - a root, thus unlock v suffices.
 							executor.submit(this); // Continue with next arc
@@ -146,7 +149,6 @@ public class SCCWorker implements Callable<Void> {
 							this.v = w;
 
 							boolean isRoot = w.isRoot();
-
 							graph.unlockTrees(w, root);
 							graph.unlock(vOld);
 							/*
