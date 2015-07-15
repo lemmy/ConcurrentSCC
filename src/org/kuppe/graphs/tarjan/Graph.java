@@ -83,14 +83,10 @@ public class Graph {
 	
 	/* contraction */
 
-	public void contract(final GraphNode parent, final GraphNode child) {
-		final GraphNode dstRecord = this.nodePtrTable.get(parent.getId());
-		assert dstRecord == parent;
-		assert dstRecord != null;
-		
+	public void contract(final GraphNode into, final GraphNode child) {
 		// Globally Replace src with dst
-		final GraphNode replaced = this.nodePtrTable.replace(child.getId(), dstRecord);
-		assert replaced != dstRecord;
+		final GraphNode replaced = this.nodePtrTable.replace(child.getId(), into);
+		assert replaced != into;
 		this.replaced.add(replaced);
 		
 		// add all outgoing arcs to dstRecord
@@ -106,11 +102,11 @@ public class Graph {
 		// => SCCWorker checks PRIOR to lock acquisition, if the arc's endpoint
 		// node is POST
 		if (replaced.hasArcs()) {
-			dstRecord.addArcs(replaced.getArcs());
+			into.addArcs(replaced.getArcs());
 			replaced.clearArcs();
 		}
 		
-		assert this.nodePtrTable.get(child.getId()) == parent;
+		assert this.nodePtrTable.get(child.getId()) == into;
 	}
 	
 	/* Graph Locking */
