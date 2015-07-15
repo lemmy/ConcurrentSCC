@@ -50,6 +50,7 @@ public class Graph {
 	//TODO Remove replaced in "production". It's here to strengthen the post condition.
 	private final Set<GraphNode> replaced = new HashSet<>();
 	private final String name;
+	private final Deque<GraphNode> initNodes = new ArrayDeque<>();
 
 	public Graph() {
 		this(null);
@@ -70,11 +71,13 @@ public class Graph {
 	 * @return The initial nodes?!
 	 */
 	public Deque<GraphNode> getStartNodes() {
-		final Deque<GraphNode> start = new ArrayDeque<GraphNode>(this.nodePtrTable.size());
-		for (GraphNode graphNode : nodePtrTable.values()) {
-			start.add(graphNode);
+		if (initNodes.isEmpty()) {
+			// If no initial nodes are set, all nodes are considered initial.
+			for (GraphNode graphNode : nodePtrTable.values()) {
+				initNodes.add(graphNode);
+			}
 		}
-		return start;
+		return initNodes;
 	}
 
 	public GraphNode get(final int id) {
@@ -247,5 +250,9 @@ public class Graph {
 		node.setArcs(s);
 		
 		this.nodePtrTable.put(node.getId(), node);
+	}
+	
+	void setInit(final int nodeId) {
+		initNodes.add(get(nodeId));
 	}
 }

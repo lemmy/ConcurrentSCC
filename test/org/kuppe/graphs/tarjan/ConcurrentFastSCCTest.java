@@ -111,6 +111,52 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	}
 	
 	@Test
+	public void testAWithOneAsInit() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 1, 2);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 1, 3);
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 4);
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four, 3);
+
+		graph.setInit(one.getId());
+		
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+		
+		// All arcs have been explored
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		
+		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 2, scc.size());
+		}
+		
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		
+		Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(one);
+		anSCC.add(two);
+		
+		expected.add(anSCC);
+
+		anSCC = new HashSet<GraphNode>();
+		anSCC.add(three);
+		anSCC.add(four);
+		
+		expected.add(anSCC);
+		
+		Assert.assertEquals(expected, sccs);
+	}
+	
+	@Test
 	public void testB() {
 		final Graph graph = new Graph();
 
@@ -147,7 +193,47 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 	}
+
+	@Test
+	public void testBWithOneAsInit() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 1,2,3);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 1,2,3);
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 1,2,3);
+
+		graph.setInit(one.getId());
+		
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		
+		// All arcs have been explored
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
 	
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 3, scc.size());
+		}
+		
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(three);
+		anSCC.add(two);
+		anSCC.add(one);
+		expected.add(anSCC);
+		Assert.assertEquals(expected, sccs);
+	}
+
 	@Test
 	public void testC() {
 		final Graph graph = new Graph();
@@ -162,6 +248,56 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		graph.addNode(four,1);
 		final GraphNode five = new GraphNode(5);
 		graph.addNode(five,2);
+		
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
+		Assert.assertTrue(five.is(Visited.POST));
+		
+		// All arcs have been explored
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		Assert.assertFalse(five.hasArcs());
+
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 5, scc.size());
+		}
+		
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(two);
+		anSCC.add(one);
+		anSCC.add(three);
+		anSCC.add(four);
+		anSCC.add(five);
+		expected.add(anSCC);
+		Assert.assertEquals(expected, sccs);
+	}
+	
+	@Test
+	public void testCWithFourAsInit() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one,3);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two,3);
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three,4,5);
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four,1);
+		final GraphNode five = new GraphNode(5);
+		graph.addNode(five,2);
+		
+		graph.setInit(four.getId());
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
@@ -242,6 +378,54 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	}
 
 	@Test
+	public void testDWithOneAndTreeAsInits() {
+		final Graph graph = new Graph();
+
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 2);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 1);
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 4);
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four, 3);
+		
+		graph.setInit(one.getId());
+		graph.setInit(three.getId());
+		
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
+		
+		// All arcs have been explored
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		
+		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 2, scc.size());
+		}
+
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(one);
+		anSCC.add(two);
+		expected.add(anSCC);
+		anSCC = new HashSet<GraphNode>();
+		anSCC.add(three);
+		anSCC.add(four);
+		expected.add(anSCC);
+		Assert.assertEquals(expected, sccs);
+	}
+	
+	@Test
 	public void testE() {
 		final Graph graph = new Graph();
 
@@ -259,6 +443,62 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		final GraphNode six = new GraphNode(6);
 		graph.addNode(six, 1);
 
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+		
+		// All nodes are post-visited
+		Assert.assertTrue(one.is(Visited.POST));
+		Assert.assertTrue(two.is(Visited.POST));
+		Assert.assertTrue(three.is(Visited.POST));
+		Assert.assertTrue(four.is(Visited.POST));
+		Assert.assertTrue(five.is(Visited.POST));
+		Assert.assertTrue(six.is(Visited.POST));
+		
+		// All arcs have been explored
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		Assert.assertFalse(five.hasArcs());
+		Assert.assertFalse(six.hasArcs());
+		
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 6, scc.size());
+		}
+		
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(one);
+		anSCC.add(two);
+		anSCC.add(three);
+		anSCC.add(four);
+		anSCC.add(five);
+		anSCC.add(six);
+		expected.add(anSCC);
+		Assert.assertEquals(expected, sccs);
+	}
+	
+	@Test
+	public void testEWithOneAsInit() {
+		final Graph graph = new Graph();
+
+		// a ring
+		final GraphNode one = new GraphNode(1);
+		graph.addNode(one, 2);
+		final GraphNode two = new GraphNode(2);
+		graph.addNode(two, 3);
+		final GraphNode three = new GraphNode(3);
+		graph.addNode(three, 4);
+		final GraphNode four = new GraphNode(4);
+		graph.addNode(four, 5);
+		final GraphNode five = new GraphNode(5);
+		graph.addNode(five, 6);
+		final GraphNode six = new GraphNode(6);
+		graph.addNode(six, 1);
+
+		graph.setInit(one.getId());
+		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
@@ -368,6 +608,59 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		
 		final GraphNode rightBottom = new GraphNode(5);
 		graph.addNode(rightBottom, 3);
+		
+		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+
+		// All nodes are post-visited
+		Assert.assertTrue(center.is(Visited.POST));
+		Assert.assertTrue(leftUpper.is(Visited.POST));
+		Assert.assertTrue(leftBottom.is(Visited.POST));
+		Assert.assertTrue(rightUpper.is(Visited.POST));
+		Assert.assertTrue(rightBottom.is(Visited.POST));
+
+		// All arcs have been explored
+		Assert.assertFalse(center.hasArcs());
+		Assert.assertFalse(leftUpper.hasArcs());
+		Assert.assertFalse(leftBottom.hasArcs());
+		Assert.assertFalse(rightUpper.hasArcs());
+		Assert.assertFalse(rightBottom.hasArcs());
+
+		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
+		for (Set<GraphNode> scc : sccs) {
+			Assert.assertEquals(printSCC(scc), 3, scc.size());
+		}
+		
+		final Set<Set<GraphNode>> expected = new HashSet<Set<GraphNode>>();
+		final Set<GraphNode> anSCC = new HashSet<GraphNode>();
+		anSCC.add(center);
+		anSCC.add(rightBottom);
+		anSCC.add(rightUpper);
+		expected.add(anSCC);
+		Assert.assertEquals(expected, sccs);
+	}
+	
+	@Test
+	public void testFWithOneAsInit() {
+		final Graph graph = new Graph();
+
+		// a star with one loop
+		final GraphNode center = new GraphNode(1);
+		graph.addNode(center, 2,4,5);
+		
+		final GraphNode leftUpper = new GraphNode(2);
+		graph.addNode(leftUpper, 2);
+		
+		final GraphNode rightUpper = new GraphNode(3);
+		graph.addNode(rightUpper, 1);
+		
+		final GraphNode leftBottom = new GraphNode(4);
+		graph.addNode(leftBottom,4);
+		
+		final GraphNode rightBottom = new GraphNode(5);
+		graph.addNode(rightBottom, 3);
+		
+		graph.setInit(center.getId());
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());

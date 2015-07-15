@@ -178,6 +178,18 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	}
 	
 	@Test
+	public void testMediumWithThreeInitsOnly() throws IOException {
+		final Graph graph = new Graph("testMedium");
+		readFile(graph, "mediumDG.txt");
+		graph.setInit(1); // Source node
+		graph.setInit(10); // Source node
+		graph.setInit(20); // One node of the smaller SCC which is isolated WRT incoming arcs.
+
+		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		testMediumSCCs(graph, sccs);
+	}
+	
+	@Test
 	public void testMediumLoop() throws IOException {
 		final Graph graph = new Graph("testMediumLoop");
 		readFile(graph, "mediumDG.txt");
@@ -318,6 +330,16 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				if (!graph.hasNode(arcId)) {
 					graph.addNode(new GraphNode(arcId));
 				}
+			}
+		}
+	}
+	
+	private static void readInits(Graph graph, String filename) throws IOException {
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream(filename);
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+			for (String line = br.readLine(); line != null; line = br.readLine()) {
+				final int nodeId = Integer.parseInt(line.trim());
+				graph.setInit(nodeId);
 			}
 		}
 	}
