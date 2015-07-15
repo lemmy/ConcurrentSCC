@@ -29,12 +29,18 @@ package org.kuppe.graphs.tarjan;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class SCCWorker implements Runnable {
 
+	public static final AtomicLong V_LOCK_FAIL = new AtomicLong();
+	public static final AtomicLong V_LOCK_SUCC = new AtomicLong();
+	public static final AtomicLong W_LOCK_FAIL = new AtomicLong();
+	public static final AtomicLong W_LOCK_SUCC = new AtomicLong();
+	
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private final ExecutorService executor;
@@ -66,7 +72,7 @@ public class SCCWorker implements Runnable {
 
 			// Get lock of v
 			if (graph.tryLock(v)) {
-
+				V_LOCK_SUCC.incrementAndGet();
 				// Skip POST-visited v
 				if (v.is(Visited.POST)) {
 					// If POST, there must not be any children. 
@@ -112,6 +118,7 @@ public class SCCWorker implements Runnable {
 					
 					GraphNode root = null;
 					if ((root = graph.tryLockTrees(w)) != null) {
+						W_LOCK_SUCC.incrementAndGet();
 						graph.removeTraversedArc(v, arc);
 						
 						if (w.equals(v)) {
@@ -232,6 +239,7 @@ public class SCCWorker implements Runnable {
 					return;
 				}
 			} else {
+				V_LOCK_FAIL.incrementAndGet();
 				// Cannot acquire v lock, try later
 				executor.execute(this);
 				return;
