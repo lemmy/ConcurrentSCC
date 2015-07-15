@@ -45,6 +45,8 @@ public class Graph {
 	public static final int NO_ARC = -1;
 
 	private final Map<Integer, GraphNode> nodePtrTable;
+	//TODO Remove replaced in "production". It's here to strengthen the post condition.
+	private final Set<GraphNode> replaced = new HashSet<>();
 	private final String name;
 
 	public Graph() {
@@ -83,6 +85,7 @@ public class Graph {
 		assert this.nodePtrTable.containsKey(node.getId());
 		GraphNode graphNode = this.nodePtrTable.get(node.getId());
 		graphNode.removeArc((Integer)arcId); // Explicitly cast to Integer to remove the element arcId and not the element at position arcId;
+		assert graphNode.isNot(Visited.POST);
 	}
 
 	public int getUntraversedArc(GraphNode node) {
@@ -127,6 +130,7 @@ public class Graph {
 		// Globally Replace src with dst
 		final GraphNode replaced = this.nodePtrTable.replace(child.getId(), dstRecord);
 		assert replaced != dstRecord;
+		this.replaced.add(replaced);
 		
 		// add all outgoing arcs to dstRecord
 		// TODO LinkedList might not be the ideal data structure here:
@@ -201,7 +205,7 @@ public class Graph {
 	public void unlockTrees(GraphNode w, GraphNode wRoot) {
 		// do not unlock w twice if w's root is w itself.
 		if (w != wRoot) {
-		unlock(wRoot);
+			unlock(wRoot);
 		}
 		unlock(w);
 	}
@@ -242,6 +246,25 @@ public class Graph {
 				return false;
 			}
 			if (!graphNode.isRoot()) {
+				return false;
+			}
+			if (graphNode.isLocked()) {
+				return false;
+			}
+		}
+		for (GraphNode graphNode : this.replaced) {
+			if (graphNode.isNot(Visited.POST)) {
+				return false;
+			}
+			if (graphNode.hasArcs()) {	
+				return false;
+			}
+			if (graphNode.hasChildren()) {
+				return false;
+			}
+			if (graphNode.isRoot()) {
+				// Contracted nodes are part of the SCC linked list and thus
+				// have a parent.
 				return false;
 			}
 			if (graphNode.isLocked()) {
