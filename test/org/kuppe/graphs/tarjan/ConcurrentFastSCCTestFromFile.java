@@ -30,9 +30,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -115,12 +115,10 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
-		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
-		while (!graph.checkPostCondition()) {
-			for (GraphNode graphNode : nodes) {
-				new SCCWorker(executor, graph, sccs, graphNode).run();
-			}
+		final Iterator<GraphNode> iterator = graph.iterator();
+		while (iterator.hasNext()) {
+			new SCCWorker(executor, graph, sccs, iterator.next()).run();
 		}
 		
 		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
@@ -196,12 +194,10 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
-		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
-		while (!graph.checkPostCondition()) {
-			for (GraphNode graphNode : nodes) {
-				new SCCWorker(executor, graph, sccs, graphNode).run();
-			}
+		final Iterator<GraphNode> iterator = graph.iterator();
+		while (iterator.hasNext()) {
+			new SCCWorker(executor, graph, sccs, iterator.next()).run();
 		}
 		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
 		for (GraphNode graphNode : sccs.values()) {

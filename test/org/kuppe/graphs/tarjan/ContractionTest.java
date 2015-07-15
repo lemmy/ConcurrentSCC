@@ -26,9 +26,9 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -436,11 +436,9 @@ public class ContractionTest {
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
-		final Collection<GraphNode> nodes = graph.getStartNodes();
-		while (!graph.checkPostCondition()) {
-			for (GraphNode graphNode : nodes) {
-				new SCCWorker(noopExecutor, graph, sccs, graphNode).run();
-			}
+		final Iterator<GraphNode> iterator = graph.iterator();
+		while (iterator.hasNext()) {
+			new SCCWorker(noopExecutor, graph, sccs, iterator.next()).run();
 		}
 		Assert.assertEquals(1, sccs.size());
 		final Set<GraphNode> expected = new HashSet<GraphNode>();
@@ -471,11 +469,9 @@ public class ContractionTest {
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
-		final Collection<GraphNode> nodes = graph.getStartNodes();
-		while (!graph.checkPostCondition()) {
-			for (GraphNode graphNode : nodes) {
-				new SCCWorker(noopExecutor, graph, sccs, graphNode).run();
-			}
+		final Iterator<GraphNode> iterator = graph.iterator();
+		while (iterator.hasNext()) {
+			new SCCWorker(noopExecutor, graph, sccs, iterator.next()).run();
 		}
 		
 		// All nodes are post-visited

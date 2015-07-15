@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -67,17 +68,11 @@ public class Graph {
 	
 	/* nodes */
 	
-	/**
-	 * @return The initial nodes?!
-	 */
-	public Deque<GraphNode> getStartNodes() {
+	public Iterator<GraphNode> iterator() {
 		if (initNodes.isEmpty()) {
-			// If no initial nodes are set, all nodes are considered initial.
-			for (GraphNode graphNode : nodePtrTable.values()) {
-				initNodes.add(graphNode);
-			}
+			return this.nodePtrTable.values().iterator();
 		}
-		return initNodes;
+		return initNodes.iterator();
 	}
 
 	public GraphNode get(final int id) {
