@@ -28,7 +28,9 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
@@ -42,9 +44,16 @@ public class SCCWorker implements Runnable {
 	private final Graph graph;
 	private GraphNode v;
 
-	public SCCWorker(final ExecutorService executor, final Graph graph, Map<GraphNode, GraphNode> sccs,
+	private final AtomicLong cnt;
+
+	private final CountDownLatch latch;
+
+	public SCCWorker(final ExecutorService executor, AtomicLong cnt, CountDownLatch latch, final Graph graph, Map<GraphNode, GraphNode> sccs,
 			final GraphNode root) {
 		this.executor = executor;
+		cnt.incrementAndGet(); // count this instance
+		this.cnt = cnt;
+		this.latch = latch;
 		this.graph = graph;
 		this.sccs = sccs;
 		this.v = root;
@@ -61,6 +70,7 @@ public class SCCWorker implements Runnable {
 
 				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
 				// my job is already done
+				finished();
 				return;
 			}
 
@@ -76,6 +86,7 @@ public class SCCWorker implements Runnable {
 
 					logger.fine(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
 					graph.unlock(v);
+					finished();
 					return;
 				}
 
@@ -83,6 +94,7 @@ public class SCCWorker implements Runnable {
 				if (!v.isRoot()) {
 					logger.fine(() -> String.format("%s: Skipping non-root v %s", getId(), v));
 					graph.unlock(v);
+					finished();
 					return; // A new worker will be scheduled by our tree
 									// root. We are a child right now.
 				}
@@ -159,7 +171,9 @@ public class SCCWorker implements Runnable {
 							 */
 							if (isRoot) {
 								executor.execute(this); // Continue with w
+								return;
 							}
+							finished();
 							return;
 						} else if (!w.equals(v)) {
 							/*
@@ -199,6 +213,7 @@ public class SCCWorker implements Runnable {
 									// No need to unlock w, has happened during
 									// contraction
 									graph.unlock(v);
+									finished();
 									return;
 								} else {
 									// v is a (contracted) root and thus
@@ -229,6 +244,7 @@ public class SCCWorker implements Runnable {
 					// No arcs left, become post-visited and free childs
 					freeChilds();
 					graph.unlock(v);
+					finished();
 					return;
 				}
 			} else {
@@ -236,11 +252,18 @@ public class SCCWorker implements Runnable {
 				executor.execute(this);
 				return;
 			}
+			finished();
 			return;
 		} catch (Exception | Error e) {
 			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage()));
 			e.printStackTrace();
 			throw e;
+		}
+	}
+
+	private void finished() {
+		if (cnt.decrementAndGet() == 0) {
+			latch.countDown();
 		}
 	}
 
@@ -302,7 +325,7 @@ public class SCCWorker implements Runnable {
 			child.cut();
 			// Now that the child is free, it's a root again.
 			logger.info(() -> String.format("%s: Free'ed child (%s)", getId(), child));
-			executor.execute(new SCCWorker(executor, graph, sccs, child));
+			executor.execute(new SCCWorker(executor, cnt, latch, graph, sccs, child));
 		}
 
 		// All our children must in fact be cut loose

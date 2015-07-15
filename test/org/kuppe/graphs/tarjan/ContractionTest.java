@@ -31,7 +31,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -396,7 +398,7 @@ public class ContractionTest {
 		//
 		// Once (4) gets explored, it is found that it has no children and its
 		// child (1) must be cut loose.
-		new SCCWorker(noopExecutor, graph, sccs, four).run();
+		new SCCWorker(noopExecutor, new AtomicLong(Long.MAX_VALUE), new CountDownLatch(1), graph, sccs, four).run();
 		Assert.assertTrue(four.is(Visited.POST));
 		
 		// Since with the NoopExcecutor nested calls are executed recursively,
@@ -436,10 +438,11 @@ public class ContractionTest {
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
+		CountDownLatch latch = new CountDownLatch(1);
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
-				new SCCWorker(noopExecutor, graph, sccs, graphNode).run();
+				new SCCWorker(noopExecutor, new AtomicLong(Long.MAX_VALUE), latch, graph, sccs, graphNode).run();
 			}
 		}
 		Assert.assertEquals(1, sccs.size());
@@ -472,9 +475,10 @@ public class ContractionTest {
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
+		CountDownLatch latch = new CountDownLatch(1);
 		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
-				new SCCWorker(noopExecutor, graph, sccs, graphNode).run();
+				new SCCWorker(noopExecutor, new AtomicLong(Long.MAX_VALUE), latch, graph, sccs, graphNode).run();
 			}
 		}
 		

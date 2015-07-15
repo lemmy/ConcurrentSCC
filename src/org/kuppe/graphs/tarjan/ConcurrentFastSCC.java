@@ -32,8 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -43,7 +46,7 @@ public class ConcurrentFastSCC {
 		// TODO Name threads inside executor to aid debugging.
 		// see
 		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
-		final ForkJoinPool executor = new ForkJoinPool();
+		final ExecutorService executor = Executors.newFixedThreadPool(4);
 
 		final List<GraphNode> startNodes = graph.getStartNodes();
 		if (startNodes.isEmpty()) {
@@ -62,19 +65,29 @@ public class ConcurrentFastSCC {
 		// The map of sccs passed around by SCCWorkers
 		final Map<GraphNode, GraphNode> sccs = new ConcurrentHashMap<GraphNode, GraphNode>();
 		
+		final AtomicLong cnt = new AtomicLong(0);
+		final CountDownLatch latch = new CountDownLatch(1);
+		
 		// Take timestamp of when actual work started
 		final long start = System.currentTimeMillis();
 		
 		// Submit a new worker for each graph node
 		for (GraphNode graphNode : startNodes) {
 			if (graphNode.isNot(Visited.POST)) {
-				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
+				executor.execute(new SCCWorker(executor, cnt, latch, graph, sccs, graphNode));
 			}
 		}
 
+		try {
+			latch.await();
+			
+			executor.shutdown();
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 		// Wait until no SCCWorker is running and no SCCWorker is queued.
-		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-		executor.shutdown();
 
 		// Print runtime statistics
 		if (graph.getName() != null) {

@@ -33,9 +33,12 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -104,9 +107,11 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 
 		final Collection<GraphNode> nodes = graph.getStartNodes();
 		final NoopExecutorService executor = new NoopExecutorService();
+		CountDownLatch latch = new CountDownLatch(1);
+
 		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
-				new SCCWorker(executor, graph, sccs, graphNode).run();
+				new SCCWorker(executor, new AtomicLong(Long.MAX_VALUE), latch, graph, sccs, graphNode).run();
 			}
 		}
 		
@@ -171,18 +176,22 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
-		final Collection<GraphNode> nodes = graph.getStartNodes();
+		List<GraphNode> nodes = graph.getStartNodes();
+//		final Collection<List<GraphNode>> permutations = Collections2.permutations();
+//		for (List<GraphNode> nodes : permutations) {
+		CountDownLatch latch = new CountDownLatch(1);
 		final NoopExecutorService executor = new NoopExecutorService();
-		while (!graph.checkPostCondition()) {
-			for (GraphNode graphNode : nodes) {
-				new SCCWorker(executor, graph, sccs, graphNode).run();
+			while (!graph.checkPostCondition()) {
+				for (GraphNode graphNode : nodes) {
+					new SCCWorker(executor, new AtomicLong(Long.MAX_VALUE), latch, graph, sccs, graphNode).run();
+				}
 			}
-		}
-		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
-		for (GraphNode graphNode : sccs.values()) {
-			result.add(graphNode.getSCC());
-		}
-		testMediumSCCs(graph, result);
+			final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
+			for (GraphNode graphNode : sccs.values()) {
+				result.add(graphNode.getSCC());
+			}
+			testMediumSCCs(graph, result);
+//		}
 	}
 
 	private void testMediumSCCs(final Graph graph, final Set<Set<GraphNode>> sccs) {
