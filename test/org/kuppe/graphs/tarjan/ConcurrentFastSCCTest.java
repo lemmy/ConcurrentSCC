@@ -51,7 +51,7 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	public void testSingleVertex() {
 		final Graph graph = new Graph();
 
-		final GraphNode single = new GraphNode(1, graph);
+		final GraphNode single = new GraphNode(1);
 		graph.addNode(single, 1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -61,7 +61,7 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(single.is(Visited.POST));
 	
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(single));
+		Assert.assertFalse(single.hasArcs());
 		
 		Assert.assertEquals(0, sccs.size());
 	}
@@ -70,23 +70,23 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	public void testA() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 1, 2);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1, 3);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 4);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four, 3);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
 		Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
-		Assert.assertFalse(graph.hasUntraversedArc(four));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
 		
 		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -114,11 +114,11 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	public void testB() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 1,2,3);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1,2,3);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 1,2,3);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -130,9 +130,9 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(three.is(Visited.POST));
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
 	
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -152,15 +152,15 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	public void testC() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one,3);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two,3);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three,4,5);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,1);
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five,2);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -174,11 +174,11 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(five.is(Visited.POST));
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
-		Assert.assertFalse(graph.hasUntraversedArc(four));
-		Assert.assertFalse(graph.hasUntraversedArc(five));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		Assert.assertFalse(five.hasArcs());
 
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -200,13 +200,13 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 	public void testD() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 4);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -219,10 +219,10 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(four.is(Visited.POST));
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
-		Assert.assertFalse(graph.hasUntraversedArc(four));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
 		
 		Assert.assertEquals(printSCCs(sccs), 2, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -246,17 +246,17 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		final Graph graph = new Graph();
 
 		// a ring
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 3);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 4);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four, 5);
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five, 6);
-		final GraphNode six = new GraphNode(6, graph);
+		final GraphNode six = new GraphNode(6);
 		graph.addNode(six, 1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -271,12 +271,12 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(six.is(Visited.POST));
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
-		Assert.assertFalse(graph.hasUntraversedArc(four));
-		Assert.assertFalse(graph.hasUntraversedArc(five));
-		Assert.assertFalse(graph.hasUntraversedArc(six));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		Assert.assertFalse(five.hasArcs());
+		Assert.assertFalse(six.hasArcs());
 		
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -300,17 +300,17 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		final Graph graph = new Graph();
 
 		// a ring with bi-directional edges
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2,6);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two,1,3);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three,2,4);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,3,5);
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five,4,6);
-		final GraphNode six = new GraphNode(6, graph);
+		final GraphNode six = new GraphNode(6);
 		graph.addNode(six,5,1);
 
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -325,12 +325,12 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(six.is(Visited.POST));
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
-		Assert.assertFalse(graph.hasUntraversedArc(four));
-		Assert.assertFalse(graph.hasUntraversedArc(five));
-		Assert.assertFalse(graph.hasUntraversedArc(six));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		Assert.assertFalse(five.hasArcs());
+		Assert.assertFalse(six.hasArcs());
 		
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -354,19 +354,19 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode center = new GraphNode(1, graph);
+		final GraphNode center = new GraphNode(1);
 		graph.addNode(center, 2,4,5);
 		
-		final GraphNode leftUpper = new GraphNode(2, graph);
+		final GraphNode leftUpper = new GraphNode(2);
 		graph.addNode(leftUpper, 2);
 		
-		final GraphNode rightUpper = new GraphNode(3, graph);
+		final GraphNode rightUpper = new GraphNode(3);
 		graph.addNode(rightUpper, 1);
 		
-		final GraphNode leftBottom = new GraphNode(4, graph);
+		final GraphNode leftBottom = new GraphNode(4);
 		graph.addNode(leftBottom,4);
 		
-		final GraphNode rightBottom = new GraphNode(5, graph);
+		final GraphNode rightBottom = new GraphNode(5);
 		graph.addNode(rightBottom, 3);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -380,11 +380,11 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(rightBottom.is(Visited.POST));
 
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(center));
-		Assert.assertFalse(graph.hasUntraversedArc(leftUpper));
-		Assert.assertFalse(graph.hasUntraversedArc(leftBottom));
-		Assert.assertFalse(graph.hasUntraversedArc(rightUpper));
-		Assert.assertFalse(graph.hasUntraversedArc(rightBottom));
+		Assert.assertFalse(center.hasArcs());
+		Assert.assertFalse(leftUpper.hasArcs());
+		Assert.assertFalse(leftBottom.hasArcs());
+		Assert.assertFalse(rightUpper.hasArcs());
+		Assert.assertFalse(rightBottom.hasArcs());
 
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {
@@ -405,10 +405,10 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		final Graph graph = new Graph();
 
 		// two nodes with bi-directional connection
-		final GraphNode left = new GraphNode(1, graph);
+		final GraphNode left = new GraphNode(1);
 		graph.addNode(left, 2);
 		
-		final GraphNode right = new GraphNode(2, graph);
+		final GraphNode right = new GraphNode(2);
 		graph.addNode(right, 1);
 		
 		final Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
@@ -419,8 +419,8 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		Assert.assertTrue(right.is(Visited.POST));
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(left));
-		Assert.assertFalse(graph.hasUntraversedArc(right));
+		Assert.assertFalse(left.hasArcs());
+		Assert.assertFalse(right.hasArcs());
 		
 		Assert.assertEquals(printSCCs(sccs), 1, sccs.size());
 		for (Set<GraphNode> scc : sccs) {

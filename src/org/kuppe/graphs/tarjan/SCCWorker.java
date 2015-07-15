@@ -78,7 +78,7 @@ public class SCCWorker implements Runnable {
 					// If POST, there must not be any children. 
 					assert!v.hasChildren();
 					// All arcs must be traversed
-					assert!graph.hasUntraversedArc(v);
+					assert!v.hasArcs();
 
 					logger.fine(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
 					graph.unlock(v);
@@ -96,8 +96,8 @@ public class SCCWorker implements Runnable {
 				/*
 				 * Then traverse the next outgoing untraversed arc;
 				 */
-				final int arc = graph.getUntraversedArc(v);
-				if (arc != Graph.NO_ARC) {
+				int arc = Graph.NO_ARC;
+				NEXT_ARC : while ((arc = v.getArc()) != Graph.NO_ARC) {
 					// To traverse an arc (v, w), if w is postvisited do
 					// nothing.
 					final GraphNode w = graph.get(arc);
@@ -119,16 +119,14 @@ public class SCCWorker implements Runnable {
 					GraphNode root = null;
 					if ((root = graph.tryLockTrees(w)) != null) {
 						W_LOCK_SUCC.incrementAndGet();
-						graph.removeTraversedArc(v, arc);
+						v.removeArc(arc);
 						
 						if (w.equals(v)) {
 							// TODO self-loop, might check stuttering here
 							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 							
 							// do nothing
-							graph.unlock(v); // w = v and v is - by def - a root, thus unlock v suffices.
-							executor.execute(this); // Continue with next arc
-							return;
+							continue NEXT_ARC;
 						}
 
 						// w happens to be done, just release the lock and move
@@ -136,9 +134,7 @@ public class SCCWorker implements Runnable {
 						if (w.is(Visited.POST)) {
 							// v # w (due to previous check)
 							graph.unlockTrees(w, root);
-							graph.unlock(v);
-							executor.execute(this); // Continue with next arc
-							return;
+							continue NEXT_ARC;
 						}
 
 						// Otherwise...
@@ -154,9 +150,6 @@ public class SCCWorker implements Runnable {
 							final GraphNode vOld = v;
 							this.v = w;
 
-							boolean isRoot = w.isRoot();
-							graph.unlockTrees(w, root);
-							graph.unlock(vOld);
 							/*
 							 * Since v is now a child, it is not (for the
 							 * moment) eligible for further processing. The
@@ -164,9 +157,12 @@ public class SCCWorker implements Runnable {
 							 * check to see if the root of the tree containing v
 							 * and w is idle, and switch to this root if so.
 							 */
-							if (isRoot) {
-								executor.execute(this); // Continue with w
+							if (w.isRoot()) {
+								graph.unlock(vOld);
+								continue NEXT_ARC;
 							}
+							graph.unlockTrees(w, root);
+							graph.unlock(vOld);
 							return;
 						} else if (!w.equals(v)) {
 							/*
@@ -198,26 +194,7 @@ public class SCCWorker implements Runnable {
 							// After all, we don't want to block the concurrent
 							// fast SCC search.
 							if (v.checkSCC()) {
-								if (!graph.hasUntraversedArc(v)) {
-									freeChilds();
-									// v is a (contracted) root and thus
-									// eligible
-									// for further processing. this.v = v;
-									// No need to unlock w, has happened during
-									// contraction
-									graph.unlock(v);
-									return;
-								} else {
-									// v is a (contracted) root and thus
-									// eligible
-									// for further processing. this.v = v;
-									// No need to unlock w, has happened during
-									// contraction
-									graph.unlock(v);
-
-									executor.execute(this);
-									return;
-								}
+								continue NEXT_ARC;
 							} else {
 								// All other threads can stop, we've found a
 								// violation.
@@ -227,24 +204,25 @@ public class SCCWorker implements Runnable {
 							}
 						}
 					} else {
-						// Cannot acquire w's lock, try later.
+						// Failed to acquire w lock, try later again but release
+						// v's lock first. It's possible we failed to acquire
+						// w's lock because of a cyclic lock graph.
+						W_LOCK_FAIL.incrementAndGet();
 						graph.unlock(v);
 						executor.execute(this);
 						return;
 					}
-				} else {
-					// No arcs left, become post-visited and free childs
-					freeChilds();
-					graph.unlock(v);
-					return;
 				}
+				// No arcs left, become post-visited and free childs
+				freeChilds();
+				graph.unlock(v);
+				return;
 			} else {
 				V_LOCK_FAIL.incrementAndGet();
 				// Cannot acquire v lock, try later
 				executor.execute(this);
 				return;
 			}
-			return;
 		} catch (Exception | Error e) {
 			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage()));
 			e.printStackTrace();
@@ -259,7 +237,7 @@ public class SCCWorker implements Runnable {
 		assert v.isNot(Visited.POST);
 
 		// All arcs must be traversed
-		assert!graph.hasUntraversedArc(v);
+		assert!v.hasArcs();
 
 		/*
 		 * if there is no such arc: a) mark the root postvisited

@@ -42,16 +42,13 @@ public class GraphNode extends NaiveTreeNode {
 		UN, POST;
 	};
 	
-	private final Graph graph;
-	
 	// package protected for unit tests only
 	volatile Visited visited = Visited.UN;
 
 	private List<Integer> arcs;
 
-	public GraphNode(int id, Graph graph) {
+	public GraphNode(int id) {
 		super(id);
-		this.graph = graph;
 	}
 
 	public boolean is(Visited v) {
@@ -68,7 +65,7 @@ public class GraphNode extends NaiveTreeNode {
 		
 		// When a GraphNode transitions into post, all its arcs have to be
 		// explored.
-		assert visited != Visited.POST || !graph.hasUntraversedArc(this);
+		assert visited != Visited.POST || !this.hasArcs();
 
 		this.visited = visited;
 	}
@@ -89,10 +86,10 @@ public class GraphNode extends NaiveTreeNode {
 		return !this.arcs.isEmpty();
 	}
 
-	public void removeArc(Integer arcId) {
+	public boolean removeArc(Integer arcId) {
 		// has to be Integer (not int) to remove the element and not element at
 		// position.
-		this.arcs.remove(arcId);
+		return this.arcs.remove(arcId);
 	}
 
 	public void addArcs(List<Integer> other) {
@@ -107,6 +104,9 @@ public class GraphNode extends NaiveTreeNode {
 
 	public int getArc() {
 		assert isNot(Visited.POST);
+		if (this.arcs.isEmpty()) {
+			return Graph.NO_ARC;
+		}
 		return this.arcs.get(0);
 	}
 
@@ -184,7 +184,7 @@ public class GraphNode extends NaiveTreeNode {
 		GraphNode head = sccs.get(this);
 		if (head == null) {
 			// No previous scc for this node, create a new graphNode as new head
-			head = new GraphNode(SCC_NODE, graph);
+			head = new GraphNode(SCC_NODE);
 			head.visited = Visited.POST;
 			head.parent = this;
 			sccs.put(this, head);
@@ -210,7 +210,7 @@ public class GraphNode extends NaiveTreeNode {
 			// Logically replace parent with this GraphNode in the Graph.
 			graph.contract(this, parent);
 			// parent's arcs should have been contracted into this now.
-			assert !graph.hasUntraversedArc(parent);
+			assert !parent.hasArcs();
 			
 			// Before unlink/cut, remember parent's parent. Don't use getParent
 			// though, which might return null if lock acquisition fails.

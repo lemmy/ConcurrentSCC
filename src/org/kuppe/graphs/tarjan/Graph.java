@@ -26,8 +26,10 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,8 +69,8 @@ public class Graph {
 	/**
 	 * @return The initial nodes?!
 	 */
-	public List<GraphNode> getStartNodes() {
-		final List<GraphNode> start = new ArrayList<GraphNode>(this.nodePtrTable.size());
+	public Deque<GraphNode> getStartNodes() {
+		final Deque<GraphNode> start = new ArrayDeque<GraphNode>(this.nodePtrTable.size());
 		for (GraphNode graphNode : nodePtrTable.values()) {
 			start.add(graphNode);
 		}
@@ -77,47 +79,6 @@ public class Graph {
 
 	public GraphNode get(final int id) {
 		return this.nodePtrTable.get(id);
-	}
-
-	/* (outgoing) arcs */
-
-	public void removeTraversedArc(GraphNode node, int arcId) {
-		assert this.nodePtrTable.containsKey(node.getId());
-		GraphNode graphNode = this.nodePtrTable.get(node.getId());
-		graphNode.removeArc((Integer)arcId); // Explicitly cast to Integer to remove the element arcId and not the element at position arcId;
-		assert graphNode.isNot(Visited.POST);
-	}
-
-	public int getUntraversedArc(GraphNode node) {
-		final GraphNode record = this.nodePtrTable.get(node.getId());
-		// 'node' has been contracted already. Thus return no untraversed arcs.
-		if (isContracted(record, node)) {
-			return NO_ARC;
-		}
-		if (!record.hasArcs()) {
-			return NO_ARC;
-		}
-		return record.getArc();
-	}
-
-	public boolean hasUntraversedArc(GraphNode node) {
-		final GraphNode graphNode = this.nodePtrTable.get(node.getId());
-		// If this node has been replaced by one into which it was contracted,
-		// there will obviously be arcs in the set. Thus, check if it's indeed
-		// replaced.
-		if (isContracted(graphNode, node)) {
-			return false;
-		}
-		return graphNode.hasArcs();
-	}
-
-	private boolean isContracted(GraphNode graphNode, GraphNode node) {
-		int id = graphNode.getId();
-		if (id != node.getId()) {
-			assert node.is(Visited.POST);
-			return true;
-		}
-		return false;
 	}
 	
 	/* contraction */

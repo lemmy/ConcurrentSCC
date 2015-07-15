@@ -45,9 +45,9 @@ public class ContractionTest {
 	public void testInvalidVisitedStateChildContraction() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 1,2);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1,2);
 		
 		one.setParent(two);
@@ -65,19 +65,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2,4,5);
 		
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 2);
 		
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 1);
 		
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,4);
 		
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five, 3);
 		
 		// The SCC in F
@@ -100,15 +100,15 @@ public class ContractionTest {
 	public void testContractionsInC() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one,3);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two,3);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three,4,5);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,1);
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five,2);
 		
 		// One possible permutation of child>parent relationships in the tree
@@ -120,11 +120,11 @@ public class ContractionTest {
 		// 4 <- 3 <- 2 <- 5 
 
 		// Have all outgoing arcs
-		Assert.assertTrue(graph.hasUntraversedArc(one));
-		Assert.assertTrue(graph.hasUntraversedArc(two));
-		Assert.assertTrue(graph.hasUntraversedArc(three));
-		Assert.assertTrue(graph.hasUntraversedArc(four));
-		Assert.assertTrue(graph.hasUntraversedArc(five));
+		Assert.assertTrue(one.hasArcs());
+		Assert.assertTrue(two.hasArcs());
+		Assert.assertTrue(three.hasArcs());
+		Assert.assertTrue(four.hasArcs());
+		Assert.assertTrue(five.hasArcs());
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 		four.contract(sccs, graph, one);
@@ -132,17 +132,17 @@ public class ContractionTest {
 		Assert.assertTrue(three.is(Visited.POST));
 		
 		// one and three have no outgoing arcs
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(three.hasArcs());
 		// but 2 and 5 still do
-		Assert.assertTrue(graph.hasUntraversedArc(two));
-		Assert.assertTrue(graph.hasUntraversedArc(five));
+		Assert.assertTrue(two.hasArcs());
+		Assert.assertTrue(five.hasArcs());
 
 		four.contract(sccs, graph, five);
 		Assert.assertTrue(five.is(Visited.POST));
 		Assert.assertTrue(two.is(Visited.POST));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(five));
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(five.hasArcs());
 		
 		// all arcs are now in four
 		Assert.assertEquals(5, graph.getUntraversedArcs(four).size());
@@ -162,19 +162,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a unidirectional loop
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2);
 		
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 3);
 		
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 4);
 		
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,5);
 		
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five, 1);
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
@@ -210,37 +210,37 @@ public class ContractionTest {
 	public void testNestedContractionWithSplitNode() {
 		final Graph graph = new Graph();
 
-		final GraphNode zero = new GraphNode(0, graph);
+		final GraphNode zero = new GraphNode(0);
 		graph.addNode(zero);
 		
 		// 1 splits into 3 nodes
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 1);
 		
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 1);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four, 1);
 		
 		// 2 has two childs
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five, 2);
-		final GraphNode six = new GraphNode(6, graph);
+		final GraphNode six = new GraphNode(6);
 		graph.addNode(six, 2);
 
 		// 3 has one child (with childs)
-		final GraphNode seven = new GraphNode(7, graph);
+		final GraphNode seven = new GraphNode(7);
 		graph.addNode(seven, 3);
 
-		final GraphNode nine = new GraphNode(9, graph);
+		final GraphNode nine = new GraphNode(9);
 		graph.addNode(nine, 7);
-		final GraphNode ten = new GraphNode(10, graph);
+		final GraphNode ten = new GraphNode(10);
 		graph.addNode(ten, 9);
 		
 		// four has one child
-		final GraphNode eight = new GraphNode(8, graph);
+		final GraphNode eight = new GraphNode(8);
 		graph.addNode(eight, 4);
 		
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
@@ -360,19 +360,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2,4,5);
 		
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 2);
 		
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 1);
 		
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,4);
 		
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five, 3);
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
@@ -387,7 +387,7 @@ public class ContractionTest {
 		Assert.assertTrue(!one.isRoot());
 		
 		// one has outgoing arcs
-		Assert.assertTrue(graph.hasUntraversedArc(one));
+		Assert.assertTrue(one.hasArcs());
 		
 		Assert.assertTrue(one.isNot(Visited.POST));
 		
@@ -404,7 +404,7 @@ public class ContractionTest {
 		Assert.assertTrue(one.is(Visited.POST));
 		Assert.assertTrue(one.isRoot());
 		// one has no outgoing arcs
-		Assert.assertFalse(graph.hasUntraversedArc(one));
+		Assert.assertFalse(one.hasArcs());
 		Assert.assertEquals(0, graph.getUntraversedArcs(one).size());
 		
 		final Set<GraphNode> expected = new HashSet<GraphNode>();
@@ -419,19 +419,19 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2,4,5);
 		
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 2);
 		
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three, 1);
 		
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,4);
 		
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five, 3);
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
@@ -456,17 +456,17 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a ring with bi-directional edges
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 2,6);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two,1,3);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three,2,4);
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four,3,5);
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five,4,6);
-		final GraphNode six = new GraphNode(6, graph);
+		final GraphNode six = new GraphNode(6);
 		graph.addNode(six,5,1);
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
@@ -487,12 +487,12 @@ public class ContractionTest {
 		Assert.assertTrue(six.is(Visited.POST));
 		
 		// All arcs have been explored
-		Assert.assertFalse(graph.hasUntraversedArc(one));
-		Assert.assertFalse(graph.hasUntraversedArc(two));
-		Assert.assertFalse(graph.hasUntraversedArc(three));
-		Assert.assertFalse(graph.hasUntraversedArc(four));
-		Assert.assertFalse(graph.hasUntraversedArc(five));
-		Assert.assertFalse(graph.hasUntraversedArc(six));
+		Assert.assertFalse(one.hasArcs());
+		Assert.assertFalse(two.hasArcs());
+		Assert.assertFalse(three.hasArcs());
+		Assert.assertFalse(four.hasArcs());
+		Assert.assertFalse(five.hasArcs());
+		Assert.assertFalse(six.hasArcs());
 		
 		Assert.assertEquals(1, sccs.size());
 		GraphNode actual = (GraphNode) sccs.values().toArray()[0];
@@ -511,20 +511,20 @@ public class ContractionTest {
 	public void testContractionChildren() {
 		final Graph graph = new Graph();
 		
-		final GraphNode zero = new GraphNode(0, graph);
+		final GraphNode zero = new GraphNode(0);
 		graph.addNode(zero);
 		Assert.assertFalse(zero.hasChildren());
 		
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one);
 		one.setParent(zero);
-		final GraphNode oneChild = new GraphNode(4711, graph);
+		final GraphNode oneChild = new GraphNode(4711);
 		graph.addNode(oneChild);
 		oneChild.setParent(one);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two);
 		two.setParent(zero);
-		final GraphNode three = new GraphNode(3, graph);
+		final GraphNode three = new GraphNode(3);
 		graph.addNode(three);
 		three.setParent(zero);
 		Assert.assertTrue(zero.hasChildren());
@@ -538,13 +538,13 @@ public class ContractionTest {
 		Assert.assertEquals(zero, one.getParent());
 		Assert.assertEquals(zero, two.getParent());
 		
-		final GraphNode four = new GraphNode(4, graph);
+		final GraphNode four = new GraphNode(4);
 		graph.addNode(four);
 		four.setParent(three);
-		final GraphNode five = new GraphNode(5, graph);
+		final GraphNode five = new GraphNode(5);
 		graph.addNode(five);
 		five.setParent(three);
-		final GraphNode six = new GraphNode(6, graph);
+		final GraphNode six = new GraphNode(6);
 		graph.addNode(six);
 		six.setParent(three);
 		Assert.assertTrue(zero.hasChildren());
@@ -567,19 +567,19 @@ public class ContractionTest {
 		Assert.assertEquals(three, five.getParent());
 		Assert.assertEquals(three, six.getParent());
 		
-		final GraphNode seven = new GraphNode(7, graph);
+		final GraphNode seven = new GraphNode(7);
 		graph.addNode(seven);
 		seven.setParent(four);
-		final GraphNode sevenChildA = new GraphNode(815, graph);
+		final GraphNode sevenChildA = new GraphNode(815);
 		graph.addNode(sevenChildA);
 		sevenChildA.setParent(seven);
-		final GraphNode sevenChildB = new GraphNode(42, graph);
+		final GraphNode sevenChildB = new GraphNode(42);
 		graph.addNode(sevenChildB);
 		sevenChildB.setParent(seven);
-		final GraphNode eight = new GraphNode(8, graph);
+		final GraphNode eight = new GraphNode(8);
 		graph.addNode(eight);
 		eight.setParent(four);
-		final GraphNode nine = new GraphNode(9, graph);
+		final GraphNode nine = new GraphNode(9);
 		graph.addNode(nine);
 		nine.setParent(four);
 		Assert.assertTrue(zero.hasChildren());
@@ -611,16 +611,16 @@ public class ContractionTest {
 		Assert.assertEquals(three, five.getParent());
 		Assert.assertEquals(three, six.getParent());
 		
-		final GraphNode ten = new GraphNode(10, graph);
+		final GraphNode ten = new GraphNode(10);
 		graph.addNode(ten);
 		ten.setParent(eight);
-		final GraphNode tenChildA = new GraphNode(23, graph);
+		final GraphNode tenChildA = new GraphNode(23);
 		graph.addNode(tenChildA);
 		tenChildA.setParent(ten);
-		final GraphNode tenChildB = new GraphNode(666, graph);
+		final GraphNode tenChildB = new GraphNode(666);
 		graph.addNode(tenChildB);
 		tenChildB.setParent(ten);
-		final GraphNode eleven = new GraphNode(11, graph);
+		final GraphNode eleven = new GraphNode(11);
 		graph.addNode(eleven);
 		eleven.setParent(eight);
 		Assert.assertTrue(zero.hasChildren());
@@ -679,9 +679,9 @@ public class ContractionTest {
 	public void testVisitedStateChildContraction() {
 		final Graph graph = new Graph();
 
-		final GraphNode one = new GraphNode(1, graph);
+		final GraphNode one = new GraphNode(1);
 		graph.addNode(one, 1,2);
-		final GraphNode two = new GraphNode(2, graph);
+		final GraphNode two = new GraphNode(2);
 		graph.addNode(two, 1,2);
 		
 		one.setParent(two);

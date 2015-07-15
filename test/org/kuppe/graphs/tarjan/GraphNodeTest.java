@@ -39,13 +39,12 @@ public class GraphNodeTest {
 
 	@Test
 	public void testIsInSameTree() {
-		final Graph graph = new Graph();
-		final GraphNode root = new GraphNode(0, graph);
+		final GraphNode root = new GraphNode(0);
 		
-		final GraphNode left = new GraphNode(1, graph);
+		final GraphNode left = new GraphNode(1);
 		left.setParent(root);
 
-		final GraphNode right = new GraphNode(2, graph);
+		final GraphNode right = new GraphNode(2);
 		right.setParent(root);
 		
 		assertTrue(root.isInSameTree(root));
@@ -65,9 +64,8 @@ public class GraphNodeTest {
 	
 	@Test
 	public void testInDifferentTrees() {
-		final Graph graph = new Graph();
-		final GraphNode A = new GraphNode(1, graph);
-		final GraphNode B = new GraphNode(2, graph);
+		final GraphNode A = new GraphNode(1);
+		final GraphNode B = new GraphNode(2);
 
 		assertTrue(A.isInSameTree(A));
 		assertFalse(A.isInSameTree(B));
@@ -78,9 +76,8 @@ public class GraphNodeTest {
 	
 	@Test
 	public void testRoot() {
-		final Graph graph = new Graph();
-		final GraphNode a = new GraphNode(1, graph);
-		final GraphNode b = new GraphNode(2, graph);
+		final GraphNode a = new GraphNode(1);
+		final GraphNode b = new GraphNode(2);
 
 		assertTrue(a.isRoot());
 		assertTrue(b.isRoot());
@@ -100,7 +97,7 @@ public class GraphNodeTest {
 	@Test
 	public void testVisitedStateChange() {
 		final Graph graph = new Graph();
-		final GraphNode a = new GraphNode(1, graph);
+		final GraphNode a = new GraphNode(1);
 		graph.addNode(a);
 		assertTrue(a.is(Visited.UN));
 		a.set(Visited.UN);
@@ -112,7 +109,7 @@ public class GraphNodeTest {
 	@Test
 	public void testVisitedStateChangeInvalidDowngrade() {
 		final Graph graph = new Graph();
-		final GraphNode a = new GraphNode(1, graph);
+		final GraphNode a = new GraphNode(1);
 		graph.addNode(a);
 		a.set(Visited.POST);
 		assertTrue(a.is(Visited.POST));

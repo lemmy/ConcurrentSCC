@@ -38,11 +38,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest {
 
 	@Test
+	@Ignore
 	public void testTLCN10() throws IOException {
 		// Manually copy the 2gb file to the test directory. It's too large for git to handle.
 		final Graph graph = new Graph("testTLCN10");
@@ -308,13 +310,13 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 				if (graph.hasNode(nodeId)) {
 					graph.addArc(nodeId, arcId);
 				} else {
-					graph.addNode(new GraphNode(nodeId, graph), arcId);
+					graph.addNode(new GraphNode(nodeId), arcId);
 				}
 				
 				// Also create the to node (arcId) in case it's not explicitly
 				// created in a test graph.
 				if (!graph.hasNode(arcId)) {
-					graph.addNode(new GraphNode(arcId, graph));
+					graph.addNode(new GraphNode(arcId));
 				}
 			}
 		}

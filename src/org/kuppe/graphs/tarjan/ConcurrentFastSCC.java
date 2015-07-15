@@ -27,9 +27,8 @@
 package org.kuppe.graphs.tarjan;
 
 import java.text.DecimalFormat;
-import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +45,7 @@ public class ConcurrentFastSCC {
 		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
 		final ForkJoinPool executor = new ForkJoinPool();
 
-		final List<GraphNode> startNodes = graph.getStartNodes();
+		final Deque<GraphNode> startNodes = graph.getStartNodes();
 		if (startNodes.isEmpty()) {
 			// No graph nodes => no SCCs
 			return new HashSet<>();
@@ -58,7 +57,7 @@ public class ConcurrentFastSCC {
 		// Assuming the first thread locks 0, the second 1 and the third 2, it
 		// means 0 cannot succeed because 1 and 2 are locked already. Thus,
 		// try to distribute the workers across the complete graph.
-		Collections.shuffle(startNodes);
+//		Collections.shuffle(startNodes);
 
 		// The map of sccs passed around by SCCWorkers
 		final Map<GraphNode, GraphNode> sccs = new ConcurrentHashMap<GraphNode, GraphNode>();
@@ -67,9 +66,14 @@ public class ConcurrentFastSCC {
 		final long start = System.currentTimeMillis();
 		
 		// Submit a new worker for each graph node
-		for (GraphNode graphNode : startNodes) {
+		while (!startNodes.isEmpty()) {
+			GraphNode graphNode = startNodes.removeFirst();
 			if (graphNode.isNot(Visited.POST)) {
-				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
+				if (graphNode.isLocked()) {
+					startNodes.offerLast(graphNode);
+				} else {
+					executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
+				}
 			}
 		}
 
