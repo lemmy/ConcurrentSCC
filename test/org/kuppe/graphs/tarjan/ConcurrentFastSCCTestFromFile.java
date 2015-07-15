@@ -106,7 +106,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final NoopExecutorService executor = new NoopExecutorService();
 		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
-				new SCCWorker(executor, graph, sccs, graphNode).call();
+				new SCCWorker(executor, graph, sccs, graphNode).run();
 			}
 		}
 		
@@ -175,7 +175,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final NoopExecutorService executor = new NoopExecutorService();
 		while (!graph.checkPostCondition()) {
 			for (GraphNode graphNode : nodes) {
-				new SCCWorker(executor, graph, sccs, graphNode).call();
+				new SCCWorker(executor, graph, sccs, graphNode).run();
 			}
 		}
 		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());

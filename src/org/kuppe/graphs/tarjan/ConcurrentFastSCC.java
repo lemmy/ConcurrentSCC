@@ -68,7 +68,7 @@ public class ConcurrentFastSCC {
 		// Submit a new worker for each graph node
 		for (GraphNode graphNode : startNodes) {
 			if (graphNode.isNot(Visited.POST)) {
-				executor.submit(new SCCWorker(executor, graph, sccs, graphNode));
+				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
 			}
 		}
 

@@ -14,6 +14,7 @@ class NoopExecutorService implements ExecutorService {
 
 	@Override
 	public void execute(Runnable command) {
+		command.run();
 	}
 
 	@Override

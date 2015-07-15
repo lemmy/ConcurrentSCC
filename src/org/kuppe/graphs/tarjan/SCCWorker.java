@@ -28,13 +28,12 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
-public class SCCWorker implements Callable<Void> {
+public class SCCWorker implements Runnable {
 
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
@@ -51,7 +50,7 @@ public class SCCWorker implements Callable<Void> {
 		this.v = root;
 	}
 
-	public Void call() {
+	public void run() {
 		try {
 			// Skip POST-visited v (POST will never transition back to UN,
 			// whereas isRoot() can change between now and when the lock is
@@ -62,7 +61,7 @@ public class SCCWorker implements Callable<Void> {
 
 				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
 				// my job is already done
-				return null;
+				return;
 			}
 
 			// Get lock of v
@@ -77,14 +76,14 @@ public class SCCWorker implements Callable<Void> {
 
 					logger.fine(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
 					graph.unlock(v);
-					return null;
+					return;
 				}
 
 				// Skip non-root v
 				if (!v.isRoot()) {
 					logger.fine(() -> String.format("%s: Skipping non-root v %s", getId(), v));
 					graph.unlock(v);
-					return null; // A new worker will be scheduled by our tree
+					return; // A new worker will be scheduled by our tree
 									// root. We are a child right now.
 				}
 
@@ -121,8 +120,8 @@ public class SCCWorker implements Callable<Void> {
 							
 							// do nothing
 							graph.unlock(v); // w = v and v is - by def - a root, thus unlock v suffices.
-							executor.submit(this); // Continue with next arc
-							return null;
+							executor.execute(this); // Continue with next arc
+							return;
 						}
 
 						// w happens to be done, just release the lock and move
@@ -131,8 +130,8 @@ public class SCCWorker implements Callable<Void> {
 							// v # w (due to previous check)
 							graph.unlockTrees(w, root);
 							graph.unlock(v);
-							executor.submit(this); // Continue with next arc
-							return null;
+							executor.execute(this); // Continue with next arc
+							return;
 						}
 
 						// Otherwise...
@@ -159,9 +158,9 @@ public class SCCWorker implements Callable<Void> {
 							 * and w is idle, and switch to this root if so.
 							 */
 							if (isRoot) {
-								executor.submit(this); // Continue with w
+								executor.execute(this); // Continue with w
 							}
-							return null;
+							return;
 						} else if (!w.equals(v)) {
 							/*
 							 * The other possibility is that w is in the same
@@ -200,7 +199,7 @@ public class SCCWorker implements Callable<Void> {
 									// No need to unlock w, has happened during
 									// contraction
 									graph.unlock(v);
-									return null;
+									return;
 								} else {
 									// v is a (contracted) root and thus
 									// eligible
@@ -209,8 +208,8 @@ public class SCCWorker implements Callable<Void> {
 									// contraction
 									graph.unlock(v);
 
-									executor.submit(this);
-									return null;
+									executor.execute(this);
+									return;
 								}
 							} else {
 								// All other threads can stop, we've found a
@@ -223,21 +222,21 @@ public class SCCWorker implements Callable<Void> {
 					} else {
 						// Cannot acquire w's lock, try later.
 						graph.unlock(v);
-						executor.submit(this);
-						return null;
+						executor.execute(this);
+						return;
 					}
 				} else {
 					// No arcs left, become post-visited and free childs
 					freeChilds();
 					graph.unlock(v);
-					return null;
+					return;
 				}
 			} else {
 				// Cannot acquire v lock, try later
-				executor.submit(this);
-				return null;
+				executor.execute(this);
+				return;
 			}
-			return null;
+			return;
 		} catch (Exception | Error e) {
 			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage()));
 			e.printStackTrace();
@@ -303,7 +302,7 @@ public class SCCWorker implements Callable<Void> {
 			child.cut();
 			// Now that the child is free, it's a root again.
 			logger.info(() -> String.format("%s: Free'ed child (%s)", getId(), child));
-			executor.submit(new SCCWorker(executor, graph, sccs, child));
+			executor.execute(new SCCWorker(executor, graph, sccs, child));
 		}
 
 		// All our children must in fact be cut loose
