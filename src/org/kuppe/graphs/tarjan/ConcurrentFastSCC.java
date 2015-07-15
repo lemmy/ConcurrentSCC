@@ -46,7 +46,7 @@ public class ConcurrentFastSCC {
 		// TODO Name threads inside executor to aid debugging.
 		// see
 		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
-		final ExecutorService executor = Executors.newFixedThreadPool(4);
+		final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		final List<GraphNode> startNodes = graph.getStartNodes();
 		if (startNodes.isEmpty()) {
