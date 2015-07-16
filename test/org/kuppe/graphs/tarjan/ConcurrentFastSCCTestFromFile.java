@@ -90,6 +90,33 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		}
 	}
 	
+	@Test
+	@Ignore
+	public void testTLCN8JustInits() throws IOException {
+		final Graph graph = new Graph("testTLCN8");
+		readFile(graph, "tlc.txt");
+		readInits(graph, "tlcinits.txt");
+		
+		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		Assert.assertTrue(graph.checkPostCondition());
+		Assert.assertEquals(574, sccs.size());
+		
+		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
+		
+		// Read the file with the correct SCCs
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("tlcsccs.txt");
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+			for(String line = br.readLine(); line != null; line = br.readLine()) {
+				final Set<Integer> hashSet = new HashSet<Integer>();
+				final String[] ints = line.trim().split("\\s+");
+				for (String string : ints) {
+					hashSet.add(Integer.parseInt(string));
+				}
+				Assert.assertTrue(convertedSCCs.contains(hashSet));
+			}
+		}
+	}
+	
 	/*
 	 * tinyDG.txt has 13 nodes, 22 arcs
 	 * 
