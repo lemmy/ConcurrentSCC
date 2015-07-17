@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -74,12 +73,64 @@ public class Graph {
 	}
 	
 	/* nodes */
-	
-	public Iterator<GraphNode> iterator() {
-		if (initNodes.isEmpty()) {
-			return this.nodePtrTable.values().iterator();
+
+	public List<AppendableIterator<GraphNode>> partition(final int availableProcessors) {
+		final List<AppendableIterator<GraphNode>> res = new ArrayList<>(availableProcessors);
+
+		final int size = this.nodePtrTable.size();
+		final int partitionSize = size / availableProcessors;
+
+		for (int i = 0; i < availableProcessors - 1; i++) {
+			res.add(new PartitionIterator(i * partitionSize, (i + 1) * partitionSize, nodePtrTable));
 		}
-		return initNodes.iterator();
+		// Make the last partition use up the rest in case partitionSize isn't actually a natural
+		final int start = (availableProcessors - 1) * partitionSize;
+		res.add(new PartitionIterator(start, size, nodePtrTable));
+		
+		return res;
+	}
+	
+	private static class PartitionIterator implements AppendableIterator<GraphNode> {
+		
+		private final int end;
+		private final Map<Integer, GraphNode> map;
+		private final List<Integer> appended = new ArrayList<Integer>();
+		
+		private int start;
+
+		public PartitionIterator(final int start, final int end, final Map<Integer, GraphNode> map) {
+			this.start = start;
+			this.end = end;
+			this.map = map;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return (start < end && !map.isEmpty()) || !appended.isEmpty();
+		}
+
+		@Override
+		public GraphNode next() {
+			GraphNode next = null;
+			if (!appended.isEmpty()) {
+				// prefer to take from appended to reduce memory requirement.
+				// Start:End is a simple range.
+				final Integer index = appended.remove((int) 0);
+				next = this.map.get(index);
+			} else {
+				next = this.map.get((Integer) start++);
+			}
+			assert next != null;
+			return next;
+		}
+		
+		@Override
+		public void append(final int id) {
+			// Only keep the id if outside of current partition
+			if (id < start || id > end) {
+				appended.add(id);
+			}
+		}
 	}
 
 	public GraphNode get(final int id) {
@@ -92,7 +143,7 @@ public class Graph {
 		// Globally Replace src with dst
 		final GraphNode replaced = this.nodePtrTable.replace(child.getId(), into);
 		assert replaced != into;
-		this.replaced.add(replaced);
+	//	this.replaced.add(replaced);
 		
 		// add all outgoing arcs to dstRecord
 		// TODO LinkedList might not be the ideal data structure here:
@@ -106,12 +157,16 @@ public class Graph {
 		// arcs would be discarded.
 		// => SCCWorker checks PRIOR to lock acquisition, if the arc's endpoint
 		// node is POST
+		mergeOutArcs(into, replaced);
+		
+		assert this.nodePtrTable.get(child.getId()) == into;
+	}
+
+	private void mergeOutArcs(final GraphNode into, final GraphNode replaced) {
 		if (replaced.hasArcs()) {
 			into.addArcs(replaced.getArcs());
 			replaced.clearArcs();
 		}
-		
-		assert this.nodePtrTable.get(child.getId()) == into;
 	}
 	
 	/* Tree locking */

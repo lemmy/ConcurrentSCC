@@ -46,199 +46,194 @@ public class SCCWorker implements Runnable {
 	private final ExecutorService executor;
 	private final Map<GraphNode, GraphNode> sccs;
 	private final Graph graph;
-	private GraphNode v;
+	private AppendableIterator<GraphNode> iterator;
+	private int id;
 
-	public SCCWorker(final ExecutorService executor, final Graph graph, Map<GraphNode, GraphNode> sccs,
-			final GraphNode root) {
+	public SCCWorker(final ExecutorService executor, final Graph graph, final AppendableIterator<GraphNode> iterator, Map<GraphNode, GraphNode> sccs) {
 		this.executor = executor;
 		this.graph = graph;
+		this.iterator = iterator;
 		this.sccs = sccs;
-		this.v = root;
 	}
 
 	public void run() {
-		try {
-			// Skip POST-visited v (POST will never transition back to UN,
-			// whereas isRoot() can change between now and when the lock is
-			// acquired in the next line.
-			if (v.is(Visited.POST)) {
-				// Note: Not checking if all children are free'ed or if the node
-				// has unprocessed arcs. It could be interleaved with contraction.
-
-				logger.fine(() -> String.format("%s: Skipping (unlocked) post-visted v %s", getId(), v));
-				// my job is already done
-				return;
-			}
-
-			// ...but if v becomes a root again, a dedicate job for v is
-			// scheduled which is guaranteed to happen before this isRoot check.
-			if (!v.isRoot()) {
-				logger.fine(() -> String.format("%s: Skipping (unlocked) non-root v %s", getId(), v));
-				// my job is already done
-				return;
-			}
+		NEXT_NODE : while (iterator.hasNext()) {
+			GraphNode v = iterator.next();
 			
-			// Get lock of v
-			if (v.tryLock()) {
-				V_LOCK_SUCC.incrementAndGet();
-				// Skip POST-visited v
-				if (v.is(Visited.POST)) {
-					// If POST, there must not be any children. 
-					assert!v.hasChildren();
-					// All arcs must be traversed
-					assert!v.hasArcs();
+			V_LOCK : while (!executor.isShutdown()) {
+				this.id = v.getId();
+				try {
+					// Skip POST-visited v (POST will never transition back to UN,
+					// whereas isRoot() can change between now and when the lock is
+					// acquired in the next line.
+					if (v.is(Visited.POST)) {
+						// Note: Not checking if all children are free'ed or if the node
+						// has unprocessed arcs. It could be interleaved with contraction.
 
-					logger.fine(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
-					v.unlock();
-					return;
-				}
-
-				// Skip non-root v
-				if (!v.isRoot()) {
-					logger.fine(() -> String.format("%s: Skipping non-root v %s", getId(), v));
-					v.unlock();
-					return; // A new worker will be scheduled by our tree
-									// root. We are a child right now.
-				}
-
-				/*
-				 * Then traverse the next outgoing untraversed arc;
-				 */
-				int arc = Graph.NO_ARC;
-				NEXT_ARC : while ((arc = v.getArc()) != Graph.NO_ARC) {
-					// To traverse an arc (v, w), if w is postvisited do
-					// nothing.
-					final GraphNode w = graph.get(arc);
-
-					// During contraction, out-arcs of contracted nodes are
-					// merged creating duplicates. As we don't want to pay the
-					// price to discard duplicates during contraction, check if
-					// w is already POST-visited OUTSIDE of lock acquisition.
-					// However, as it turns out, this cannot be done because it
-					// opens the door to a dirty read when interleaved with w
-					// being contracted. (We read the contracted w node at 
-					// graph.get(arc) above instead of the node w got contracted
-					// into).
-//					if (w.is(Visited.POST)) {
-//						v.removeArc(arc);
-//						continue NEXT_ARC;
-//					}
-					
-					GraphNode root = null;
-					if ((root = graph.tryLockTrees(w)) != null) {
-						W_LOCK_SUCC.incrementAndGet();
-						v.removeArc(arc);
-						
-						if (w.equals(v)) {
-							// TODO self-loop, might check stuttering here
-							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
-							
-							// do nothing and don't unlock w. It would unlock v too.
-							continue NEXT_ARC;
-						}
-
-						// w happens to be done, just release the lock and move
-						// onto the next arc
-						if (w.is(Visited.POST)) {
-							// v # w (due to previous check)
-							graph.unlockTrees(w, root);
-							continue NEXT_ARC;
-						}
-
-						// Otherwise...
-						if (!root.equals(v)) { // No need to findroot(v). v is by definition a root, thus compare w's root with v => O(n) * 1
-							// If w is in a different tree than v, make w the
-							// parent of v and mark w previsited if it is
-							// unvisited.
-							v.setParent(w);
-							logger.info(() -> String.format("%s: ### w (%s) PARENT OF v (%s)", getId(), w.getId(),
-									v.getId()));
-
-							// We've potentially just created a new root
-							final GraphNode vOld = v;
-							this.v = w;
-
-							/*
-							 * Since v is now a child, it is not (for the
-							 * moment) eligible for further processing. The
-							 * thread can switch to an arbitrary root, or it can
-							 * check to see if the root of the tree containing v
-							 * and w is idle, and switch to this root if so.
-							 */
-							if (w.isRoot()) {
-								vOld.unlock();
-								continue NEXT_ARC;
-							}
-							graph.unlockTrees(w, root);
-							vOld.unlock();
-							return;
-						} else if (!w.equals(v)) {
-							/*
-							 * The other possibility is that w is in the same
-							 * tree as v. If v = w, do nothing. (Self-loops can
-							 * be created by contractions.)
-							 */
-							/*
-							 * If v # w, contract all the ancestors of w into a
-							 * single vertex, which is a root. It may be
-							 * convenient and efficient to view this contraction
-							 * as contracting all the vertices into v, since v
-							 * is already a root.
-							 * 
-							 * Continue processing this root. (The new root
-							 * inherits all the outgoing un-traversed arcs from
-							 * the set of contracted vertices).
-							 */
-
-							// Put SCC in a global set of sccs
-							logger.fine(
-									() -> String.format("%s: Trying to contracted w (%s) into v (%s)", getId(), w, v));
-							v.contract(sccs, graph, w);
-							logger.info(() -> String.format("%s: +++ Contracted w (%s) into v (%s)", getId(), w, v));
-
-							// This is when an SCC has been found in v.
-							// TODO SCCs might not be maximal SCCs.
-							// TODO Release any lock we own and work on a copy?
-							// After all, we don't want to block the concurrent
-							// fast SCC search.
-							if (v.checkSCC()) {
-								continue NEXT_ARC;
-							} else {
-								// All other threads can stop, we've found a
-								// violation.
-								executor.shutdownNow();
-								// TODO Throw something better here
-								throw new RuntimeException("SCC violates liveness");
-							}
-						}
-					} else {
-						// Failed to acquire w lock, try later again but release
-						// v's lock first. It's possible we failed to acquire
-						// w's lock because of a cyclic lock graph.
-						W_LOCK_FAIL.incrementAndGet();
-						v.unlock();
-						executor.execute(this);
-						return;
+						// my job is already done
+						continue NEXT_NODE;
 					}
+
+					// ...but if v becomes a root again, a dedicate job for v is
+					// scheduled which is guaranteed to happen before this isRoot check.
+					if (!v.isRoot()) {
+						// my job is already done
+						continue NEXT_NODE;
+					}
+					
+					// Get lock of v
+					if (v.tryLock()) {
+						V_LOCK_SUCC.incrementAndGet();
+						// Skip POST-visited v
+						if (v.is(Visited.POST)) {
+							// If POST, there must not be any children. 
+							assert!v.hasChildren();
+							// All arcs must be traversed
+							assert!v.hasArcs();
+
+							v.unlock();
+							continue NEXT_NODE;
+						}
+
+						// Skip non-root v
+						if (!v.isRoot()) {
+							v.unlock();
+							continue NEXT_NODE; // A new worker will be scheduled by our tree
+											// root. We are a child right now.
+						}
+
+						/*
+						 * Then traverse the next outgoing untraversed arc;
+						 */
+						int arc = Graph.NO_ARC;
+						NEXT_ARC : while ((arc = v.getArc()) != Graph.NO_ARC) {
+							// To traverse an arc (v, w), if w is postvisited do
+							// nothing.
+							final GraphNode w = graph.get(arc);
+
+							// During contraction, out-arcs of contracted nodes are
+							// merged creating duplicates. As we don't want to pay the
+							// price to discard duplicates during contraction, check if
+							// w is already POST-visited OUTSIDE of lock acquisition.
+							// However, as it turns out, this cannot be done because it
+							// opens the door to a dirty read when interleaved with w
+							// being contracted. (We read the contracted w node at 
+							// graph.get(arc) above instead of the node w got contracted
+							// into).
+//							if (w.is(Visited.POST)) {
+//								v.removeArc(arc);
+//								continue NEXT_ARC;
+//							}
+							
+							GraphNode root = null;
+							if ((root = graph.tryLockTrees(w)) != null) {
+								W_LOCK_SUCC.incrementAndGet();
+								v.removeArc(arc);
+								
+								if (w.equals(v)) {
+									// TODO self-loop, might check stuttering here
+									
+									// do nothing and don't unlock w. It would unlock v too.
+									continue NEXT_ARC;
+								}
+
+								// w happens to be done, just release the lock and move
+								// onto the next arc
+								if (w.is(Visited.POST)) {
+									// v # w (due to previous check)
+									graph.unlockTrees(w, root);
+									continue NEXT_ARC;
+								}
+
+								// Otherwise...
+								if (!root.equals(v)) { // No need to findroot(v). v is by definition a root, thus compare w's root with v => O(n) * 1
+									// If w is in a different tree than v, make w the
+									// parent of v and mark w previsited if it is
+									// unvisited.
+									v.setParent(w);
+
+									// We've potentially just created a new root
+									final GraphNode vOld = v;
+									v = w;
+
+									/*
+									 * Since v is now a child, it is not (for the
+									 * moment) eligible for further processing. The
+									 * thread can switch to an arbitrary root, or it can
+									 * check to see if the root of the tree containing v
+									 * and w is idle, and switch to this root if so.
+									 */
+									if (w.isRoot()) {
+										vOld.unlock();
+										continue NEXT_ARC;
+									}
+									graph.unlockTrees(w, root);
+									vOld.unlock();
+									continue NEXT_NODE;
+								} else if (!w.equals(v)) {
+									/*
+									 * The other possibility is that w is in the same
+									 * tree as v. If v = w, do nothing. (Self-loops can
+									 * be created by contractions.)
+									 */
+									/*
+									 * If v # w, contract all the ancestors of w into a
+									 * single vertex, which is a root. It may be
+									 * convenient and efficient to view this contraction
+									 * as contracting all the vertices into v, since v
+									 * is already a root.
+									 * 
+									 * Continue processing this root. (The new root
+									 * inherits all the outgoing un-traversed arcs from
+									 * the set of contracted vertices).
+									 */
+									// Put SCC in a global set of sccs
+									v.contract(sccs, graph, w);
+
+									// This is when an SCC has been found in v.
+									// TODO SCCs might not be maximal SCCs.
+									// TODO Release any lock we own and work on a copy?
+									// After all, we don't want to block the concurrent
+									// fast SCC search.
+									if (v.checkSCC()) {
+										continue NEXT_ARC;
+									} else {
+										// All other threads can stop, we've found a
+										// violation.
+										executor.shutdownNow();
+										// TODO Throw something better here
+										throw new RuntimeException("SCC violates liveness");
+									}
+								}
+							} else {
+								// Failed to acquire w lock, try again later but release
+								// v's lock first. It's possible we failed to acquire
+								// w's lock because of a cyclic lock graph.
+								W_LOCK_FAIL.incrementAndGet();
+								v.unlock();
+								continue V_LOCK;
+							}
+						}
+						// No arcs left, become post-visited and free childs
+						freeChilds(v);
+						v.unlock();
+						continue NEXT_NODE;
+					} else {
+						V_LOCK_FAIL.incrementAndGet();
+						// Cannot acquire v lock, try later
+						continue V_LOCK;
+					}
+				} catch (Exception | Error e) {
+					logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage()));
+					e.printStackTrace();
+					throw e;
 				}
-				// No arcs left, become post-visited and free childs
-				freeChilds();
-				v.unlock();
-				return;
-			} else {
-				V_LOCK_FAIL.incrementAndGet();
-				// Cannot acquire v lock, try later
-				executor.execute(this);
-				return;
 			}
-		} catch (Exception | Error e) {
-			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage()));
-			e.printStackTrace();
-			throw e;
 		}
+		assert !iterator.hasNext();
 	}
 
-	private void freeChilds() {
+	private void freeChilds(final GraphNode v) {
 		logger.fine(() -> String.format("%s: Freeing children of v.", getId(), v.getId()));
 
 		// No untraversed arcs left (UN) or no arcs at all (UN).
@@ -296,7 +291,7 @@ public class SCCWorker implements Runnable {
 			child.cut();
 			// Now that the child is free, it's a root again.
 			logger.info(() -> String.format("%s: Free'ed child (%s)", getId(), child));
-			executor.execute(new SCCWorker(executor, graph, sccs, child));
+			this.iterator.append(child.getId());
 		}
 
 		// All our children must in fact be cut loose
@@ -304,7 +299,7 @@ public class SCCWorker implements Runnable {
 	}
 
 	public int getId() {
-		return v.getId();
+		return id;
 	}
 
 	/* (non-Javadoc)

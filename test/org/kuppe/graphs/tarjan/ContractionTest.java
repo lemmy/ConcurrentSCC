@@ -28,7 +28,6 @@ package org.kuppe.graphs.tarjan;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -396,7 +395,8 @@ public class ContractionTest {
 		//
 		// Once (4) gets explored, it is found that it has no children and its
 		// child (1) must be cut loose.
-		new SCCWorker(noopExecutor, graph, sccs, four).run();
+		final AppendableIterator<GraphNode> iterator = graph.partition(1).get(0);
+		new SCCWorker(noopExecutor, graph, iterator, sccs).run();
 		Assert.assertTrue(four.is(Visited.POST));
 		
 		// Since with the NoopExcecutor nested calls are executed recursively,
@@ -436,10 +436,8 @@ public class ContractionTest {
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
-		final Iterator<GraphNode> iterator = graph.iterator();
-		while (iterator.hasNext()) {
-			new SCCWorker(noopExecutor, graph, sccs, iterator.next()).run();
-		}
+		final AppendableIterator<GraphNode> iterator = graph.partition(1).get(0);
+		new SCCWorker(noopExecutor, graph, iterator, sccs).run();
 		Assert.assertEquals(1, sccs.size());
 		final Set<GraphNode> expected = new HashSet<GraphNode>();
 		expected.add(one);
@@ -469,10 +467,8 @@ public class ContractionTest {
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
-		final Iterator<GraphNode> iterator = graph.iterator();
-		while (iterator.hasNext()) {
-			new SCCWorker(noopExecutor, graph, sccs, iterator.next()).run();
-		}
+		final AppendableIterator<GraphNode> iterator = graph.partition(1).get(0);
+		new SCCWorker(noopExecutor, graph, iterator, sccs).run();
 		
 		// All nodes are post-visited
 		Assert.assertTrue(one.is(Visited.POST));

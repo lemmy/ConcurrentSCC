@@ -28,7 +28,7 @@ class NoopExecutorService implements ExecutorService {
 
 	@Override
 	public boolean isShutdown() {
-		return true;
+		return false;
 	}
 
 	@Override

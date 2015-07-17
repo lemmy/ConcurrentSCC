@@ -28,14 +28,12 @@ package org.kuppe.graphs.tarjan;
 
 import java.text.DecimalFormat;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-
-import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 public class ConcurrentFastSCC {
 	
@@ -58,6 +56,7 @@ public class ConcurrentFastSCC {
 		// TODO Name threads inside executor to aid debugging.
 		// see
 		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
+		final int availableProcessors = Runtime.getRuntime().availableProcessors();
 		final ForkJoinPool executor = new ForkJoinPool();
 
 		// The map of sccs passed around by SCCWorkers
@@ -66,13 +65,9 @@ public class ConcurrentFastSCC {
 		// Take timestamp of when actual work started
 		final long start = System.currentTimeMillis();
 		
-		// Submit a new worker for each graph node
-		final Iterator<GraphNode> itr = graph.iterator();
-		while (itr.hasNext()) {
-			final GraphNode graphNode = itr.next();
-			if (graphNode.isNot(Visited.POST) && graphNode.isRoot()) {
-				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
-			}
+		final List<AppendableIterator<GraphNode>> iterators = graph.partition(availableProcessors);
+		for (AppendableIterator<GraphNode> iterator : iterators) {
+			executor.execute(new SCCWorker(executor, graph, iterator, sccs));
 		}
 
 		// Wait until no SCCWorker is running and no SCCWorker is queued.
