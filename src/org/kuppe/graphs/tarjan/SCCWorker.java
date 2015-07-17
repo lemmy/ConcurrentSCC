@@ -79,7 +79,7 @@ public class SCCWorker implements Runnable {
 			}
 			
 			// Get lock of v
-			if (graph.tryLock(v)) {
+			if (v.tryLock()) {
 				V_LOCK_SUCC.incrementAndGet();
 				// Skip POST-visited v
 				if (v.is(Visited.POST)) {
@@ -89,14 +89,14 @@ public class SCCWorker implements Runnable {
 					assert!v.hasArcs();
 
 					logger.fine(() -> String.format("%s: Skipping post-visited v %s", getId(), v));
-					graph.unlock(v);
+					v.unlock();
 					return;
 				}
 
 				// Skip non-root v
 				if (!v.isRoot()) {
 					logger.fine(() -> String.format("%s: Skipping non-root v %s", getId(), v));
-					graph.unlock(v);
+					v.unlock();
 					return; // A new worker will be scheduled by our tree
 									// root. We are a child right now.
 				}
@@ -116,12 +116,12 @@ public class SCCWorker implements Runnable {
 					// w is already POST-visited OUTSIDE of lock acquisition.
 					// However, as it turns out, this cannot be done because it
 					// opens the door to a dirty read when interleaved with w
-					// being contracted.
+					// being contracted. (We read the contracted w node at 
+					// graph.get(arc) above instead of the node w got contracted
+					// into).
 //					if (w.is(Visited.POST)) {
-//						graph.removeTraversedArc(v, arc);
-//						graph.unlock(v);
-//						executor.submit(this); // Continue with next arc
-//						return null;
+//						v.removeArc(arc);
+//						continue NEXT_ARC;
 //					}
 					
 					GraphNode root = null;
@@ -133,7 +133,7 @@ public class SCCWorker implements Runnable {
 							// TODO self-loop, might check stuttering here
 							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 							
-							// do nothing
+							// do nothing and don't unlock w. It would unlock v too.
 							continue NEXT_ARC;
 						}
 
@@ -166,11 +166,11 @@ public class SCCWorker implements Runnable {
 							 * and w is idle, and switch to this root if so.
 							 */
 							if (w.isRoot()) {
-								graph.unlock(vOld);
+								vOld.unlock();
 								continue NEXT_ARC;
 							}
 							graph.unlockTrees(w, root);
-							graph.unlock(vOld);
+							vOld.unlock();
 							return;
 						} else if (!w.equals(v)) {
 							/*
@@ -216,14 +216,14 @@ public class SCCWorker implements Runnable {
 						// v's lock first. It's possible we failed to acquire
 						// w's lock because of a cyclic lock graph.
 						W_LOCK_FAIL.incrementAndGet();
-						graph.unlock(v);
+						v.unlock();
 						executor.execute(this);
 						return;
 					}
 				}
 				// No arcs left, become post-visited and free childs
 				freeChilds();
-				graph.unlock(v);
+				v.unlock();
 				return;
 			} else {
 				V_LOCK_FAIL.incrementAndGet();

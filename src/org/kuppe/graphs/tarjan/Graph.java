@@ -107,17 +107,7 @@ public class Graph {
 		assert this.nodePtrTable.get(child.getId()) == into;
 	}
 	
-	/* Graph Locking */
-
-	public boolean tryLock(GraphNode node) {
-		return node.tryLock();
-	}
-	
-	public void unlock(GraphNode node) {
-		node.unlock();
-	}
-
-	/* Link cut tree locking */
+	/* Tree locking */
 	
 	public GraphNode tryLockTrees(final GraphNode w) {
 		if (!w.tryLock()) {
@@ -160,9 +150,9 @@ public class Graph {
 	public void unlockTrees(GraphNode w, GraphNode wRoot) {
 		// do not unlock w twice if w's root is w itself.
 		if (w != wRoot) {
-			unlock(wRoot);
+			wRoot.unlock();
 		}
-		unlock(w);
+		w.unlock();
 	}
 
 	/* aux methods for testing */ 
