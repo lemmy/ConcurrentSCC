@@ -30,13 +30,13 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -59,7 +59,7 @@ public class Graph {
 	
 	public Graph(final String name) {
 		this.name = name;
-		this.nodePtrTable = new ConcurrentHashMap<Integer, GraphNode>();
+		this.nodePtrTable = new HashMap<Integer, GraphNode>();
 	}
 	
 	public String getName() {
