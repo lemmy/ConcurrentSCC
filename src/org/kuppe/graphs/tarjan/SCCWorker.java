@@ -70,6 +70,14 @@ public class SCCWorker implements Runnable {
 				return;
 			}
 
+			// ...but if v becomes a root again, a dedicate job for v is
+			// scheduled which is guaranteed to happen before this isRoot check.
+			if (!v.isRoot()) {
+				logger.fine(() -> String.format("%s: Skipping (unlocked) non-root v %s", getId(), v));
+				// my job is already done
+				return;
+			}
+			
 			// Get lock of v
 			if (graph.tryLock(v)) {
 				V_LOCK_SUCC.incrementAndGet();

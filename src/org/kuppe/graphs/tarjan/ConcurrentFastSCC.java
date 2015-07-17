@@ -55,7 +55,7 @@ public class ConcurrentFastSCC {
 		final Iterator<GraphNode> itr = graph.iterator();
 		while (itr.hasNext()) {
 			final GraphNode graphNode = itr.next();
-			if (graphNode.isNot(Visited.POST)) {
+			if (graphNode.isNot(Visited.POST) && graphNode.isRoot()) {
 				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
 			}
 		}
