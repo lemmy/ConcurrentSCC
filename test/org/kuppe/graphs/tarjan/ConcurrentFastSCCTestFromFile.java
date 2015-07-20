@@ -204,7 +204,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	
 	@Test
 	public void testMediumWithThreeInitsOnly() throws IOException {
-		final Graph graph = new Graph("testMedium");
+		final Graph graph = new Graph("testMediumWithInits");
 		readFile(graph, "mediumDG.txt");
 		graph.setInit(1); // Source node
 		graph.setInit(10); // Source node

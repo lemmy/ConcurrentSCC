@@ -31,9 +31,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class GraphNode extends NaiveTreeNode {
+	
+	public static final AtomicLong AVERAGE_FIX_AMOUNT = new AtomicLong();
+	public static final AtomicLong AVERAGE_FIX_CNT = new AtomicLong();
+
+	public static final AtomicLong CONTRACTIONS = new AtomicLong();
+	public static final AtomicLong CONTRACTION_LENGTH = new AtomicLong();
 
 	private static final int SCC_NODE = -23;
 	
@@ -172,6 +179,8 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public void contract(final Map<GraphNode, GraphNode> sccs, final Graph graph, final GraphNode graphNode) {
+		CONTRACTIONS.incrementAndGet();
+		
 		assert isNot(Visited.POST);
 
 		// We have to be a root in the tree...
@@ -191,8 +200,10 @@ public class GraphNode extends NaiveTreeNode {
 		}
 		
 		// Traverse GraphNode's tree up to the root which is us/this.
+		int length = 0;
 		GraphNode parent = graphNode;
 		while (parent != this) {
+			length++;
 			// Acquire parent's lock so that I cannot be change concurrently by
 			// SCCWorker either as v or w. Since we know that we own the root
 			// of w (which is v), we can wait for parent. Other threads trying
@@ -239,7 +250,8 @@ public class GraphNode extends NaiveTreeNode {
 			// Continue with parent's parent.
 			parent = parentsParent;
 		}
-
+		CONTRACTION_LENGTH.addAndGet(length);
+		
 		// We remain a root in the tree.
 		assert this.isRoot();
 		// Must not be POST-visited now
@@ -273,7 +285,9 @@ public class GraphNode extends NaiveTreeNode {
 			if (child.getId() != SCC_NODE) {
 				graph.contract(this, child);
 			}
+			AVERAGE_FIX_AMOUNT.incrementAndGet();
 		}
+		AVERAGE_FIX_CNT.incrementAndGet();
 	}
 
 	public boolean checkSCC() {

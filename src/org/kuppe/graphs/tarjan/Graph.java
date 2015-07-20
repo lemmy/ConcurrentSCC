@@ -131,7 +131,7 @@ public class Graph {
 		// w is locked from here on and not a root
 		
 		// traverse w all the way up to its root
-		int length = 0;
+		int length = 1;
 		GraphNode parent = w.getParent();
 		while (parent != null) {
 			length++;

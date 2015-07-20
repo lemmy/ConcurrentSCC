@@ -40,7 +40,7 @@ public class SCCWorker implements Runnable {
 	public static final AtomicLong V_LOCK_SUCC = new AtomicLong();
 	public static final AtomicLong W_LOCK_FAIL = new AtomicLong();
 	public static final AtomicLong W_LOCK_SUCC = new AtomicLong();
-	
+
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private final ExecutorService executor;
