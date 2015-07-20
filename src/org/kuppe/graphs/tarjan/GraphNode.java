@@ -42,6 +42,8 @@ public class GraphNode extends NaiveTreeNode {
 	public static final AtomicLong CONTRACTIONS = new AtomicLong();
 	public static final AtomicLong CONTRACTION_LENGTH = new AtomicLong();
 
+	public static final AtomicLong PARENTING = new AtomicLong();
+	
 	private static final int SCC_NODE = -23;
 	
 	public enum Visited {
@@ -137,6 +139,7 @@ public class GraphNode extends NaiveTreeNode {
 	public void setParent(final GraphNode parent) {
 		assert this.isNot(Visited.POST);
 		link(parent);
+		PARENTING.incrementAndGet();
 	}
 	
 	/**
