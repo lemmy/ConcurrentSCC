@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -47,6 +48,12 @@ public class Graph {
 
 	public static final int NO_ARC = -1;
 
+	public static final AtomicInteger AVERAGE_FINDROOT_LENGTH = new AtomicInteger();
+	public static final AtomicInteger AVERAGE_FINDROOT_CNT = new AtomicInteger();
+	
+	public static final AtomicInteger AVERAGE_FAIL_LENGTH = new AtomicInteger();
+	public static final AtomicInteger AVERAGE_FAIL_CNT = new AtomicInteger();
+	
 	private final Map<Integer, GraphNode> nodePtrTable;
 	//TODO Remove replaced in "production". It's here to strengthen the post condition.
 	private final Set<GraphNode> replaced = new HashSet<>();
@@ -111,19 +118,23 @@ public class Graph {
 	
 	public GraphNode tryLockTrees(final GraphNode w) {
 		if (!w.tryLock()) {
+			doFailStats(0);
 			// Nothing is locked
 			return null;
 		}
 		
 		if (w.isRoot()) {
+			doSuccStats(1);
 			return w;
 		}
 		
 		// w is locked from here on and not a root
 		
 		// traverse w all the way up to its root
+		int length = 0;
 		GraphNode parent = w.getParent();
 		while (parent != null) {
+			length++;
 			if (parent.is(Visited.POST)) {
 				parent.unlock();
 				w.unlock();
@@ -131,8 +142,10 @@ public class Graph {
 			}
 			if (parent.isRoot()) {
 				if (parent.isRootTo(w)) {
+					doSuccStats(length);
 					return parent;
 				} else {
+					doFailStats(length);
 					parent.unlock();
 					w.unlock();
 					return null;
@@ -143,8 +156,19 @@ public class Graph {
 			parent = (GraphNode) parent.getParent();
 			oldparent.unlock();
 		}
+		doFailStats(length);
 		w.unlock();
 		return null;
+	}
+
+	private void doSuccStats(int length) {
+		AVERAGE_FINDROOT_LENGTH.addAndGet(length);
+		AVERAGE_FINDROOT_CNT.incrementAndGet();
+	}
+
+	private void doFailStats(int length) {
+		AVERAGE_FAIL_LENGTH.addAndGet(length);
+		AVERAGE_FAIL_CNT.incrementAndGet();
 	}
 
 	public void unlockTrees(GraphNode w, GraphNode wRoot) {

@@ -70,6 +70,8 @@ public class ConcurrentFastSCC {
 			System.out.println("Succss v locks: " + DecimalFormat.getInstance().format(SCCWorker.V_LOCK_SUCC.get()));
 			System.out.println("Failed w locks: " + DecimalFormat.getInstance().format(SCCWorker.W_LOCK_FAIL.get()));
 			System.out.println("Succss w locks: " + DecimalFormat.getInstance().format(SCCWorker.W_LOCK_SUCC.get()));
+			System.out.println("Avg. succ length: " + DecimalFormat.getInstance().format(Graph.AVERAGE_FINDROOT_LENGTH.get() / Graph.AVERAGE_FINDROOT_CNT.get()));
+			System.out.println("Avg. fail length: " + DecimalFormat.getInstance().format(Graph.AVERAGE_FAIL_LENGTH.get() / Graph.AVERAGE_FAIL_CNT.get()));
 			System.out.println(graph.getName() + " : " + (System.currentTimeMillis() - start) / 1000 + " sec");
 		}
 
