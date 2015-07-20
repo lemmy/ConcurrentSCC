@@ -53,6 +53,7 @@ public class ConcurrentFastSCC {
 		GraphNode.AVERAGE_FIX_CNT.set(1);
 		GraphNode.CONTRACTION_LENGTH.set(1);
 		GraphNode.CONTRACTIONS.set(1);
+		GraphNode.PARENTING.set(0);
 		
 		// TODO Name threads inside executor to aid debugging.
 		// see
@@ -95,6 +96,8 @@ public class ConcurrentFastSCC {
 					"Number of contractions: " + DecimalFormat.getInstance().format(GraphNode.CONTRACTIONS.get()));
 			System.out.println("Avg. contraction length: " + DecimalFormat.getInstance()
 					.format(GraphNode.CONTRACTION_LENGTH.get() / GraphNode.CONTRACTIONS.get()));
+			System.out.println("Total Parenting: " + DecimalFormat.getInstance()
+			.format(GraphNode.PARENTING.get()));
 			System.out.println("Runtime: " + (System.currentTimeMillis() - start) / 1000 + " sec");
 		}
 
