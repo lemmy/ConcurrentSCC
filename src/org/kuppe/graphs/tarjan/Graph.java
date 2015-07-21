@@ -37,9 +37,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
+
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * Abstraction of TLC's NodePtrTable.
@@ -48,11 +50,8 @@ public class Graph {
 
 	public static final int NO_ARC = -1;
 
-	public static final AtomicInteger AVERAGE_FINDROOT_LENGTH = new AtomicInteger();
-	public static final AtomicInteger AVERAGE_FINDROOT_CNT = new AtomicInteger();
-	
-	public static final AtomicInteger AVERAGE_FAIL_LENGTH = new AtomicInteger();
-	public static final AtomicInteger AVERAGE_FAIL_CNT = new AtomicInteger();
+	private final static Histogram findroot = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class, "findroot"));
+	private final static Histogram fail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class, "fail"));
 	
 	private final Map<Integer, GraphNode> nodePtrTable;
 	//TODO Remove replaced in "production". It's here to strengthen the post condition.
@@ -92,7 +91,7 @@ public class Graph {
 		// Globally Replace src with dst
 		final GraphNode replaced = this.nodePtrTable.replace(child.getId(), into);
 		assert replaced != into;
-		this.replaced.add(replaced);
+//		this.replaced.add(replaced);
 		
 		// add all outgoing arcs to dstRecord
 		// TODO LinkedList might not be the ideal data structure here:
@@ -113,18 +112,18 @@ public class Graph {
 		
 		assert this.nodePtrTable.get(child.getId()) == into;
 	}
-	
+
 	/* Tree locking */
 	
 	public GraphNode tryLockTrees(final GraphNode w) {
 		if (!w.tryLock()) {
-			doFailStats(0);
+			fail.update(0);
 			// Nothing is locked
 			return null;
 		}
 		
 		if (w.isRoot()) {
-			doSuccStats(1);
+			findroot.update(1);
 			return w;
 		}
 		
@@ -142,10 +141,10 @@ public class Graph {
 			}
 			if (parent.isRoot()) {
 				if (parent.isRootTo(w)) {
-					doSuccStats(length);
+					findroot.update(length);
 					return parent;
 				} else {
-					doFailStats(length);
+					fail.update(length);
 					parent.unlock();
 					w.unlock();
 					return null;
@@ -156,19 +155,9 @@ public class Graph {
 			parent = (GraphNode) parent.getParent();
 			oldparent.unlock();
 		}
-		doFailStats(length);
+		fail.update(length);
 		w.unlock();
 		return null;
-	}
-
-	private void doSuccStats(int length) {
-		AVERAGE_FINDROOT_LENGTH.addAndGet(length);
-		AVERAGE_FINDROOT_CNT.incrementAndGet();
-	}
-
-	private void doFailStats(int length) {
-		AVERAGE_FAIL_LENGTH.addAndGet(length);
-		AVERAGE_FAIL_CNT.incrementAndGet();
 	}
 
 	public void unlockTrees(GraphNode w, GraphNode wRoot) {

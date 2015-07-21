@@ -26,9 +26,10 @@
 
 package org.kuppe.graphs.tarjan;
 
-import java.text.DecimalFormat;
+import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,23 +38,32 @@ import java.util.concurrent.TimeUnit;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.CsvReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 public class ConcurrentFastSCC {
 	
+	public static final MetricRegistry metrics = new MetricRegistry();
+	private final Timer timer = ConcurrentFastSCC.metrics.timer(MetricRegistry.name(ConcurrentFastSCC.class, "timer"));
+	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
-		// reset counters
-		SCCWorker.V_LOCK_FAIL.set(0);
-		SCCWorker.V_LOCK_SUCC.set(0);
-		SCCWorker.W_LOCK_FAIL.set(0);
-		SCCWorker.W_LOCK_SUCC.set(0);
-		Graph.AVERAGE_FAIL_CNT.set(1);
-		Graph.AVERAGE_FAIL_LENGTH.set(1);
-		Graph.AVERAGE_FINDROOT_CNT.set(1);
-		Graph.AVERAGE_FINDROOT_LENGTH.set(1);
-		GraphNode.AVERAGE_FIX_AMOUNT.set(1);
-		GraphNode.AVERAGE_FIX_CNT.set(1);
-		GraphNode.CONTRACTION_LENGTH.set(1);
-		GraphNode.CONTRACTIONS.set(1);
-		GraphNode.PARENTING.set(0);
+		
+		if (graph.getName() != null) {
+			final ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
+					.convertRatesTo(TimeUnit.SECONDS)
+					.convertDurationsTo(TimeUnit.MILLISECONDS)
+					.build();
+			reporter.start(1, TimeUnit.SECONDS);
+			
+			final File directory = new File("/tmp/" + graph.getName());
+			directory.mkdirs();
+			final CsvReporter csvReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
+					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
+					.build(directory);
+			csvReporter.start(1, TimeUnit.SECONDS);
+		}
 		
 		// TODO Name threads inside executor to aid debugging.
 		// see
@@ -79,27 +89,8 @@ public class ConcurrentFastSCC {
 		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		executor.shutdown();
 
-		// Print runtime statistics
-		if (graph.getName() != null) {
-			System.out.println("=============" + graph.getName() + "============");
-			System.out.println("Failed v locks: " + DecimalFormat.getInstance().format(SCCWorker.V_LOCK_FAIL.get()));
-			System.out.println("Succss v locks: " + DecimalFormat.getInstance().format(SCCWorker.V_LOCK_SUCC.get()));
-			System.out.println("Failed w locks: " + DecimalFormat.getInstance().format(SCCWorker.W_LOCK_FAIL.get()));
-			System.out.println("Succss w locks: " + DecimalFormat.getInstance().format(SCCWorker.W_LOCK_SUCC.get()));
-			System.out.println("Avg. succ length: " + DecimalFormat.getInstance()
-					.format(Graph.AVERAGE_FINDROOT_LENGTH.get() / Graph.AVERAGE_FINDROOT_CNT.get()));
-			System.out.println("Avg. fail length: " + DecimalFormat.getInstance()
-					.format(Graph.AVERAGE_FAIL_LENGTH.get() / Graph.AVERAGE_FAIL_CNT.get()));
-			System.out.println("Avg. dangling: " + DecimalFormat.getInstance()
-					.format(GraphNode.AVERAGE_FIX_AMOUNT.get() / GraphNode.AVERAGE_FIX_CNT.get()));
-			System.out.println(
-					"Number of contractions: " + DecimalFormat.getInstance().format(GraphNode.CONTRACTIONS.get()));
-			System.out.println("Avg. contraction length: " + DecimalFormat.getInstance()
-					.format(GraphNode.CONTRACTION_LENGTH.get() / GraphNode.CONTRACTIONS.get()));
-			System.out.println("Total Parenting: " + DecimalFormat.getInstance()
-			.format(GraphNode.PARENTING.get()));
-			System.out.println("Runtime: " + (System.currentTimeMillis() - start) / 1000 + " sec");
-		}
+		timer.update((System.currentTimeMillis() - start), TimeUnit.MILLISECONDS);
+
 
 		// Convert the result from a map with key being the parent in a tree of
 		// the forest to just a set of SCCs. The parent is irrelevant from the

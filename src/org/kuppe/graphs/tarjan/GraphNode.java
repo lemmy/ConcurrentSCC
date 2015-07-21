@@ -31,18 +31,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 public class GraphNode extends NaiveTreeNode {
 	
-	public static final AtomicLong AVERAGE_FIX_AMOUNT = new AtomicLong();
-	public static final AtomicLong AVERAGE_FIX_CNT = new AtomicLong();
+	private static final Histogram danling = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(GraphNode.class, "dangling"));
+	private static final Histogram contraction = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(GraphNode.class, "contraction"));
+	private static final Meter contractionRate = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(GraphNode.class, "contractionRate"));
+	private static final Counter parenting = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(GraphNode.class, "parenting"));
 
-	public static final AtomicLong CONTRACTIONS = new AtomicLong();
-	public static final AtomicLong CONTRACTION_LENGTH = new AtomicLong();
-
-	public static final AtomicLong PARENTING = new AtomicLong();
 	
 	private static final int SCC_NODE = -23;
 	
@@ -139,7 +141,7 @@ public class GraphNode extends NaiveTreeNode {
 	public void setParent(final GraphNode parent) {
 		assert this.isNot(Visited.POST);
 		link(parent);
-		PARENTING.incrementAndGet();
+		parenting.inc();
 	}
 	
 	/**
@@ -182,7 +184,7 @@ public class GraphNode extends NaiveTreeNode {
 	}
 
 	public void contract(final Map<GraphNode, GraphNode> sccs, final Graph graph, final GraphNode graphNode) {
-		CONTRACTIONS.incrementAndGet();
+		contractionRate.mark();
 		
 		assert isNot(Visited.POST);
 
@@ -253,7 +255,7 @@ public class GraphNode extends NaiveTreeNode {
 			// Continue with parent's parent.
 			parent = parentsParent;
 		}
-		CONTRACTION_LENGTH.addAndGet(length);
+		contraction.update(length);
 		
 		// We remain a root in the tree.
 		assert this.isRoot();
@@ -281,16 +283,17 @@ public class GraphNode extends NaiveTreeNode {
 		// going to one node in parentsSubset "t", it will be skipped as
 		// "t" is post-visited. It has to be pre-visited though, which
 		// is this' visited state after contraction.
+		long fixes = 0L;
 		Iterator<NaiveTreeNode> iterator = head.iterator();
 		while(iterator.hasNext()) {
 			GraphNode child = (GraphNode) iterator.next();
 			assert child.is(Visited.POST);
 			if (child.getId() != SCC_NODE) {
 				graph.contract(this, child);
+				fixes++;
 			}
-			AVERAGE_FIX_AMOUNT.incrementAndGet();
 		}
-		AVERAGE_FIX_CNT.incrementAndGet();
+		danling.update(fixes);
 	}
 
 	public boolean checkSCC() {

@@ -29,18 +29,27 @@ package org.kuppe.graphs.tarjan;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.RatioGauge;
+
 public class SCCWorker implements Runnable {
+	
+	private static final Counter vLock = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(SCCWorker.class, "v-lock-success"));
+	private static final Counter vLockFail = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(SCCWorker.class, "v-lock-failed"));
 
-	public static final AtomicLong V_LOCK_FAIL = new AtomicLong();
-	public static final AtomicLong V_LOCK_SUCC = new AtomicLong();
-	public static final AtomicLong W_LOCK_FAIL = new AtomicLong();
-	public static final AtomicLong W_LOCK_SUCC = new AtomicLong();
-
+	private static final Counter wLock = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(SCCWorker.class, "w-lock-success"));
+	private static final Counter wLockFail = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(SCCWorker.class, "w-lock-failed"));
+	
+	@SuppressWarnings("unused") // It's used because registered as a metric
+	private static final LockRatioGauge vRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".v-lock-ratio", new LockRatioGauge(vLock, vLockFail));
+	@SuppressWarnings("unused") // It's used because registered as a metric
+	private static final LockRatioGauge wRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".w-lock-ratio", new LockRatioGauge(wLock, wLockFail));
+	
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private final ExecutorService executor;
@@ -80,7 +89,7 @@ public class SCCWorker implements Runnable {
 			
 			// Get lock of v
 			if (v.tryLock()) {
-				V_LOCK_SUCC.incrementAndGet();
+				vLock.inc();
 				// Skip POST-visited v
 				if (v.is(Visited.POST)) {
 					// If POST, there must not be any children. 
@@ -126,7 +135,7 @@ public class SCCWorker implements Runnable {
 					
 					GraphNode root = null;
 					if ((root = graph.tryLockTrees(w)) != null) {
-						W_LOCK_SUCC.incrementAndGet();
+						wLock.inc();
 						v.removeArc(arc);
 						
 						if (w.equals(v)) {
@@ -215,7 +224,7 @@ public class SCCWorker implements Runnable {
 						// Failed to acquire w lock, try later again but release
 						// v's lock first. It's possible we failed to acquire
 						// w's lock because of a cyclic lock graph.
-						W_LOCK_FAIL.incrementAndGet();
+						wLockFail.inc();
 						v.unlock();
 						executor.execute(this);
 						return;
@@ -226,7 +235,7 @@ public class SCCWorker implements Runnable {
 				v.unlock();
 				return;
 			} else {
-				V_LOCK_FAIL.incrementAndGet();
+				vLockFail.inc();
 				// Cannot acquire v lock, try later
 				executor.execute(this);
 				return;
@@ -313,5 +322,21 @@ public class SCCWorker implements Runnable {
 	@Override
 	public String toString() {
 		return Integer.toString(getId());
+	}
+
+	public static class LockRatioGauge extends RatioGauge {
+		private Counter success;
+		private Counter fail;
+
+		public LockRatioGauge(Counter success, Counter fail) {
+			this.success = success;
+			this.fail = fail;
+		}
+
+		@Override
+		protected Ratio getRatio() {
+			return Ratio.of(success.getCount(), fail.getCount());
+		}
+
 	}
 }
