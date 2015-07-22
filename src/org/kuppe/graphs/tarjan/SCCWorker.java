@@ -142,7 +142,10 @@ public class SCCWorker implements Runnable {
 							// TODO self-loop, might check stuttering here
 							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 							
-							// do nothing and don't unlock w. It would unlock v too.
+							// Decrease lock hold count (reentrant lock!) by one. v remains locked though.
+							w.unlock(1);
+							
+							// do nothing.
 							continue NEXT_ARC;
 						}
 
@@ -182,6 +185,12 @@ public class SCCWorker implements Runnable {
 							}
 							return;
 						} else if (!w.equals(v)) {
+							// Decrease v lock hold count (reentrant lock!) by
+							// one. v remains locked though, because tryTreeLock
+							// above increased its hold count by one but didn't
+							// initially lock it.
+							v.unlock(1);
+							
 							/*
 							 * The other possibility is that w is in the same
 							 * tree as v. If v = w, do nothing. (Self-loops can
