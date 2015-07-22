@@ -185,15 +185,8 @@ public class Graph {
 				return null;
 			}
 			if (parent.isRoot()) {
-				if (parent.isRootTo(w)) {
-					findroot.update(length);
-					return parent;
-				} else {
-					fail.update(length);
-					parent.unlock();
-					w.unlock();
-					return null;
-				}
+				findroot.update(length);
+				return parent;
 			}
 			// getParent acquires parent's lock
 			GraphNode oldparent = parent;
