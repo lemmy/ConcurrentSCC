@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -50,14 +49,9 @@ public class ConcurrentFastSCC {
 	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
 		
+		File directory = null;
 		if (graph.getName() != null) {
-			final ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
-					.convertRatesTo(TimeUnit.SECONDS)
-					.convertDurationsTo(TimeUnit.MILLISECONDS)
-					.build();
-			reporter.start(1, TimeUnit.SECONDS);
-			
-			final File directory = new File("/tmp/" + graph.getName());
+			directory = new File("/tmp/" + graph.getName() + "/" + System.currentTimeMillis());
 			directory.mkdirs();
 			final CsvReporter csvReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
 					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
@@ -89,8 +83,12 @@ public class ConcurrentFastSCC {
 		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		executor.shutdown();
 
-		timer.update((System.currentTimeMillis() - start), TimeUnit.MILLISECONDS);
+		final long duration = System.currentTimeMillis() - start;
+		timer.update(duration, TimeUnit.MILLISECONDS);
 
+		if (graph.getName() != null) {
+			System.out.printf("Runtime (%s): %s sec (%s)\n", graph.getName(), duration / 1000L, directory.getAbsolutePath());
+		}
 
 		// Convert the result from a map with key being the parent in a tree of
 		// the forest to just a set of SCCs. The parent is irrelevant from the
