@@ -175,6 +175,7 @@ public class SCCWorker implements Runnable {
 							 * and w is idle, and switch to this root if so.
 							 */
 							if (w.isRoot()) {
+								assert w.equals(root);
 								vOld.unlock();
 								continue NEXT_ARC;
 							}
