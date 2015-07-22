@@ -40,7 +40,7 @@ import com.codahale.metrics.MetricRegistry;
 
 public class GraphNode extends NaiveTreeNode {
 	
-	private static final Histogram danling = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(GraphNode.class, "dangling"));
+	private static final Histogram dangling = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(GraphNode.class, "dangling"));
 	private static final Histogram contraction = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(GraphNode.class, "contraction"));
 	private static final Meter contractionRate = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(GraphNode.class, "contractionRate"));
 	private static final Counter parenting = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(GraphNode.class, "parenting"));
@@ -293,7 +293,7 @@ public class GraphNode extends NaiveTreeNode {
 				fixes++;
 			}
 		}
-		danling.update(fixes);
+		dangling.update(fixes);
 	}
 
 	public boolean checkSCC() {
