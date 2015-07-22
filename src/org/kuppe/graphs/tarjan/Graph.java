@@ -76,9 +76,53 @@ public class Graph {
 	
 	public Iterator<GraphNode> iterator() {
 		if (initNodes.isEmpty()) {
+			if (this.nodePtrTable.isEmpty()) {
 			return this.nodePtrTable.values().iterator();
 		}
+			final int availableProcessors = Runtime.getRuntime().availableProcessors();
+			final int partitions = Math.min(availableProcessors, this.nodePtrTable.size());
+			return new PartitioningIterator<GraphNode>(this.nodePtrTable, partitions);
+		}
 		return initNodes.iterator();
+	}
+
+	private static class PartitioningIterator<T> implements Iterator<GraphNode> {
+
+		private final Map<Integer, GraphNode> table;
+		private final int[] partitions;
+		private int index = 0;
+		private int read = 0;
+		
+		public PartitioningIterator(Map<Integer, GraphNode> aTable, int partitions) {
+			this.table = aTable;
+			
+			final int length = this.table.size() / partitions;
+
+			this.partitions = new int[partitions];
+			for (int i = 0; i < this.partitions.length - 1; i++) {
+				this.partitions[i] = i * length;
+			}
+			
+			// remainder goes to last partition
+			this.partitions[partitions - 1] = this.table.size() - length;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return read < this.table.size();
+		}
+
+		@Override
+		public GraphNode next() {
+			// Used up an element
+			read++;
+			// lookup the next element in the current partition.
+			final int elem = this.partitions[index++]++;
+			// switch to next partition		
+			index = index % this.partitions.length;
+			// Return the element
+			return this.table.get(elem);
+		}
 	}
 
 	public GraphNode get(final int id) {
