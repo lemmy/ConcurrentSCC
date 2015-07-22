@@ -135,6 +135,7 @@ public class Graph {
 		while (parent != null) {
 			length++;
 			if (parent.is(Visited.POST)) {
+				fail.update(length);
 				parent.unlock();
 				w.unlock();
 				return null;
