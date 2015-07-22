@@ -181,9 +181,18 @@ public class SCCWorker implements Runnable {
 							 * check to see if the root of the tree containing v
 							 * and w is idle, and switch to this root if so.
 							 */
+							boolean wIsRoot = w.isRoot(); // do this check
+															// before unlocking
+															// w, otherwise
+															// assertion about
+															// equality to root
+															// might be violated
+															// when w becomes a
+															// root after
+															// unlocking.
 							graph.unlockTrees(w, root);
 							vOld.unlock();
-							if (w.isRoot()) {
+							if (wIsRoot) {
 								assert w.equals(root);
 								executor.execute(this);
 							}
