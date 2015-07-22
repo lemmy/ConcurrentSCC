@@ -31,7 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
@@ -39,7 +41,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
 public class GraphNode extends NaiveTreeNode {
-	
+
 	private static final Histogram dangling = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(GraphNode.class, "dangling"));
 	private static final Histogram contraction = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(GraphNode.class, "contraction"));
 	private static final Meter contractionRate = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(GraphNode.class, "contractionRate"));
@@ -151,7 +153,7 @@ public class GraphNode extends NaiveTreeNode {
 	public GraphNode getParent() {
 		final GraphNode parent = (GraphNode) super.getParent();
 		if (parent != null) {
-			if (parent.tryLock()) {
+			if (parent.tryReadLock()) {
 				return parent;
 			}
 		}
@@ -214,7 +216,8 @@ public class GraphNode extends NaiveTreeNode {
 			// of w (which is v), we can wait for parent. Other threads trying
 			// to acquire w's root (v) will eventually give up.
 			//TODO Change lock to be fair
-			parent.lock.lock();
+			boolean locked = parent.isLocked();
+			parent.lock.writeLock().lock();
 
 			assert parent.isNot(Visited.POST);
 			// This should be the only place where visited is accessed directly
@@ -307,16 +310,40 @@ public class GraphNode extends NaiveTreeNode {
 		return id;
 	}
 
-	private final ReentrantLock lock = new ReentrantLock();
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
 	public boolean tryLock() {
-		return lock.tryLock();
+		return this.lock.writeLock().tryLock();
+	}
+	
+	public boolean tryReadLock() {
+		return this.lock.readLock().tryLock();
+	}
+	
+	public void decreaseReadLock() {
+		readUnlock(1);
+	}
+
+	public void readUnlock(final int readHoldCount) {
+		final ReadLock readLock = this.lock.readLock();
+		for (int i = 0; i < readHoldCount; i++) {
+			readLock.unlock();
+		}
+	}
+
+	public void readUnlock() {
+		readUnlock(this.lock.getReadHoldCount());
+	}
+
+	public void decreaseWriteLock() {
+		unlock(1);
 	}
 
 	public void unlock(final int holdCount) {
+		final WriteLock writeLock = this.lock.writeLock();
 		for (int i = 0; i < holdCount; i++) {
-			assert lock.isHeldByCurrentThread();
-			lock.unlock();
+			assert writeLock.isHeldByCurrentThread();
+			writeLock.unlock();
 		}
 	}
 
@@ -326,10 +353,19 @@ public class GraphNode extends NaiveTreeNode {
 		// scheduler but call SCCWorker#call recursively. Thus, a lock is
 		// acquired multiple times during recursion but completely unlocked upon
 		// the first invocation. Subsequent unlocks would fail.
-		unlock(lock.getHoldCount());
+		unlock(this.lock.writeLock().getHoldCount());
+		readUnlock();
 	}
 
 	public boolean isLocked() {
-		return this.lock.isLocked();
+		return this.lock.isWriteLocked();
+	}
+	
+	public boolean isWriteLocked() {
+		return this.lock.isWriteLocked();
+	}
+
+	public boolean isReadLocked() {
+		return this.lock.getReadLockCount() > 0;
 	}
 }

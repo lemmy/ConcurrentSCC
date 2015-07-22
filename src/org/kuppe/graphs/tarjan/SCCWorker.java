@@ -34,21 +34,20 @@ import java.util.logging.Logger;
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
 import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 
 public class SCCWorker implements Runnable {
-	
-	private static final Meter vLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "v-lock-success"));
-	private static final Meter vLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "v-lock-failed"));
-
-	private static final Meter wLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "w-lock-success"));
-	private static final Meter wLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "w-lock-failed"));
-	
-	@SuppressWarnings("unused") // It's used because registered as a metric
-	private static final LockRatioGauge vRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".v-lock-ratio", new LockRatioGauge(vLock, vLockFail));
-	@SuppressWarnings("unused") // It's used because registered as a metric
-	private static final LockRatioGauge wRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".w-lock-ratio", new LockRatioGauge(wLock, wLockFail));
+//
+//	private static final Meter vLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "v-lock-success"));
+//	private static final Meter vLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "v-lock-failed"));
+//
+//	private static final Meter wLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "w-lock-success"));
+//	private static final Meter wLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "w-lock-failed"));
+//	
+//	@SuppressWarnings("unused") // It's used because registered as a metric
+//	private static final LockRatioGauge vRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".v-lock-ratio", new LockRatioGauge(vLock, vLockFail));
+//	@SuppressWarnings("unused") // It's used because registered as a metric
+//	private static final LockRatioGauge wRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".w-lock-ratio", new LockRatioGauge(wLock, wLockFail));
 	
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
@@ -87,9 +86,14 @@ public class SCCWorker implements Runnable {
 				return;
 			}
 			
+			if (v.isWriteLocked()) {
+				// my job is already done, some other thread reparents or contracts v.
+				return;
+			}
+
 			// Get lock of v
 			if (v.tryLock()) {
-				vLock.mark();
+//				vLock.mark();
 				// Skip POST-visited v
 				if (v.is(Visited.POST)) {
 					// If POST, there must not be any children. 
@@ -135,7 +139,7 @@ public class SCCWorker implements Runnable {
 					
 					GraphNode root = null;
 					if ((root = graph.tryLockTrees(w)) != null) {
-						wLock.mark();
+//						wLock.mark();
 						v.removeArc(arc);
 						
 						if (w.equals(v)) {
@@ -143,7 +147,7 @@ public class SCCWorker implements Runnable {
 							logger.fine(() -> String.format("%s: Check self-loop on v (%s)", getId(), v));
 							
 							// Decrease lock hold count (reentrant lock!) by one. v remains locked though.
-							w.unlock(1);
+							w.decreaseWriteLock();
 							
 							// do nothing.
 							continue NEXT_ARC;
@@ -189,8 +193,8 @@ public class SCCWorker implements Runnable {
 							// one. v remains locked though, because tryTreeLock
 							// above increased its hold count by one but didn't
 							// initially lock it.
-							v.unlock(1);
-							
+							v.decreaseReadLock();
+
 							/*
 							 * The other possibility is that w is in the same
 							 * tree as v. If v = w, do nothing. (Self-loops can
@@ -233,7 +237,7 @@ public class SCCWorker implements Runnable {
 						// Failed to acquire w lock, try later again but release
 						// v's lock first. It's possible we failed to acquire
 						// w's lock because of a cyclic lock graph.
-						wLockFail.mark();
+//						wLockFail.mark();
 						v.unlock();
 						executor.execute(this);
 						return;
@@ -244,7 +248,7 @@ public class SCCWorker implements Runnable {
 				v.unlock();
 				return;
 			} else {
-				vLockFail.mark();
+//				vLockFail.mark();
 				// Cannot acquire v lock, try later
 				executor.execute(this);
 				return;

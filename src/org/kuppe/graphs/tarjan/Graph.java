@@ -49,7 +49,7 @@ import com.codahale.metrics.MetricRegistry;
 public class Graph {
 
 	public static final int NO_ARC = -1;
-
+	
 	private final static Histogram findroot = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class, "findroot"));
 	private final static Histogram fail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class, "fail"));
 	
@@ -77,15 +77,15 @@ public class Graph {
 	public Iterator<GraphNode> iterator() {
 		if (initNodes.isEmpty()) {
 			if (this.nodePtrTable.isEmpty()) {
-			return this.nodePtrTable.values().iterator();
-		}
+				return this.nodePtrTable.values().iterator();
+			}
 			final int availableProcessors = Runtime.getRuntime().availableProcessors();
 			final int partitions = Math.min(availableProcessors, this.nodePtrTable.size());
 			return new PartitioningIterator<GraphNode>(this.nodePtrTable, partitions);
 		}
 		return initNodes.iterator();
 	}
-
+	
 	private static class PartitioningIterator<T> implements Iterator<GraphNode> {
 
 		private final Map<Integer, GraphNode> table;
@@ -180,7 +180,7 @@ public class Graph {
 			length++;
 			if (parent.is(Visited.POST)) {
 				fail.update(length);
-				parent.unlock();
+				parent.readUnlock();
 				w.unlock();
 				return null;
 			}
@@ -189,9 +189,9 @@ public class Graph {
 				return parent;
 			}
 			// getParent acquires parent's lock
-			GraphNode oldparent = parent;
+			GraphNode oldParent = parent;
 			parent = (GraphNode) parent.getParent();
-			oldparent.unlock();
+			oldParent.readUnlock();
 		}
 		fail.update(length);
 		w.unlock();
@@ -201,7 +201,7 @@ public class Graph {
 	public void unlockTrees(GraphNode w, GraphNode wRoot) {
 		// do not unlock w twice if w's root is w itself.
 		if (w != wRoot) {
-			wRoot.unlock();
+			wRoot.readUnlock();
 		}
 		w.unlock();
 	}

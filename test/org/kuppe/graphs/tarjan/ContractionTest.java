@@ -648,6 +648,17 @@ public class ContractionTest {
 		Assert.assertTrue(eight.getChildren().contains(ten));
 		Assert.assertTrue(eight.getChildren().contains(eleven));
 	
+		// getParent acquires a read lock on the parent. Since this test has
+		// nothing to do with concurrency, release those locks again.
+		one.readUnlock();
+		two.readUnlock();
+		three.readUnlock();
+		four.readUnlock();
+		five.readUnlock();
+		six.readUnlock();
+		seven.readUnlock();
+		eight.readUnlock();
+		
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 		zero.contract(sccs, graph, eight);
 		
