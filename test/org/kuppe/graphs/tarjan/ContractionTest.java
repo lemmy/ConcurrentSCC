@@ -419,20 +419,20 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a star with one loop
-		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 2,4,5);
+		final GraphNode one = new GraphNode(0);
+		graph.addNode(one, 1,3,4);
 		
-		final GraphNode two = new GraphNode(2);
-		graph.addNode(two, 2);
+		final GraphNode two = new GraphNode(1);
+		graph.addNode(two, 1);
 		
-		final GraphNode three = new GraphNode(3);
-		graph.addNode(three, 1);
+		final GraphNode three = new GraphNode(2);
+		graph.addNode(three, 0);
 		
-		final GraphNode four = new GraphNode(4);
-		graph.addNode(four,4);
+		final GraphNode four = new GraphNode(3);
+		graph.addNode(four,3);
 		
-		final GraphNode five = new GraphNode(5);
-		graph.addNode(five, 3);
+		final GraphNode five = new GraphNode(4);
+		graph.addNode(five, 2);
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
@@ -454,18 +454,18 @@ public class ContractionTest {
 		final Graph graph = new Graph();
 
 		// a ring with bi-directional edges
-		final GraphNode one = new GraphNode(1);
-		graph.addNode(one, 2,6);
-		final GraphNode two = new GraphNode(2);
-		graph.addNode(two,1,3);
-		final GraphNode three = new GraphNode(3);
-		graph.addNode(three,2,4);
-		final GraphNode four = new GraphNode(4);
-		graph.addNode(four,3,5);
-		final GraphNode five = new GraphNode(5);
-		graph.addNode(five,4,6);
-		final GraphNode six = new GraphNode(6);
-		graph.addNode(six,5,1);
+		final GraphNode one = new GraphNode(0);
+		graph.addNode(one, 1,5);
+		final GraphNode two = new GraphNode(1);
+		graph.addNode(two,0,2);
+		final GraphNode three = new GraphNode(2);
+		graph.addNode(three,1,3);
+		final GraphNode four = new GraphNode(3);
+		graph.addNode(four,2,4);
+		final GraphNode five = new GraphNode(4);
+		graph.addNode(five,3,5);
+		final GraphNode six = new GraphNode(5);
+		graph.addNode(six,4,0);
 
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
