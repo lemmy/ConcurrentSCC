@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -727,4 +728,20 @@ public class ConcurrentFastSCCTest extends AbstractConcurrentFastSCCTest {
 		expected.add(anSCC);
 		Assert.assertEquals(expected, sccs);
 	}
+
+	@Test
+    @Ignore
+    public void testHugeGraphNoConnections() {
+            final Graph graph = new Graph("HugeGraphNoArcs");
+            for(int i = 0; i < Integer.MAX_VALUE / 500; i++) {
+                    graph.addNode(new GraphNode(i), i);
+            }
+            Set<Set<GraphNode>> sccs = concurrentFastScc.searchSCCs(graph);
+            Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+            Assert.assertEquals(0, sccs.size());
+            
+            sccs = concurrentFastScc.searchSCCs(graph);
+            Assert.assertTrue(printSCCs(sccs), graph.checkPostCondition());
+            Assert.assertEquals(0, sccs.size());
+    }
 }
