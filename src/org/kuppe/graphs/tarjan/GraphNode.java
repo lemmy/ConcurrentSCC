@@ -216,7 +216,6 @@ public class GraphNode extends NaiveTreeNode {
 			// of w (which is v), we can wait for parent. Other threads trying
 			// to acquire w's root (v) will eventually give up.
 			//TODO Change lock to be fair
-			boolean locked = parent.isLocked();
 			parent.lock.writeLock().lock();
 
 			assert parent.isNot(Visited.POST);
