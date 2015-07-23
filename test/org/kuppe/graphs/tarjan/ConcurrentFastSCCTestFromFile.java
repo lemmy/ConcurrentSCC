@@ -27,15 +27,22 @@
 package org.kuppe.graphs.tarjan;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -56,9 +63,10 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	}
 
 	@Test
-	public void testTLCN9() throws IOException {
+	public void testTLCN9() throws IOException, InterruptedException {
 		final Graph graph = new Graph("testTLCN9");
-		readFile(graph, "tlcn9.txt");
+		readBinFile(graph, "tlcn09.bin");
+		Assert.assertEquals(2369550, graph.size());
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
@@ -331,6 +339,74 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 			converted.add(anSCC);
 		}
 		return converted;
+	}
+
+	// This implementation makes heavy use of multi-threading and is considerably faster on multi-core machines.
+	private static void readBinFile(Graph graph, String filename) throws IOException, InterruptedException {
+		// Read the inputstream into a byte buffer all at once. This provides good performance because
+		// we don't call read() repeatedly.
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream(filename);
+		final DataInputStream dis = new DataInputStream(in);
+		final byte[] buf = new byte[dis.available()];
+		dis.readFully(buf);
+		dis.close();
+		
+		// Create an executor with as many threads as available on the system.
+		final int nThreads = Runtime.getRuntime().availableProcessors();
+		final ExecutorService executor = Executors.newFixedThreadPool(nThreads);
+
+		// Wrap the byte buffer as an int buffer.
+		final IntBuffer intBuf = ByteBuffer.wrap(buf).asIntBuffer();
+
+		// Partition the work among the threads 
+		final int partition = intBuf.capacity() / nThreads;
+		
+		for (int i = 0; i < nThreads; i++) {
+			final int start= i * partition;
+			// The thread responsible for the last partition will read until the
+			// end of the buffer in case partition has a remainder.
+			final int end = i == (nThreads -1) ? intBuf.capacity() : (i + 1) * partition;
+
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					int s = start;
+					if (s > 0 && intBuf.get(s-1) != Integer.MIN_VALUE) {
+						// Records (node and its out arcs) in the buffer are of
+						// variable length and terminated by an end marker
+						// (MIN_VALUE).
+						// Advance/align to the first end marker in this
+						// partition unless we are at the beginning of a p. or
+						// we are right at the beginning of a record. The reader
+						// of the previous partition will read into our
+						// partition if necessary.
+						while ((intBuf.get(s++) != Integer.MIN_VALUE)) {
+							; // no-op
+						}
+					}
+					while (s < end) {
+						// Create a new node instance
+						final int nodeId = intBuf.get(s++);
+						final GraphNode graphNode = new GraphNode(nodeId);
+
+						// Read the node's arcs
+						int arcId;
+						final LinkedList<Integer> arcs = new LinkedList<Integer>();
+						while ((arcId = intBuf.get(s++)) != Integer.MIN_VALUE) {
+							arcs.add(arcId);
+						}
+						graphNode.setArcs(arcs);
+						
+						// Add the node to the graph
+						graph.put(nodeId, graphNode);
+					}
+				}
+			});
+		}
+		
+		// Wait for the threads to do their work.
+		executor.shutdown();
+		executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 	}
 
 	private static void readFile(Graph graph, String filename) throws IOException {

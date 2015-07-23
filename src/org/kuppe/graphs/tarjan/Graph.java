@@ -128,7 +128,7 @@ public class Graph {
 	public GraphNode get(final int id) {
 		return this.nodePtrTable.get(id);
 	}
-	
+
 	/* contraction */
 
 	public void contract(final GraphNode into, final GraphNode child) {
@@ -290,5 +290,13 @@ public class Graph {
 	
 	void setInit(final int nodeId) {
 		initNodes.add(get(nodeId));
+	}
+	
+	public synchronized GraphNode put(final int id, final GraphNode node) {
+		return this.nodePtrTable.put(id, node);
+	}
+
+	public int size() {
+		return this.nodePtrTable.size();
 	}
 }
