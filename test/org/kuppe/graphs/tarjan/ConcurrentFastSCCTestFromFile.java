@@ -51,11 +51,23 @@ import org.junit.Test;
 public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest {
 
 	@Test
+	public void testTLCBakeryN3() throws IOException, InterruptedException {
+		final Graph graph = new Graph("testTLCbakeryN3");
+		readBinFile(graph, "BakeryN3.bin");
+		Assert.assertEquals(2212736, graph.size());
+		
+		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		Assert.assertTrue(graph.checkPostCondition());
+		Assert.assertEquals(324590, sccs.size());
+	}
+
+	@Test
 	@Ignore
 	public void testTLCN10() throws IOException {
 		// Manually copy the 2gb file to the test directory. It's too large for git to handle.
 		final Graph graph = new Graph("testTLCN10");
 		readFile(graph, "tlcn10.txt");
+		Assert.assertEquals(10508304, graph.size());
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
