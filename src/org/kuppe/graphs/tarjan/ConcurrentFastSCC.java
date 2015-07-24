@@ -38,7 +38,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.CsvReporter;
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
@@ -46,8 +48,13 @@ public class ConcurrentFastSCC {
 	
 	public static final MetricRegistry metrics = new MetricRegistry();
 	private final Timer timer = ConcurrentFastSCC.metrics.timer(MetricRegistry.name(ConcurrentFastSCC.class, "timer"));
-	
+
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
+		
+		// TODO Name threads inside executor to aid debugging.
+		// see
+		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
+		final ForkJoinPool executor = new ForkJoinPool();
 		
 		File directory = null;
 		if (graph.getName() != null) {
@@ -57,12 +64,8 @@ public class ConcurrentFastSCC {
 					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
 					.build(directory);
 			csvReporter.start(1, TimeUnit.SECONDS);
+			startPoolMonitor(executor);
 		}
-		
-		// TODO Name threads inside executor to aid debugging.
-		// see
-		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
-		final ForkJoinPool executor = new ForkJoinPool();
 
 		// The map of sccs passed around by SCCWorkers
 		final Map<GraphNode, GraphNode> sccs = new ConcurrentHashMap<GraphNode, GraphNode>();
@@ -100,5 +103,40 @@ public class ConcurrentFastSCC {
 			result.add(graphNode.getSCC());
 		}
 		return result;
+	}
+
+	private void startPoolMonitor(final ForkJoinPool executor) {
+		final Thread monitor = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				final Histogram poolSize = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(ConcurrentFastSCC.class, "poolSize"));
+				final Counter runningThreadCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "runningThreadCount"));
+				final Counter stealCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "stealCount"));
+				final Counter queuedSubmissionCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "queuedSubmissionCount"));
+				final Counter queuedTaskCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "queuedTaskCount"));
+				final Counter activeThreadCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "activeThreadCount"));
+
+				while (true) {
+					try {
+						activeThreadCount.inc(executor.getActiveThreadCount());
+						runningThreadCount.inc(executor.getRunningThreadCount());
+
+						queuedSubmissionCount.inc(executor.getQueuedSubmissionCount());
+						queuedTaskCount.inc(executor.getQueuedTaskCount());
+
+						poolSize.update(executor.getPoolSize());
+						stealCount.inc(executor.getStealCount());
+						
+						Thread.sleep(500L);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		monitor.setDaemon(true); // make sure it doesn't stop the VM from shutting down
+		monitor.start();
 	}
 }
