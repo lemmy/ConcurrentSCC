@@ -50,8 +50,8 @@ public class Graph {
 
 	public static final int NO_ARC = -1;
 	
-	private final static Histogram findroot = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class, "findroot"));
-	private final static Histogram fail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class, "fail"));
+	private final static Histogram findroot = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class.getSimpleName(), "findroot"));
+	private final static Histogram fail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(Graph.class.getSimpleName(), "fail"));
 	
 	private final Map<Integer, GraphNode> nodePtrTable;
 	//TODO Remove replaced in "production". It's here to strengthen the post condition.

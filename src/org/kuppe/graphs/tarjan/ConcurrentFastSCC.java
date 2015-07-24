@@ -47,7 +47,7 @@ import com.codahale.metrics.Timer;
 public class ConcurrentFastSCC {
 	
 	public static final MetricRegistry metrics = new MetricRegistry();
-	private final Timer timer = ConcurrentFastSCC.metrics.timer(MetricRegistry.name(ConcurrentFastSCC.class, "timer"));
+	private final Timer timer = ConcurrentFastSCC.metrics.timer(MetricRegistry.name(ConcurrentFastSCC.class.getSimpleName(), "timer"));
 
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
 		
@@ -58,7 +58,7 @@ public class ConcurrentFastSCC {
 		
 		File directory = null;
 		if (graph.getName() != null) {
-			directory = new File(System.getProperty("java.io.tmpdir") + graph.getName() + "/" + System.currentTimeMillis());
+			directory = new File(System.getProperty("java.io.tmpdir") + File.separator + graph.getName() + File.separator + System.currentTimeMillis());
 			directory.mkdirs();
 			final CsvReporter csvReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
 					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
@@ -111,12 +111,12 @@ public class ConcurrentFastSCC {
 			@Override
 			public void run() {
 				
-				final Histogram poolSize = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(ConcurrentFastSCC.class, "poolSize"));
-				final Counter runningThreadCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "runningThreadCount"));
-				final Counter stealCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "stealCount"));
-				final Counter queuedSubmissionCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "queuedSubmissionCount"));
-				final Counter queuedTaskCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "queuedTaskCount"));
-				final Counter activeThreadCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class, "activeThreadCount"));
+				final Histogram poolSize = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name(ConcurrentFastSCC.class.getSimpleName(), "poolSize"));
+				final Counter runningThreadCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class.getSimpleName(), "runningThreadCount"));
+				final Counter stealCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class.getSimpleName(), "stealCount"));
+				final Counter queuedSubmissionCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class.getSimpleName(), "queuedSubmissionCount"));
+				final Counter queuedTaskCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class.getSimpleName(), "queuedTaskCount"));
+				final Counter activeThreadCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(ConcurrentFastSCC.class.getSimpleName(), "activeThreadCount"));
 
 				while (true) {
 					try {

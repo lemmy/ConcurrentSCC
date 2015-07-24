@@ -40,18 +40,18 @@ import com.codahale.metrics.RatioGauge;
 
 public class SCCWorker implements Runnable {
 
-	private static final Meter vLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "v-lock-success"));
-	private static final Meter vLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "v-lock-failed"));
+	private static final Meter vLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class.getSimpleName(), "v-lock-success"));
+	private static final Meter vLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class.getSimpleName(), "v-lock-failed"));
 
-	private static final Meter wLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "w-lock-success"));
-	private static final Meter wLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class, "w-lock-failed"));
+	private static final Meter wLock = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class.getSimpleName(), "w-lock-success"));
+	private static final Meter wLockFail = ConcurrentFastSCC.metrics.meter(MetricRegistry.name(SCCWorker.class.getSimpleName(), "w-lock-failed"));
 	
 	@SuppressWarnings("unused") // It's used because registered as a metric
-	private static final LockRatioGauge vRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".v-lock-ratio", new LockRatioGauge(vLock, vLockFail));
+	private static final LockRatioGauge vRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getSimpleName() + ".v-lock-ratio", new LockRatioGauge(vLock, vLockFail));
 	@SuppressWarnings("unused") // It's used because registered as a metric
-	private static final LockRatioGauge wRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".w-lock-ratio", new LockRatioGauge(wLock, wLockFail));
+	private static final LockRatioGauge wRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getSimpleName() + ".w-lock-ratio", new LockRatioGauge(wLock, wLockFail));
 
-	private static final Counter postState = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(SCCWorker.class.getName(), "post-state"));
+	private static final Counter postState = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(SCCWorker.class.getSimpleName(), "post-state"));
 
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
