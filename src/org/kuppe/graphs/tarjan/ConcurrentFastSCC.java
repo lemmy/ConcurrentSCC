@@ -58,7 +58,7 @@ public class ConcurrentFastSCC {
 		
 		File directory = null;
 		if (graph.getName() != null) {
-			directory = new File("/tmp/" + graph.getName() + "/" + System.currentTimeMillis());
+			directory = new File(System.getProperty("java.io.tmpdir") + graph.getName() + "/" + System.currentTimeMillis());
 			directory.mkdirs();
 			final CsvReporter csvReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
 					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
