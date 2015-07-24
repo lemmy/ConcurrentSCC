@@ -78,6 +78,8 @@ public class ConcurrentFastSCC {
 				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
 			}
 		}
+		// measure time it takes to submit all jobs
+		timer.update(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
 
 		// Wait until no SCCWorker is running and no SCCWorker is queued.
 		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
