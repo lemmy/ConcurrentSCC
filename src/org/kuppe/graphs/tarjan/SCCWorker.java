@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
@@ -49,7 +50,9 @@ public class SCCWorker implements Runnable {
 	private static final LockRatioGauge vRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".v-lock-ratio", new LockRatioGauge(vLock, vLockFail));
 	@SuppressWarnings("unused") // It's used because registered as a metric
 	private static final LockRatioGauge wRatio = ConcurrentFastSCC.metrics.register(SCCWorker.class.getName() + ".w-lock-ratio", new LockRatioGauge(wLock, wLockFail));
-	
+
+	private static final Counter postState = ConcurrentFastSCC.metrics.counter(MetricRegistry.name(SCCWorker.class.getName(), "post-state"));
+
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private final ExecutorService executor;
@@ -282,6 +285,7 @@ public class SCCWorker implements Runnable {
 		/*
 		 * if there is no such arc: a) mark the root postvisited
 		 */
+		postState.inc();
 		v.set(Visited.POST);
 
 		// Cut its remaining direct tree childs loose. This
