@@ -57,7 +57,7 @@ public class ConcurrentFastSCC {
 		final ForkJoinPool executor = new ForkJoinPool();
 		
 		File directory = null;
-		if (graph.getName() != null) {
+		if (graph.getName() != null && !MetricRegistry.noop) {
 			directory = new File(System.getProperty("java.io.tmpdir") + File.separator + graph.getName() + File.separator + System.currentTimeMillis());
 			directory.mkdirs();
 			final CsvReporter csvReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
@@ -92,7 +92,8 @@ public class ConcurrentFastSCC {
 		timer.update(duration, TimeUnit.MILLISECONDS);
 
 		if (graph.getName() != null) {
-			System.out.printf("Runtime (%s): %s sec (%s)\n", graph.getName(), duration / 1000L, directory.getAbsolutePath());
+			System.out.printf("Runtime (%s): %s sec (%s)\n", graph.getName(), duration / 1000L,
+					directory != null ? directory.getAbsolutePath() : "no metrics collected");
 		}
 
 		// Convert the result from a map with key being the parent in a tree of
