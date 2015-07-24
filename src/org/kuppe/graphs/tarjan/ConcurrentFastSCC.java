@@ -48,6 +48,7 @@ public class ConcurrentFastSCC {
 	
 	public static final MetricRegistry metrics = new MetricRegistry();
 	private final Timer timer = ConcurrentFastSCC.metrics.timer(MetricRegistry.name("timer"));
+	private final Histogram histo = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("scc"));
 
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
 		
@@ -101,7 +102,9 @@ public class ConcurrentFastSCC {
 		// SCC POV and internal to the concurrent fast SCC algorithm.
 		final Set<Set<GraphNode>> result = new HashSet<>(sccs.size());
 		for (GraphNode graphNode : sccs.values()) {
-			result.add(graphNode.getSCC());
+			final Set<GraphNode> scc = graphNode.getSCC();
+			histo.update(scc.size());
+			result.add(scc);
 		}
 		return result;
 	}
