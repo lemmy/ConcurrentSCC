@@ -396,6 +396,9 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 							; // no-op
 						}
 					}
+					// TODO Implement collecting n graphnodes into an
+					// intermediate collection to append the collection to graph
+					// => less contention on graph#put.
 					while (s < end) {
 						// Create a new node instance
 						final int nodeId = intBuf.get(s++);
