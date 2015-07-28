@@ -29,6 +29,7 @@ package org.kuppe.graphs.tarjan;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,11 +80,39 @@ public class Graph {
 			if (this.nodePtrTable.isEmpty()) {
 				return this.nodePtrTable.values().iterator();
 			}
-			final int availableProcessors = Runtime.getRuntime().availableProcessors();
-			final int partitions = Math.min(availableProcessors, this.nodePtrTable.size());
-			return new PartitioningIterator<GraphNode>(this.nodePtrTable, partitions);
+			return new PseudoRandomIterator<GraphNode>(this.nodePtrTable);
 		}
 		return initNodes.iterator();
+	}
+	
+	private static class PseudoRandomIterator<T> implements Iterator<GraphNode> {
+
+		private final Map<Integer, GraphNode> tbl;
+		private final Integer[] indices;
+		
+		private int idx = 0;
+
+		public PseudoRandomIterator(final Map<Integer, GraphNode> nodePtrTable) {
+			tbl = nodePtrTable;
+
+			int size = nodePtrTable.size();
+			final List<Integer> tmp = new ArrayList<>(size);
+			for (int i = 0; i < size; i++) {
+				tmp.add(i);
+			}
+			Collections.shuffle(tmp);
+			indices = tmp.toArray(new Integer[tmp.size()]);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return idx < this.tbl.size();
+		}
+
+		@Override
+		public GraphNode next() {
+			return this.tbl.get(indices[idx++]);
+		}
 	}
 	
 	private static class PartitioningIterator<T> implements Iterator<GraphNode> {
