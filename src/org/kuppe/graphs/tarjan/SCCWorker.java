@@ -365,5 +365,10 @@ public class SCCWorker implements Runnable {
 			return Ratio.of(success.getCount(), fail.getCount());
 		}
 
+		@Override
+		public void reset() {
+			this.success.reset();
+			this.fail.reset();
+		}
 	}
 }

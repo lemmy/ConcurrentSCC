@@ -57,6 +57,8 @@ public class ConcurrentFastSCC {
 	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph, final int numCores) {
 		
+		metrics.reset();
+		
 		// TODO Name threads inside executor to aid debugging.
 		// see
 		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
