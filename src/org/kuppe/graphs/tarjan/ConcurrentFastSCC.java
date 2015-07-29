@@ -117,7 +117,8 @@ public class ConcurrentFastSCC {
 
 	private Optional<ScheduledReporter> getScheduler(final Graph graph, final ForkJoinPool executor) {
 		if (graph.getName().isPresent() && !MetricRegistry.noop) {
-			final File directory = new File(System.getProperty("java.io.tmpdir") + File.separator + graph.getName() + File.separator + System.currentTimeMillis());
+			final File directory = new File(System.getProperty("java.io.tmpdir") + File.separator
+					+ graph.getName().get() + File.separator + System.currentTimeMillis());
 			directory.mkdirs();
 			
 			final CsvReporter scheduledReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
