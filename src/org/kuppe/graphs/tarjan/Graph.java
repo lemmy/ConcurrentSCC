@@ -26,6 +26,7 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +48,8 @@ import com.codahale.metrics.MetricRegistry;
 /**
  * Abstraction of TLC's NodePtrTable.
  */
-public class Graph {
+@SuppressWarnings("serial")
+public class Graph implements Serializable {
 
 	public static final int NO_ARC = -1;
 	
@@ -55,8 +57,6 @@ public class Graph {
 	private final static Histogram fail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("findroot-fail"));
 	
 	private final Map<Integer, GraphNode> nodePtrTable;
-	//TODO Remove replaced in "production". It's here to strengthen the post condition.
-	private final Set<GraphNode> replaced = new HashSet<>();
 	private final String name;
 	private final Deque<GraphNode> initNodes = new ArrayDeque<>();
 
@@ -164,7 +164,6 @@ public class Graph {
 		// Globally Replace src with dst
 		final GraphNode replaced = this.nodePtrTable.replace(child.getId(), into);
 		assert replaced != into;
-//		this.replaced.add(replaced);
 		
 		// add all outgoing arcs to dstRecord
 		// TODO LinkedList might not be the ideal data structure here:
@@ -271,25 +270,6 @@ public class Graph {
 				return false;
 			}
 			if (!graphNode.isRoot()) {
-				return false;
-			}
-			if (graphNode.isLocked()) {
-				return false;
-			}
-		}
-		for (GraphNode graphNode : this.replaced) {
-			if (graphNode.isNot(Visited.POST)) {
-				return false;
-			}
-			if (graphNode.hasArcs()) {	
-				return false;
-			}
-			if (graphNode.hasChildren()) {
-				return false;
-			}
-			if (graphNode.isRoot()) {
-				// Contracted nodes are part of the SCC linked list and thus
-				// have a parent.
 				return false;
 			}
 			if (graphNode.isLocked()) {

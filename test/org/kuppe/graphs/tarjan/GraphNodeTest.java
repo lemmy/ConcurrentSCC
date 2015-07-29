@@ -26,16 +26,52 @@
 
 package org.kuppe.graphs.tarjan;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.junit.Test;
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
+import org.kuppe.graphs.tarjan.copy.DeepCopy;
 
 public class GraphNodeTest {
+	
+	@Test
+	public void testClone() {
+		final GraphNode gn = new GraphNode(0);
+		final LinkedList<Integer> arcs = new LinkedList<>();
+		arcs.add(1);
+		arcs.add(2);
+		arcs.add(3);
+		gn.setArcs(arcs);
+		assertEquals(3, gn.getArcs().size());
+		assertTrue(gn.is(Visited.UN));
+		
+		final GraphNode clone = (GraphNode) DeepCopy.copy(gn);
+		assertFalse(gn == clone);
+		
+		assertEquals(3, clone.getArcs().size());
+		assertTrue(clone.is(Visited.UN));
+		
+		gn.removeArc(1);
+		assertEquals(3, clone.getArcs().size());
+		
+		gn.clearArcs();
+		assertNull(gn.getArcs());
+		assertEquals(3, clone.getArcs().size());
+		
+		gn.set(Visited.POST);
+		assertTrue(gn.is(Visited.POST));
+		assertTrue(clone.is(Visited.UN));
+		
+		assertTrue(gn.tryLock());
+		assertFalse(clone.isLocked());
+	}
 
 	@Test
 	public void testIsInSameTree() {

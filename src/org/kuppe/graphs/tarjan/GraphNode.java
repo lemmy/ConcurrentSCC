@@ -26,6 +26,7 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -40,7 +41,8 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
-public class GraphNode extends NaiveTreeNode {
+@SuppressWarnings("serial")
+public class GraphNode extends NaiveTreeNode implements Serializable {
 
 	private static final Histogram dangling = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("dangling"));
 	private static final Histogram contraction = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("contraction"));

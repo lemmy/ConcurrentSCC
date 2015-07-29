@@ -26,12 +26,14 @@
 
 package org.kuppe.graphs.tarjan;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public abstract class NaiveTreeNode implements TreeNode {
+@SuppressWarnings("serial")
+public abstract class NaiveTreeNode implements TreeNode, Serializable {
 
 	protected final int id;
 	

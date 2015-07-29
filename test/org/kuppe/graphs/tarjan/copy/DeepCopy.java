@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2015 Microsoft Research. All rights reserved. 
  *
@@ -25,21 +24,49 @@
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-import org.kuppe.graphs.tarjan.ArcTest;
-import org.kuppe.graphs.tarjan.ConcurrentFastSCCTest;
-import org.kuppe.graphs.tarjan.ConcurrentFastSCCTestFromFile;
-import org.kuppe.graphs.tarjan.ContractionTest;
-import org.kuppe.graphs.tarjan.GraphNodeTest;
-import org.kuppe.graphs.tarjan.GraphTest;
+package org.kuppe.graphs.tarjan.copy;
 
-import edu.cmu.cs.LinkCutTest;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-@RunWith(Suite.class)
-@SuiteClasses({ ArcTest.class, ConcurrentFastSCCTest.class, ContractionTest.class, GraphNodeTest.class, GraphTest.class,
-		LinkCutTest.class, ConcurrentFastSCCTestFromFile.class })
-public class AllTests {
+// see http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
+public class DeepCopy {
+	
+	public static Object copy(Object orig) {
+		try {
+			// Write the object out to a byte array
+			FastByteArrayOutputStream bos = new FastByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(bos);
+			out.writeObject(orig);
+			out.flush();
+			out.close();
+			
+			// Make an input stream from the byte array and read
+			// a copy of the object back in.
+			ObjectInputStream in = 
+                new ObjectInputStream(bos.getInputStream());
+			return in.readObject();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
+	public static Object copy(Object orig, final int size) {
+		try {
+			// Write the object out to a byte array
+			FastByteArrayOutputStream bos = new FastByteArrayOutputStream(size);
+			ObjectOutputStream out = new ObjectOutputStream(bos);
+			out.writeObject(orig);
+			out.flush();
+			out.close();
+			
+			// Make an input stream from the byte array and read
+			// a copy of the object back in.
+			ObjectInputStream in = 
+                new ObjectInputStream(bos.getInputStream());
+			return in.readObject();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
