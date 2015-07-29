@@ -52,7 +52,8 @@ public class ConcurrentFastSCC {
 	private final Histogram histo = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("scc"));
 
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
-		return searchSCCs(graph, Runtime.getRuntime().availableProcessors());
+		final int availableProcessors = Runtime.getRuntime().availableProcessors();
+		return searchSCCs(graph, Integer.getInteger(ConcurrentFastSCC.class.getName() + ".numCores", availableProcessors));
 	}
 	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph, final int numCores) {
