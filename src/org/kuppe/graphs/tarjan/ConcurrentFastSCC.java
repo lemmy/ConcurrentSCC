@@ -47,15 +47,23 @@ import com.codahale.metrics.Timer;
 public class ConcurrentFastSCC {
 	
 	public static final MetricRegistry metrics = new MetricRegistry();
+	private final Counter usedCores = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("used-cores"));
 	private final Timer timer = ConcurrentFastSCC.metrics.timer(MetricRegistry.name("timer"));
 	private final Histogram histo = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("scc"));
 
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
+		return searchSCCs(graph, Runtime.getRuntime().availableProcessors());
+	}
+	
+	public Set<Set<GraphNode>> searchSCCs(final Graph graph, final int numCores) {
 		
 		// TODO Name threads inside executor to aid debugging.
 		// see
 		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
-		final ForkJoinPool executor = new ForkJoinPool();
+		usedCores.inc(numCores); // record the number of used cores even though
+									// it's static. It allows to determine the
+									// core count in the final statistics.
+		final ForkJoinPool executor = new ForkJoinPool(numCores);
 		
 		File directory = null;
 		if (graph.getName() != null && !MetricRegistry.noop) {
