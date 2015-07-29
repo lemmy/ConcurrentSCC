@@ -42,6 +42,7 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Timer;
 
 public class ConcurrentFastSCC {
@@ -69,13 +70,14 @@ public class ConcurrentFastSCC {
 		final ForkJoinPool executor = new ForkJoinPool(numCores);
 		
 		File directory = null;
+		ScheduledReporter scheduledReporter = null;
 		if (graph.getName() != null && !MetricRegistry.noop) {
 			directory = new File(System.getProperty("java.io.tmpdir") + File.separator + graph.getName() + File.separator + System.currentTimeMillis());
 			directory.mkdirs();
-			final CsvReporter csvReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
+			scheduledReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
 					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
 					.build(directory);
-			csvReporter.start(1, TimeUnit.SECONDS);
+			scheduledReporter.start(1, TimeUnit.SECONDS);
 			startPoolMonitor(executor);
 		}
 
@@ -103,6 +105,10 @@ public class ConcurrentFastSCC {
 		final long duration = System.currentTimeMillis() - start;
 		timer.update(duration, TimeUnit.MILLISECONDS);
 
+		if (scheduledReporter != null) {
+			scheduledReporter.stop();
+		}
+		
 		if (graph.getName() != null) {
 			System.out.printf("Runtime (%s): %s sec (%s)\n", graph.getName(), duration / 1000L,
 					directory != null ? directory.getAbsolutePath() : "no metrics collected");
@@ -133,7 +139,7 @@ public class ConcurrentFastSCC {
 				final Counter queuedTaskCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("queuedTaskCount"));
 				final Counter activeThreadCount = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("activeThreadCount"));
 
-				while (true) {
+				while (!executor.isTerminated()) {
 					try {
 						activeThreadCount.inc(executor.getActiveThreadCount());
 						runningThreadCount.inc(executor.getRunningThreadCount());
