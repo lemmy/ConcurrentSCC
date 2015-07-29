@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
@@ -58,28 +59,17 @@ public class ConcurrentFastSCC {
 	}
 	
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph, final int numCores) {
-		
-		metrics.reset();
-		
-		// TODO Name threads inside executor to aid debugging.
-		// see
-		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
+		metrics.reset(); // reset any previous statistics
 		usedCores.inc(numCores); // record the number of used cores even though
 									// it's static. It allows to determine the
 									// core count in the final statistics.
+
+		// TODO Name threads inside executor to aid debugging.
+		// see
+		// http://www.nurkiewicz.com/2014/11/executorservice-10-tips-and-tricks.html
 		final ForkJoinPool executor = new ForkJoinPool(numCores);
 		
-		File directory = null;
-		ScheduledReporter scheduledReporter = null;
-		if (graph.getName() != null && !MetricRegistry.noop) {
-			directory = new File(System.getProperty("java.io.tmpdir") + File.separator + graph.getName() + File.separator + System.currentTimeMillis());
-			directory.mkdirs();
-			scheduledReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
-					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
-					.build(directory);
-			scheduledReporter.start(1, TimeUnit.SECONDS);
-			startPoolMonitor(executor);
-		}
+		final Optional<ScheduledReporter> scheduledReporter = getScheduler(graph, executor);
 
 		// The map of sccs passed around by SCCWorkers
 		final Map<GraphNode, GraphNode> sccs = new ConcurrentHashMap<GraphNode, GraphNode>();
@@ -105,14 +95,13 @@ public class ConcurrentFastSCC {
 		final long duration = System.currentTimeMillis() - start;
 		timer.update(duration, TimeUnit.MILLISECONDS);
 
-		if (scheduledReporter != null) {
-			scheduledReporter.stop();
-		}
-		
-		if (graph.getName() != null) {
-			System.out.printf("Runtime (%s): %s sec (%s)\n", graph.getName(), duration / 1000L,
-					directory != null ? directory.getAbsolutePath() : "no metrics collected");
-		}
+		// Stop the reporter from collecting any more statistics
+		scheduledReporter.ifPresent(reporter -> {reporter.stop();});
+
+		// Print simple runtime statistic
+		graph.getName().ifPresent(g -> {
+			System.out.printf("Runtime (%s): %s sec\n", graph.getName().get(), duration / 1000L);
+		});
 
 		// Convert the result from a map with key being the parent in a tree of
 		// the forest to just a set of SCCs. The parent is irrelevant from the
@@ -124,6 +113,24 @@ public class ConcurrentFastSCC {
 			result.add(scc);
 		}
 		return result;
+	}
+
+	private Optional<ScheduledReporter> getScheduler(final Graph graph, final ForkJoinPool executor) {
+		if (graph.getName().isPresent() && !MetricRegistry.noop) {
+			final File directory = new File(System.getProperty("java.io.tmpdir") + File.separator + graph.getName() + File.separator + System.currentTimeMillis());
+			directory.mkdirs();
+			
+			final CsvReporter scheduledReporter = CsvReporter.forRegistry(metrics).formatFor(Locale.US)
+					.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
+					.build(directory);
+			scheduledReporter.start(1, TimeUnit.SECONDS);
+			
+			// Start a thread that periodically collects metrics on the executor 
+			startPoolMonitor(executor);
+			
+			return Optional.of(scheduledReporter);
+		}
+		return Optional.empty();
 	}
 
 	private void startPoolMonitor(final ForkJoinPool executor) {

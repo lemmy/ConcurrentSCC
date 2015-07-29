@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
@@ -69,8 +70,8 @@ public class Graph implements Serializable {
 		this.nodePtrTable = new HashMap<Integer, GraphNode>();
 	}
 	
-	public String getName() {
-		return name;
+	public Optional<String> getName() {
+		return Optional.ofNullable(name);
 	}
 	
 	/* nodes */
