@@ -51,6 +51,18 @@ import org.junit.Test;
 public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest {
 
 	@Test
+	@Ignore
+	public void testTLCVoteProofN4() throws IOException, InterruptedException {
+		final Graph graph = new Graph("testTLCVoteProofN4");
+		readBinFile(graph, "voteproofN4.bin");
+		Assert.assertEquals(693930, graph.size());
+		
+		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		Assert.assertTrue(graph.checkPostCondition());
+		Assert.assertEquals(0, sccs.size());
+	}
+
+	@Test
 	public void testTLCBakeryN3() throws IOException, InterruptedException {
 		final Graph graph = new Graph("testTLCbakeryN3");
 		readBinFile(graph, "BakeryN3.bin");
