@@ -52,6 +52,8 @@ public class SCCWorker implements Runnable {
 	private static final LockRatioGauge wRatio = ConcurrentFastSCC.metrics.register("w-lock-ratio", new LockRatioGauge(wLock, wLockFail));
 
 	private static final Counter postState = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("post-state"));
+	
+	private static final Counter freedChildren = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("freed-children"));
 
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
@@ -326,15 +328,19 @@ public class SCCWorker implements Runnable {
 		// will be irrelevant, as v's tree will be garbage
 		// collected.
 		//TODO parallelize
+		long cutChildren = 0L;
 		final Iterator<NaiveTreeNode> iterator = v.iterator();
 		while(iterator.hasNext()) {
 			final GraphNode child = (GraphNode) iterator.next();
+			//TODO Move cut op into forked executor to run all cuts (potentially) in parallel?
 			child.cut();
 			// Now that the child is free, it's a root again.
 			logger.info(() -> String.format("%s: Free'ed child (%s)", getId(), child));
 			executor.execute(new SCCWorker(executor, graph, sccs, child));
+			cutChildren++;
 		}
-
+		freedChildren.inc(cutChildren);
+		
 		// All our children must in fact be cut loose
 		assert!v.hasChildren();
 	}
