@@ -157,7 +157,7 @@ public class ConcurrentFastSCC {
 						poolSize.update(executor.getPoolSize());
 						stealCount.inc(executor.getStealCount());
 						
-						Thread.sleep(500L);
+						Thread.sleep(1000L);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
