@@ -44,13 +44,12 @@ import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
-import com.codahale.metrics.Timer;
 
 public class ConcurrentFastSCC {
 	
 	public static final MetricRegistry metrics = new MetricRegistry();
 	private final Counter usedCores = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("used-cores"));
-	private final Timer timer = ConcurrentFastSCC.metrics.timer(MetricRegistry.name("timer"));
+	private final Counter runtime = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("runtime"));
 	private final Histogram histo = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("scc"));
 
 	public Set<Set<GraphNode>> searchSCCs(final Graph graph) {
@@ -75,7 +74,7 @@ public class ConcurrentFastSCC {
 		final Map<GraphNode, GraphNode> sccs = new ConcurrentHashMap<GraphNode, GraphNode>();
 		
 		// Take timestamp of when actual work started
-		final long start = System.currentTimeMillis();
+		final long start = System.nanoTime();
 		
 		// Submit a new worker for each graph node
 		final Iterator<GraphNode> itr = graph.iterator();
@@ -85,22 +84,22 @@ public class ConcurrentFastSCC {
 				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
 			}
 		}
-		// measure time it takes to submit all jobs
-		timer.update(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
 
 		// Wait until no SCCWorker is running and no SCCWorker is queued.
 		executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		executor.shutdown();
 
-		final long duration = System.currentTimeMillis() - start;
-		timer.update(duration, TimeUnit.MILLISECONDS);
+		final long duration = System.nanoTime() - start;
+		runtime.inc(duration);
 
-		// Stop the reporter from collecting any more statistics
-		scheduledReporter.ifPresent(reporter -> {reporter.stop();});
+		// Stop the reporter from collecting any more statistics and then report
+		// one more time to flush out the values that have been reported in
+		// between the last flush and stop (i.e. runtime.inc(duration)).
+		scheduledReporter.ifPresent(reporter -> {reporter.stop(); reporter.report();});
 
 		// Print simple runtime statistic
 		graph.getName().ifPresent(g -> {
-			System.out.printf("Runtime (%s): %s sec\n", graph.getName().get(), duration / 1000L);
+			System.out.printf("Runtime (%s): %s sec\n", graph.getName().get(), TimeUnit.NANOSECONDS.toSeconds(duration));
 		});
 
 		// Convert the result from a map with key being the parent in a tree of
