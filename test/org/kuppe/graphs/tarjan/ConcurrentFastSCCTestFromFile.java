@@ -54,7 +54,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Ignore
 	public void testTLCVoteProofN4() throws IOException, InterruptedException {
 		final Graph graph = new Graph("testTLCVoteProofN4");
-		readBinFile(graph, "voteproofN4.bin");
+		readBinFile(graph, "/data/voteproofN4.bin");
 		Assert.assertEquals(693930, graph.size());
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
@@ -65,7 +65,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testTLCBakeryN3() throws IOException, InterruptedException {
 		final Graph graph = new Graph("testTLCbakeryN3");
-		readBinFile(graph, "BakeryN3.bin");
+		readBinFile(graph, "/data/BakeryN3.bin");
 		Assert.assertEquals(2212736, graph.size());
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
@@ -78,7 +78,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	public void testTLCN10() throws IOException {
 		// Manually copy the 2gb file to the test directory. It's too large for git to handle.
 		final Graph graph = new Graph("testTLCN10");
-		readFile(graph, "tlcn10.txt");
+		readFile(graph, "/data/tlcn10.txt");
 		Assert.assertEquals(10508304, graph.size());
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
@@ -89,7 +89,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testTLCN9() throws IOException, InterruptedException {
 		final Graph graph = new Graph("testTLCN9");
-		readBinFile(graph, "tlcn09.bin");
+		readBinFile(graph, "/data/tlcn09.bin");
 		Assert.assertEquals(2369550, graph.size());
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
@@ -100,7 +100,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testTLCN8() throws IOException {
 		final Graph graph = new Graph("testTLCN8");
-		readFile(graph, "tlc.txt");
+		readFile(graph, "/data/tlc.txt");
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
@@ -109,7 +109,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
 		
 		// Read the file with the correct SCCs
-		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("tlcsccs.txt");
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("/data/tlcsccs.txt");
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 			for(String line = br.readLine(); line != null; line = br.readLine()) {
 				final Set<Integer> hashSet = new HashSet<Integer>();
@@ -126,8 +126,8 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Ignore
 	public void testTLCN8JustInits() throws IOException {
 		final Graph graph = new Graph("testTLCN8");
-		readFile(graph, "tlc.txt");
-		readInits(graph, "tlcinits.txt");
+		readFile(graph, "/data/tlc.txt");
+		readInits(graph, "/data/tlcinits.txt");
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
@@ -136,7 +136,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
 		
 		// Read the file with the correct SCCs
-		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("tlcsccs.txt");
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("/data/tlcsccs.txt");
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 			for(String line = br.readLine(); line != null; line = br.readLine()) {
 				final Set<Integer> hashSet = new HashSet<Integer>();
@@ -158,7 +158,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testTiny() throws IOException {
 		final Graph graph = new Graph("testTiny");
-		readFile(graph, "tinyDG.txt");
+		readFile(graph, "/data/tinyDG.txt");
 		
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
@@ -170,7 +170,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testTinyLoop() throws IOException {
 		final Graph graph = new Graph("testTinyLoop");
-		readFile(graph, "tinyDG.txt");
+		readFile(graph, "/data/tinyDG.txt");
 		
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
@@ -228,7 +228,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testMedium() throws IOException {
 		final Graph graph = new Graph("testMedium");
-		readFile(graph, "mediumDG.txt");
+		readFile(graph, "/data/mediumDG.txt");
 
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		testMediumSCCs(graph, sccs);
@@ -237,7 +237,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testMediumWithThreeInitsOnly() throws IOException {
 		final Graph graph = new Graph("testMediumWithInits");
-		readFile(graph, "mediumDG.txt");
+		readFile(graph, "/data/mediumDG.txt");
 		graph.setInit(1); // Source node
 		graph.setInit(10); // Source node
 		graph.setInit(20); // One node of the smaller SCC which is isolated WRT incoming arcs.
@@ -249,7 +249,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testMediumLoop() throws IOException {
 		final Graph graph = new Graph("testMediumLoop");
-		readFile(graph, "mediumDG.txt");
+		readFile(graph, "/data/mediumDG.txt");
 		
 		final Map<GraphNode, GraphNode> sccs = new HashMap<GraphNode, GraphNode>(0);
 
@@ -330,7 +330,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	@Test
 	public void testLarge() throws IOException {
 		final Graph graph = new Graph("testLarge");
-		readFile(graph, "largeDG.txt");
+		readFile(graph, "/data/largeDG.txt");
 
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
@@ -339,7 +339,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		final Set<Set<Integer>> convertedSCCs = convertToInts(sccs);
 		
 		// Read the file with the correct SCCs
-		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("largeDGsccs.txt");
+		final InputStream in = ConcurrentFastSCCTestFromFile.class.getResourceAsStream("/data/largeDGsccs.txt");
 		try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 			for(String line = br.readLine(); line != null; line = br.readLine()) {
 				final Set<Integer> hashSet = new HashSet<Integer>();
