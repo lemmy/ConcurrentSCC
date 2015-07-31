@@ -55,6 +55,10 @@ public class SCCWorker implements Runnable {
 	
 	private static final Counter freedChildren = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("freed-children"));
 
+	private static final Counter equal = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("skip-equal"));
+    
+	private static final Counter post = ConcurrentFastSCC.metrics.counter(MetricRegistry.name("skip-post"));
+	
 	private static final Logger logger = Logger.getLogger("org.kuppe.graphs.tarjan");
 
 	private final ExecutorService executor;
@@ -155,6 +159,8 @@ public class SCCWorker implements Runnable {
 							// Decrease lock hold count (reentrant lock!) by one. v remains locked though.
 							w.decreaseWriteLock();
 							
+							equal.inc();
+							
 							// do nothing.
 							continue NEXT_ARC;
 						}
@@ -164,6 +170,7 @@ public class SCCWorker implements Runnable {
 						if (w.is(Visited.POST)) {
 							// v # w (due to previous check)
 							graph.unlockTrees(w, root);
+							post.inc();
 							continue NEXT_ARC;
 						}
 
