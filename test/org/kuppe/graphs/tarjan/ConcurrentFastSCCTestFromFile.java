@@ -46,9 +46,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.kuppe.graphs.tarjan.RepeatRule.Repeat;
 
 public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest {
+
+	@Rule
+	public RepeatRule repeatRule = new RepeatRule();
 
 	@Test
 	@Ignore
