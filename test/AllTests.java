@@ -33,12 +33,11 @@ import org.kuppe.graphs.tarjan.ConcurrentFastSCCTest;
 import org.kuppe.graphs.tarjan.ConcurrentFastSCCTestFromFile;
 import org.kuppe.graphs.tarjan.ContractionTest;
 import org.kuppe.graphs.tarjan.GraphNodeTest;
-import org.kuppe.graphs.tarjan.GraphTest;
 
 import edu.cmu.cs.LinkCutTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ArcTest.class, ConcurrentFastSCCTest.class, ContractionTest.class, GraphNodeTest.class, GraphTest.class,
+@SuiteClasses({ ArcTest.class, ConcurrentFastSCCTest.class, ContractionTest.class, GraphNodeTest.class,
 		LinkCutTest.class, ConcurrentFastSCCTestFromFile.class })
 public class AllTests {
 
