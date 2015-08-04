@@ -53,6 +53,8 @@ import org.kuppe.graphs.tarjan.RepeatRule.Repeat;
 /*
 md5sums
 =======
+2bac4b28fa82fc8e7590c4d1b8d7247c  allocatorSetSize8.bin
+1adf32e3bcdce38c019e7c7f88076143  allocatorSetSize9.bin
 0126c4267176ca10b8512a82b3b4e788  BakeryN3.bin
 db48dfa272f563ae95aaa59137822b97  largeDGsccs.txt
 78ffa13d3318b8f61e3a0c200e659026  largeDG.txt
