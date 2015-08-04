@@ -55,6 +55,8 @@ md5sums
 =======
 2bac4b28fa82fc8e7590c4d1b8d7247c  allocatorSetSize8.bin
 1adf32e3bcdce38c019e7c7f88076143  allocatorSetSize9.bin
+1ca1f7174fa58219a74c8cbd308d4c6b  alternatingBitLen04.bin
+731f50cc56292daabc6b72b102186a27  alternatingBitLen32.bin
 0126c4267176ca10b8512a82b3b4e788  BakeryN3.bin
 db48dfa272f563ae95aaa59137822b97  largeDGsccs.txt
 78ffa13d3318b8f61e3a0c200e659026  largeDG.txt
@@ -479,11 +481,11 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 	public void testAllocatorSetSize9() throws IOException, InterruptedException {
 		final Graph graph = new Graph("testTLCAllocatorSetSize9");
 		readBinFile(graph, "/data/allocatorSetSize9.bin"); // TLC needs ~160seconds to search SCCs
-		Assert.assertEquals(71368704, graph.size());
+		Assert.assertEquals(9371648, graph.size());
 			
 		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
 		Assert.assertTrue(graph.checkPostCondition());
-		Assert.assertEquals(4119, sccs.size());
+		Assert.assertEquals(12611, sccs.size());
 	}
 
 	/*
