@@ -92,16 +92,6 @@ public class ConcurrentFastSCC {
 		final long duration = System.nanoTime() - start;
 		runtime.inc(duration);
 
-		// Stop the reporter from collecting any more statistics and then report
-		// one more time to flush out the values that have been reported in
-		// between the last flush and stop (i.e. runtime.inc(duration)).
-		scheduledReporter.ifPresent(reporter -> {reporter.stop(); reporter.report();});
-
-		// Print simple runtime statistic
-		graph.getName().ifPresent(g -> {
-			System.out.printf("Runtime (%s): %s sec\n", graph.getName().get(), TimeUnit.NANOSECONDS.toSeconds(duration));
-		});
-
 		// Convert the result from a map with key being the parent in a tree of
 		// the forest to just a set of SCCs. The parent is irrelevant from the
 		// SCC POV and internal to the concurrent fast SCC algorithm.
@@ -111,6 +101,17 @@ public class ConcurrentFastSCC {
 			histo.update(scc.size());
 			result.add(scc);
 		}
+
+		// Stop the reporter from collecting any more statistics and then report
+		// one more time to flush out the values that have been reported in
+		// between the last flush and stop (i.e. runtime.inc(duration)).
+		scheduledReporter.ifPresent(reporter -> {reporter.stop(); reporter.report();});
+
+		// Print simple runtime statistic
+		graph.getName().ifPresent(g -> {
+			System.out.printf("Runtime (%s): %s sec\n", graph.getName().get(), TimeUnit.NANOSECONDS.toSeconds(duration));
+		});
+		
 		return result;
 	}
 
