@@ -55,7 +55,8 @@ public class Graph implements Serializable {
 	public static final int NO_ARC = -1;
 	
 	private final static Histogram findroot = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("findroot-succ"));
-	private final static Histogram fail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("findroot-fail"));
+	private final static Histogram postFail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("findroot-post-fail"));
+	private final static Histogram lockFail = ConcurrentFastSCC.metrics.histogram(MetricRegistry.name("findroot-lock-fail"));
 	
 	private final Map<Integer, GraphNode> nodePtrTable;
 	private final String name;
@@ -190,7 +191,7 @@ public class Graph implements Serializable {
 	
 	public GraphNode tryLockTrees(final GraphNode w) {
 		if (!w.tryLock()) {
-			fail.update(0);
+			lockFail.update(0);
 			// Nothing is locked
 			return null;
 		}
@@ -208,7 +209,7 @@ public class Graph implements Serializable {
 		while (parent != null) {
 			length++;
 			if (parent.is(Visited.POST)) {
-				fail.update(length);
+				postFail.update(length);
 				parent.readUnlock();
 				w.unlock();
 				return null;
@@ -222,7 +223,7 @@ public class Graph implements Serializable {
 			parent = (GraphNode) parent.getParent();
 			oldParent.readUnlock();
 		}
-		fail.update(length);
+		lockFail.update(length);
 		w.unlock();
 		return null;
 	}
