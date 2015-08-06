@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
 
@@ -61,6 +62,7 @@ public class Graph implements Serializable {
 	private final Map<Integer, GraphNode> nodePtrTable;
 	private final String name;
 	private final Deque<GraphNode> initNodes = new ArrayDeque<>();
+	private final AtomicLong postCnt = new AtomicLong(0);
 
 	public Graph() {
 		this(null);
@@ -75,6 +77,17 @@ public class Graph implements Serializable {
 		return Optional.ofNullable(name);
 	}
 	
+	/* post state */
+	
+	public void setPost(final GraphNode node) {
+		postCnt.incrementAndGet();
+		node.set(Visited.POST);
+	}
+
+	public long getUnDone() {
+		return this.nodePtrTable.size() - postCnt.get();
+	}
+
 	/* nodes */
 	
 	public Iterator<GraphNode> iterator() {
@@ -117,6 +130,7 @@ public class Graph implements Serializable {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private static class PartitioningIterator<T> implements Iterator<GraphNode> {
 
 		private final Map<Integer, GraphNode> table;
@@ -250,7 +264,8 @@ public class Graph implements Serializable {
 		if (graphNode.getId() != node.getId()) {
 			return new ArrayList<Integer>();
 		}
-		return new HashSet<>(graphNode.getArcs());
+		final List<Integer> arcs  = graphNode.getArcs();
+		return new HashSet<>(arcs == null ? new LinkedList<>() : arcs);
 	}
 
 	Collection<Integer> getArcs(GraphNode node) {

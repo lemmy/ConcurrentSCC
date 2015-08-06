@@ -129,6 +129,26 @@ public class SCCWorker implements Runnable {
 				 */
 				int arc = Graph.NO_ARC;
 				NEXT_ARC : while ((arc = v.getArc()) != Graph.NO_ARC) {
+
+					// Our own last action (previous loop iteration) might have
+					// changed the state of nodes to post. If there is only a
+					// single node left who is not in the post state (which has
+					// to be us), there is no point continuing out arc
+					// exploration. Just do some cleanup and terminate right away.
+					// TODO Handle self-loops which might be skipped due to this
+					// check. This is no problem for the general SCC search, but
+					// for TLC it will.
+					if (graph.getUnDone() == 1) {
+						v.clearArcs();
+						graph.setPost(v);
+						// TODO cut children (freeChildren) to reset the graph
+						// to a pristine state if another search is run
+						// subsequently?
+						v.unlock();
+						executor.shutdownNow();
+						return;
+					}
+					
 					// To traverse an arc (v, w), if w is postvisited do
 					// nothing.
 					final GraphNode w = graph.get(arc);
@@ -295,7 +315,7 @@ public class SCCWorker implements Runnable {
 		 * if there is no such arc: a) mark the root postvisited
 		 */
 		postState.inc();
-		v.set(Visited.POST);
+		graph.setPost(v);
 
 		// Cut its remaining direct tree childs loose. This
 		// is i.e. necessary for Graph A, when:

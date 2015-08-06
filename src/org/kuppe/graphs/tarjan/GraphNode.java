@@ -256,6 +256,9 @@ public class GraphNode extends NaiveTreeNode implements Serializable {
 			// SCCWorker). Thus, release all locks.
 			parent.unlock();
 			
+			//Increment graph's post-state node counter
+			graph.setPost(parent);
+
 			// Continue with parent's parent.
 			parent = parentsParent;
 		}

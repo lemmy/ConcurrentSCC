@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
@@ -78,10 +79,18 @@ public class ConcurrentFastSCC {
 		
 		// Submit a new worker for each graph node
 		final Iterator<GraphNode> itr = graph.iterator();
-		while (itr.hasNext()) {
+		WHILE: while (itr.hasNext()) {
 			final GraphNode graphNode = itr.next();
 			if (graphNode.isNot(Visited.POST) && graphNode.isRoot()) {
-				executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
+				try {
+					executor.execute(new SCCWorker(executor, graph, sccs, graphNode));
+				} catch (RejectedExecutionException e) {
+					if (graph.getUnDone() > 1) {
+						throw e;
+					} else {
+						break WHILE;
+					}
+				}
 			}
 		}
 
