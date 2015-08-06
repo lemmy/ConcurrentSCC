@@ -29,6 +29,7 @@ package org.kuppe.graphs.tarjan;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Logger;
 
 import org.kuppe.graphs.tarjan.GraphNode.Visited;
@@ -294,6 +295,10 @@ public class SCCWorker implements Runnable {
 				// Cannot acquire v lock, try later
 				executor.execute(this);
 				return;
+			}
+		} catch (RejectedExecutionException ree) {
+			if (graph.getUnDone() > 1) {
+				throw ree;
 			}
 		} catch (Exception | Error e) {
 			logger.severe(() -> String.format("%s: Exception: %s", SCCWorker.this.getId(), e.getMessage()));
