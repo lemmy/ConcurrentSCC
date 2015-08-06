@@ -775,7 +775,7 @@ public class ConcurrentFastSCCTestFromFile extends AbstractConcurrentFastSCCTest
 		readFile(graph, "/data/tlcn10.txt");
 		Assert.assertEquals(10508304, graph.size());
 		
-		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph);
+		final Set<Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph); // TLC needs ~202 seconds to search SCCs.
 		Assert.assertTrue(graph.checkPostCondition());
 		Assert.assertEquals(2302, sccs.size());
 	}
