@@ -2,8 +2,13 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass scrartcl
+\textclass article
 \use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
 \maintain_unincluded_children false
 \language english
 \language_package default
@@ -75,7 +80,7 @@ Lessons learned about concurrent SCC search proposed by Robert E.
 \end_layout
 
 \begin_layout Date
-08/20/2015 (v 0.1)
+08/22/2015 (v 0.2)
 \end_layout
 
 \begin_layout Author
@@ -83,7 +88,7 @@ Markus Alexander Kuppe
 \end_layout
 
 \begin_layout Section
-Algorithm (by Robert Tarjan)
+Algorithm (by Robert Tarjan) (Leslie/Markus' amendments in red)
 \end_layout
 
 \begin_layout Standard
@@ -116,20 +121,53 @@ Concurrent algorithm
 \begin_layout Standard
 
 \shape italic
-To explain the algorithm, I’ll describe it as contacting cycles immediately,
- although a good implementation would not do the contractions explicitly
- (I think).
+To explain the algorithm, I
+\begin_inset Quotes ers
+\end_inset
+
+ll describe it as contracting cycles immediately, although a good implementation
+ would not do the contractions explicitly (I think).
  Each vertex is either unvisited, previsited, or postvisited.
- The unvisited and previsited vertices form an in-forest (a set of in-trees):
- each unvisited vertex is a root with no children; each previsited vertex
+ The unvisited and previsited vertices form an in-forest (a set of in-trees
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+An in-tree is one in which edges point from a node to its parent, the root
+ having no parent
+\end_layout
+
+\end_inset
+
+): each unvisited vertex is a root with no children; each previsited vertex
  is either a root or it has a parent that is previsited.
  Initially all vertices are unvisited.
  Only roots are eligible for processing.
- I’ll call a root “idle” if no thread is processing it.
+ I
+\begin_inset Quotes ers
+\end_inset
+
+ll call a root 
+\begin_inset Quotes grd
+\end_inset
+
+idle” if no thread is processing it.
  An idle thread can grab an idle root and start processing it.
- To process a root, if it is unvisited, mark it visited.
- Then traverse the next outgoing untraversed arc; if there is no such arc,
- mark the root postvisited and make all its children idle roots.
+ To process a root, if it is unvisited, mark it 
+\shape default
+\color red
+PRE-
+\shape italic
+\color inherit
+visited.
+ Then traverse the next outgoing untraversed arc 
+\shape default
+\color red
+of that node
+\shape italic
+\color inherit
+; if there is no such arc, mark the root postvisited and make all its children
+ idle roots.
  To traverse an arc (v, w), if w is postvisited do nothing; otherwise, if
  w is in a different tree than v, make w the parent of v and mark w previsited
  if it is unvisited.
@@ -140,17 +178,43 @@ To explain the algorithm, I’ll describe it as contacting cycles immediately,
  so.
  The other possibility is that w is in the same tree as v.
  If v = w, do nothing.
- (Self-loops can be created by contractions.) If v # w, contract all the
- ancestors of w into a single vertex, which is a root.
+ (Self-loops can be created by contractions 
+\shape default
+\color red
+or exist in the original graph.
+\shape italic
+\color inherit
+) If v # w, contract all the ancestors of w 
+\shape default
+\color red
+and w itself
+\shape italic
+\color inherit
+ into vertex 
+\shape default
+\color red
+v, which is the root of w
+\shape italic
+\color inherit
+.
  Continue processing this root.
  (The new root inherits all the outgoing untraversed arcs from the set of
  contracted vertices).
  It may be convenient and efficient to view this contraction as contracting
  all the vertices into v, since v is already a root.
+\shape default
+
 \begin_inset Newline newline
 \end_inset
 
+
+\shape italic
 Continue until all vertices are postvisited.
+
+\shape default
+\color red
+ Upon termination, the set of nodes in each contracted node represent the
+ maximal SCCs of the original graph.
 \end_layout
 
 \begin_layout Subsection*
@@ -307,10 +371,28 @@ Tree algorithm
 
 \begin_layout Itemize
 Forest of dynamically created trees.
- Search runs queries if two nodes (v & w where w is reachable from v via
- one of v's out-arcs) happen to be in the same tree or not.
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+\begin_inset CommandInset label
+LatexCommand label
+name "FindRoot"
+
+\end_inset
+
+For each two nodes (v & w) in the original graph connected via an edge,
+ the SCC search runs queries to determine if two nodes (v & w where w is
+ reachable from v via one of v's out-arcs) happen to be in the same tree
+ or not.
+ A query is a tree traversal from either a leaf or internal node up to the
+ tree's root node.
+ Trees in the forest are created on-the-fly by the SCC search by making
+ v a tree child of w when the query returned that v is not an ancestor (root)
+ of w.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 Initially used an adapted Link-cut tree O(log n) implementation originally
  authored by 
@@ -359,7 +441,7 @@ Approximately 1/4 of the runs result in a unbalanced tree of height of >
 \end_deeper
 \begin_layout Itemize
 Looked into Euler-Tour-Trees (ETT) as a replacement for Naive tree.
- ETTs are built on top of Red-Black of AVL trees.
+ ETTs are built on top of Red-Black or AVL trees.
  Both still suffer from rotations during query.
  Current research is looking into better support for concurrent Red-Black/AVL
  trees (lazy rotations) 
@@ -387,7 +469,7 @@ The current prototype uses explicit contraction (Robert Tarjan hinted to
 
 \begin_deeper
 \begin_layout Itemize
-v's out-arcs a moved (copy & remove) into w.
+v's out-arcs are moved (copy & remove) into w.
 \end_layout
 
 \begin_layout Itemize
@@ -411,12 +493,22 @@ y result in the out-arc being ignored due to v's POST-visited state when
 \end_layout
 
 \begin_layout Itemize
-Iff v happens to be the former root of a subset SCC..., the old mapping(s)
- from u -> v has to be updated to u -> w.
- This set of nested mapping updates grows with each contraction but doesn't
- significantly add to the algorithms runtime yet.
+Iff v happens to be the former root of subset SCCs (meaning earlier contractions
+ of s, t, u into v occurred), the old mappings from s, t, u -> v have to
+ be updated to s, t, u -> w.
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+The set of nested mapping updates grows with each contraction.
+\end_layout
+
+\begin_layout Itemize
+Statistics show that mapping updates do not significantly add to the algorithms
+ runtime so far.
+\end_layout
+
+\end_deeper
 \end_deeper
 \begin_layout Itemize
 Claim: Subset SCCs do not have to be merged into larger SCC when used for
@@ -425,6 +517,42 @@ Claim: Subset SCCs do not have to be merged into larger SCC when used for
 xample.
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+LL: For this claim to be correct, the properties that hold in the subset
+ SCC have to be recorded (i.e.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+the counterexample must satisfy 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|[]<>A /
+\backslash
+ []<>B|
+\end_layout
+
+\end_inset
+
+ and A is satisfied by one subset SCC and B by the other)
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+It is open if it is faster/cheaper to just merge the SCCs or record their
+ properties.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 Contraction moves the out-arcs of the to be contracted nodes into the root
  node.
@@ -455,22 +583,88 @@ Locking
 \end_layout
 
 \begin_layout Itemize
-Current implementation based on one RW-lock per node.
-\end_layout
-
-\begin_layout Itemize
-Causes increased memory requirements per graph node.
-\end_layout
-
-\begin_layout Itemize
-Lock protocol: Read-Write locking where node v and w are both write locked
- and w's root read-locked.
+Current implementation is based on one RW-lock per node.
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-Justification for obtaining w's root: w's root has to be read-locked to
- prevent concurrent re-parenting of v -> w and w -> v (see 
+Causes increased memory requirements per graph node.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Lock protocol:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+v is an idle root eligible for processing by a thread T.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+v is write-locked by T.
+\end_layout
+
+\begin_layout Enumerate
+Iff v's write-lock acquisition fails, v's processing is re-scheduled.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The next unexplored out-arc of v is followed to a w.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+w is write-locked by T.
+\end_layout
+
+\begin_layout Enumerate
+Iff w's write-lock acquisition fails, v's write lock is released and v's
+ processing is re-scheduled.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The root r of w is queried (compare 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FindRoot"
+
+\end_inset
+
+) by traversing the path from w to r.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+r is read-locked by T.
+\end_layout
+
+\begin_layout Enumerate
+Iff r's read-lock acquisition fails (or any read-lock acquisition on the
+ path from w to r), read-lock acquisition re-starts at w because the tree
+ has changed and the read parent pointer might be stale.
+\end_layout
+
+\begin_layout Enumerate
+(Tree) Traversal uses 
+\begin_inset CommandInset href
+LatexCommand href
+name "hand-over-hand"
+target "http://www.drdobbs.com/parallel/concurrent-programming-with-chain-lockin/240149442"
+
+\end_inset
+
+ locking (only ever holds two locks of the path up to the root).
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+Justification for obtaining w's root r: w's root has to be read-locked to
+ prevent concurrent re-parenting of v -> w and w -> v (see figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Counterexample-cyclic-re-parenti"
@@ -480,7 +674,6 @@ reference "fig:Counterexample-cyclic-re-parenti"
 ).
 \end_layout
 
-\end_deeper
 \begin_layout Itemize
 Finding 
 \begin_inset Quotes eld
@@ -494,33 +687,18 @@ master
  in an identical tree.
 \end_layout
 
-\begin_layout Itemize
-Tree traversal uses 
-\begin_inset CommandInset href
-LatexCommand href
-name "hand-over-hand"
-target "http://www.drdobbs.com/parallel/concurrent-programming-with-chain-lockin/240149442"
-
-\end_inset
-
- locking (only ever holds two locks of the path up to the root).
-\end_layout
-
 \begin_deeper
-\begin_layout Itemize
-Lock acquisition re-starts at the beginning child if a node on the path
- is already locked.
- A locked node potentially indicates an operation that caused roots to change.
- Thus, the path traversal might have read a stale parent pointer (cannot
- read parent pointer and lock it atomically).
-\end_layout
-
 \begin_layout Itemize
 If tree height is relatively huge, failed lock acquisition adds notably
  to overall runtime.
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+TODO: Model check lock protocol once runtime of algorithm shows superior
+ performance over sequential algorithm.
+\end_layout
+
 \begin_layout Itemize
 Explore adoption of more sophisticated lock protocols 
 \begin_inset CommandInset citation
@@ -561,7 +739,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Counterexample cyclic re-parenting
+Counter-example showing cyclic re-parenting of v to w and r to s when w's
+ root r is not read-locked.
+ Node colors indicate corresponding locks, black marks tree edges, red graph
+ out-arcs.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Counterexample-cyclic-re-parenti"
@@ -622,19 +804,20 @@ The sequential/traditional algorithm does not mandate that the search is
 
 \end_deeper
 \begin_layout Itemize
-If the graph has one (or a few) large SCCs it tends to reach a state at
- the end of the search where it is essentially sequential (see 
+If the graph has one or a few large SCCs it tends to reach a state at the
+ end of the search where it runs essentially sequential (see 
 \begin_inset CommandInset ref
-LatexCommand nameref
+LatexCommand ref
 reference "fig:No-concurrency-during"
 
 \end_inset
 
 ).
- This is because the number of forest trees gets down to a single one and
- thus only this root node is eligible for processing.
- Usually this node has a huge set of unexplored out-arcs which are explored
- sequentially.
+ This is because the number of forest trees gets down to a very low number
+ possibly a single one and thus only a few root nodes are eligible for processin
+g.
+ Usually these nodes have a huge set of unexplored out-arcs.
+ The out-arcs are explored sequentially.
 \end_layout
 
 \begin_deeper
@@ -666,7 +849,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-No concurrency during end game
+Graph shows three consecutive runs of the algorithm.
+ All three of them exhibit extended periods of almost no concurrent node
+ exploration (flat sections pointed to by black arrows).
+ These periods are the dominant contributors to overall runtime.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:No-concurrency-during"
@@ -704,6 +891,14 @@ Analysis and proof of correctness for this claim still missing, i.e.
  but in simulation mode out-arcs are generated incrementally.
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+Simulation mode is limited to graphs (sequences) of a few hundred or thousand
+ nodes.
+ The sequential SCC search is therefore sufficient.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 Can an action constraint correctly be checked from a contracted node?
 \end_layout
@@ -715,13 +910,43 @@ Non-contracted node could be P and new out-arc could lead to ¬P, however
 ing an action constraint.
 \end_layout
 
+\begin_layout Itemize
+LL: 
+\begin_inset Quotes eld
+\end_inset
+
+For an action constraint, whether or not the action is satisfied should
+ be attached to the arc, not to a node.
+ That includes self-looping arcs.
+ What you say is true for state-predicate formulas.
+ However, the SCC algorithm is for finding the SCCs.
+ Once you've found them, don't you then have to determine if any of them
+ can be used to provide a counter-example? As I recall, the Manna-Pnueli
+ algorithm for dealing with fairness involves some kind of successive decomposit
+ion of the graph.
+ But doesn't that involve finding SCCs at each stage of the decomposition?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\color blue
+=> Needs further investigation (I do not recall any decomposition though)
+\end_layout
+
+\end_deeper
 \end_deeper
 \end_deeper
 \begin_layout Itemize
 SCC search can run in parallel with TLC's check of found components.
  In TLC's current sequential algorithm the process is two staged.
- First an SCC is searched.
- Second, the search is stopped to check the SCC if it satisfies the liveness
+ First an SCC is searched until an SCC is found (not necessarily a maximal
+ one).
+ Then, the search is stopped to check the SCC if it satisfies the liveness
  counter-example.
  The concurrent algorithm - by design - will continue the search for SCCs
  with all worker threads except the one checking the counter-example.
@@ -748,15 +973,49 @@ Stop SCC search the moment all nodes in the graph (remember adjancecy list)
 \end_layout
 
 \begin_layout Itemize
-Run tear-down of forest trees (freeing) in parallel.
- At the end of the SCC search, even without any out-arcs left, all trees
- have to be completely freed to determine if there are out-arcs left to
- explore.
+(Generally) run tear-down of forest trees (free'ing) in parallel.
+ Especially at the end of the SCC search when there are no out-arcs left,
+ all forest trees are completely traversed (breadth-first like).
+ At each level the parent-child relationship is removed which returns the
+ former childs to the set of idle roots and thus makes them eligible for
+ out-arc exploration.
+ For each former child a worker thread is started only to determine that
+ the former child has no out-arcs left.
+ It then again removes the next level of the parent-child relationship and
+ schedules workers for each former child.
 \end_layout
 
 \begin_layout Itemize
 (Somehow) bias forest to grow many small trees over a few large ones to
  increase the likelihood of less lock contention.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+LL: 
+\begin_inset Quotes eld
+\end_inset
+
+Can this be done by assigning available threads to check unexplored nodes
+ rather than unexplored edges?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\color blue
+You are saying that the algorithm should randomly select nodes from the
+ set of UN-/PRE-visited ones and only explore a single out-arc before moving
+ on to the next one?
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
 \begin_inset Newpage pagebreak
 \end_inset
 
