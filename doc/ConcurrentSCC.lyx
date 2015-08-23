@@ -31,16 +31,7 @@ figs-within-sections
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref true
-\pdf_bookmarks true
-\pdf_bookmarksnumbered false
-\pdf_bookmarksopen false
-\pdf_bookmarksopenlevel 1
-\pdf_breaklinks false
-\pdf_pdfborder false
-\pdf_colorlinks false
-\pdf_backref false
-\pdf_pdfusetitle true
+\use_hyperref false
 \papersize default
 \use_geometry false
 \use_amsmath 1
@@ -80,7 +71,7 @@ Lessons learned about concurrent SCC search proposed by Robert E.
 \end_layout
 
 \begin_layout Date
-08/22/2015 (v 0.2)
+08/23/2015 (v 0.3)
 \end_layout
 
 \begin_layout Author
@@ -213,8 +204,8 @@ Continue until all vertices are postvisited.
 
 \shape default
 \color red
- Upon termination, the set of nodes in each contracted node represent the
- maximal SCCs of the original graph.
+ Upon termination, the set of nodes in each contracted node represents maximal
+ SCC of the original graph.
 \end_layout
 
 \begin_layout Subsection*
@@ -349,8 +340,8 @@ Core count from 1 to 32 cores (32 cores is the maximum count on Azure and
 \end_layout
 
 \begin_layout Itemize
-Graph size seem to small (~10GB) for scalability advantages to be measurable
- (comparable to sequential algorithm).
+Graph size seems too to small (~10GB) for scalability advantages to be measurabl
+e (comparable to sequential algorithm).
 \end_layout
 
 \begin_deeper
@@ -480,6 +471,25 @@ Iff v happens to be the former root of a subset SCC (meaning an earlier
 
 \begin_deeper
 \begin_layout Itemize
+
+\shape italic
+LL: 
+\begin_inset Quotes eld
+\end_inset
+
+I don't understand this.
+ If s, t, and u have been contracted into v, then haven't their out-arcs
+ become out-arcs of v, so their arcs to w become self-loops of w?
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Yes, the out-arcs of s, t and u earlier became out-arcs of v and thus -
+ once v gets contracted into w - become self-loops of w.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
 It uses a custom implementation of a linked list that supports merge/append
  in O(1) (Java's generic one has O(n)).
 \end_layout
@@ -487,7 +497,7 @@ It uses a custom implementation of a linked list that supports merge/append
 \end_deeper
 \begin_layout Itemize
 (Eager path contraction) The graph has to be updated so that out-arcs ending
- at v now point to w (otherwise out-arc exploration from t -> v would incorrectl
+ at v now point to w (otherwise out-arc exploration from p -> v would incorrectl
 y result in the out-arc being ignored due to v's POST-visited state when
  it's logically correct state is w's visited state).
 \end_layout
@@ -495,7 +505,8 @@ y result in the out-arc being ignored due to v's POST-visited state when
 \begin_layout Itemize
 Iff v happens to be the former root of subset SCCs (meaning earlier contractions
  of s, t, u into v occurred), the old mappings from s, t, u -> v have to
- be updated to s, t, u -> w.
+ be updated to s, t, u -> w for node p with out-arcs to s correctly checking
+ w's visited state.
 \end_layout
 
 \begin_deeper
@@ -511,6 +522,8 @@ Statistics show that mapping updates do not significantly add to the algorithms
 \end_deeper
 \end_deeper
 \begin_layout Itemize
+
+\strikeout on
 Claim: Subset SCCs do not have to be merged into larger SCC when used for
  real liveness checking.
  It suffices to check each subset SCC individually if it satisfies the counter-e
@@ -519,28 +532,18 @@ xample.
 
 \begin_deeper
 \begin_layout Itemize
+
+\shape italic
+\strikeout on
 LL: For this claim to be correct, the properties that hold in the subset
  SCC have to be recorded (i.e.
  
 \begin_inset Quotes eld
 \end_inset
 
-the counterexample must satisfy 
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-
+the counterexample must satisfy []<>A /
 \backslash
-verb|[]<>A /
-\backslash
- []<>B|
-\end_layout
-
-\end_inset
-
- and A is satisfied by one subset SCC and B by the other)
+ []<>B and A is satisfied by one subset SCC and B by the other)
 \begin_inset Quotes erd
 \end_inset
 
@@ -548,10 +551,32 @@ verb|[]<>A /
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 It is open if it is faster/cheaper to just merge the SCCs or record their
  properties.
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+
+\shape italic
+LL: 
+\begin_inset Quotes eld
+\end_inset
+
+This makes no sense to me.
+ We start with a bunch of SCCs--namely, each node with its self-loop is
+ an SCC.
+ If we didn't have to merge SCCs, then there would be no need to do any
+ SCC computation.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \end_deeper
 \begin_layout Itemize
 Contraction moves the out-arcs of the to be contracted nodes into the root
@@ -786,6 +811,43 @@ On 02/20/2015 Robert Tarjan in an email amended the algorithm to account
  sizes.
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+
+\shape italic
+LL: 
+\begin_inset Quotes eld
+\end_inset
+
+This isn't a change to the algorithm, which (quoting from above) says 
+\begin_inset Quotes eld
+\end_inset
+
+if there is no such [further outgoing] arc, mark the root postvisited and
+ make all its children idle roots.
+\begin_inset Quotes erd
+\end_inset
+
+ Do you mean that he observed that implementing this part of the algorithm
+ requires maintaining bi-directional links? This seems to be just a part
+ of the whole problem of how you find nodes that need to be explored.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\color blue
+Yes, implementing it requires bi-directional links in forest trees.
+ Otherwise, I do not see how the implementation would know the set of children
+ to become idle roots.
+\end_layout
+
+\end_deeper
+\end_deeper
 \begin_layout Itemize
 The algorithm requires that each node in the graph is explored.
  Thus, for each graph node a worker has to be started to explore its out-arcs.
@@ -852,7 +914,11 @@ status open
 Graph shows three consecutive runs of the algorithm.
  All three of them exhibit extended periods of almost no concurrent node
  exploration (flat sections pointed to by black arrows).
- These periods are the dominant contributors to overall runtime.
+ The flat line indicates that no new worker threads are started during that
+ period because the total number of threads does not increase.
+ As we know from OS statistics, all but a single core were idle during that
+ time.
+ These flat periods are the dominant contributors to overall runtime.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -911,6 +977,8 @@ ing an action constraint.
 \end_layout
 
 \begin_layout Itemize
+
+\shape italic
 LL: 
 \begin_inset Quotes eld
 \end_inset
@@ -992,6 +1060,8 @@ Stop SCC search the moment all nodes in the graph (remember adjancecy list)
 
 \begin_deeper
 \begin_layout Itemize
+
+\shape italic
 LL: 
 \begin_inset Quotes eld
 \end_inset
@@ -1006,13 +1076,36 @@ Can this be done by assigning available threads to check unexplored nodes
 
 \begin_deeper
 \begin_layout Itemize
-
-\color blue
 You are saying that the algorithm should randomly select nodes from the
  set of UN-/PRE-visited ones and only explore a single out-arc before moving
  on to the next one?
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+
+\shape italic
+LL: 
+\begin_inset Quotes eld
+\end_inset
+
+I am asking if that would achieve your goal of growing many small trees
+ rather than a few large ones.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\color blue
+When I looked into the idea of randomly selecting nodes and only processing
+ a single out-arc before selecting the next node, it showed no real performance
+ improvement.
+\end_layout
+
+\end_deeper
 \end_deeper
 \end_deeper
 \begin_layout Standard
