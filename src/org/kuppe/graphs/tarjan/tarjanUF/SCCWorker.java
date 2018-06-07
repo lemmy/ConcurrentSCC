@@ -1,7 +1,8 @@
 package tarjanUF;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import javafx.util.Pair;
 
@@ -10,7 +11,6 @@ import tarjanUF.UF.ClaimStatus;
 
 public class SCCWorker implements Runnable {
 
-    private final ExecutorService executor;
     private final Graph graph;
     private final int workerId;
     private int nodeId;
@@ -18,20 +18,21 @@ public class SCCWorker implements Runnable {
     private Stack<Integer> recursionStack;
     private Stack<Integer> rootStack;
 
-    public SCCWorker(final ExecutorService executor,
-                     final Graph graph,
-                     final int workerId,
+    public SCCWorker(final Graph graph,
+                     final Map<Integer, Integer> workerMap,
+                     final AtomicInteger workerCount,
                      final int nodeId,
-                     UF unionfind,
-                     Stack<Integer> recursionStack,
-                     Stack<Integer> rootStack) {
-        this.executor = executor;
+                     UF unionfind) {
         this.graph = graph;
-        this.workerId = workerId;
+        if (workerMap.containsKey(Thread.currentThread().getId())) {
+            this.workerId = workerMap.get(Thread.currentThread().getId());
+        } else {
+            this.workerId = workerCount.incrementAndGet();
+        }
         this.nodeId = nodeId;
         this.unionfind = unionfind;
-        this.recursionStack = recursionStack;
-        this.rootStack = rootStack;
+        this.recursionStack = new Stack<Integer>();
+        this.rootStack = new Stack<Integer>();
     }
 
     @Override
@@ -107,6 +108,6 @@ public class SCCWorker implements Runnable {
         if (!recursionStack.empty()) {
             backtrack = true;
         }
-
     }
+
 }

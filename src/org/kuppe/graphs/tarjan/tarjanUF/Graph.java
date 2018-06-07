@@ -32,4 +32,8 @@ public class Graph {
         graphNode.getArcs().add(arcId);
     }
 
+    public Integer N() {
+        return nodePtrTable.size();
+    }
+
 }
