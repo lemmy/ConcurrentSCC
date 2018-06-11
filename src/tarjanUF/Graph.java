@@ -26,10 +26,19 @@ public class Graph {
         return this.nodePtrTable.get(id);
     }
 
-    void addArc(int nodeId, int arcId) {
+    public boolean hasNode(final int id) {
+        return this.nodePtrTable.containsKey(id);
+    }
+
+    public void addArc(int nodeId, int arcId) {
         assert this.nodePtrTable.containsKey(nodeId);
         GraphNode graphNode = this.nodePtrTable.get(nodeId);
         graphNode.getArcs().add(arcId);
+    }
+
+    public void addNode(GraphNode node) {
+        assert !this.nodePtrTable.containsKey(node.getId());
+        this.nodePtrTable.put(node.getId(), node);
     }
 
     public Integer N() {

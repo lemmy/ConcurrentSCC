@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +13,12 @@ import java.util.Set;
 
 public class ConcurrentFastSCC {
 
-    public Set<Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind) {
+    public Map<Integer, Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind) {
         final int availableProcessors = Runtime.getRuntime().availableProcessors();
         return searchSCCs(graph, unionfind, Integer.getInteger(ConcurrentFastSCC.class.getName() + ".numCores", availableProcessors));
     }
 
-    public Set<Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind, final int numCores) {
+    public Map<Integer, Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind, final int numCores) {
         final ForkJoinPool executor = new ForkJoinPool(numCores);
         final Map<Integer, Integer> workerMap = new ConcurrentHashMap<Integer, Integer>();
         final AtomicInteger workerCount = new AtomicInteger(0);
@@ -35,7 +36,14 @@ public class ConcurrentFastSCC {
         final long duration = System.nanoTime() - start;
         System.out.println("Runtime for algorithm: " + duration);
 
-        final Set<Set<GraphNode>> result = new HashSet<>(0);
+        final Map<Integer, Set<GraphNode>> result = new HashMap<Integer, Set<GraphNode>>();
+        for (int i = 0; i < graph.N(); i++) {
+            int root = unionfind.find(i + 1) - 1;
+            if (!result.containsKey(root)) {
+                result.put(root, new HashSet<GraphNode>());
+            }
+            result.get(root).add(graph.get(root));
+        }
         return result;
     }
 
