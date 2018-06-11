@@ -4,7 +4,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,8 +25,9 @@ public class ConcurrentFastSCC {
         final long start = System.nanoTime();
 
         for (int i = 0; i < graph.N(); i++) {
-            // @require: Check if globally visited or not.
+            if (unionfind.visited.get(i) == false) {
                 executor.execute(new SCCWorker(graph, workerMap, workerCount, i, unionfind));
+            }
         }
         executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         executor.shutdown();
