@@ -1,7 +1,7 @@
 package tarjanUF;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Map;
@@ -12,7 +12,7 @@ public class Main {
     private static void readFile(Graph graph, String filename) throws IOException {
         final long start = System.nanoTime();
 
-        final InputStream in = Main.class.getResourceAsStream(filename);
+        final FileInputStream in = new FileInputStream(filename);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
             for (String line = br.readLine(); line != null; line = br.readLine()) {
                 final String[] split = line.trim().split("\\s+");
@@ -51,12 +51,13 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        System.out.println("Runtimes are in nanoseconds.");
         final long start = System.nanoTime();
 
-        assert args.length > 1;
-        final Graph graph = new Graph(args[1]);
+        assert args.length == 1;
+        final Graph graph = new Graph(args[0]);
         try {
-            readFile(graph, args[1]);
+            readFile(graph, args[0]);
         } catch (IOException e) {
             e.printStackTrace();
         }

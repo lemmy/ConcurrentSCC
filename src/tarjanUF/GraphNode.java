@@ -1,6 +1,7 @@
 package tarjanUF;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class GraphNode implements Serializable {
 
     public GraphNode(int id) {
         this.id = id;
+        arcs = new ArrayList<Integer>();
     }
 
     public void setArcs(List<Integer> arcs) {

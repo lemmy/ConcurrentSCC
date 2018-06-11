@@ -19,7 +19,7 @@ public class UFNode {
     }
 
     // Parent in the union find tree.
-    private volatile int parent;
+    private volatile Integer parent;
 
     public int parent() {
         return parentUpdater.get(this);
@@ -29,7 +29,7 @@ public class UFNode {
         AtomicReferenceFieldUpdater.newUpdater(UFNode.class, Integer.class, "parent");
 
     // Id of next element in the list.
-    private volatile int listNext;
+    private volatile Integer listNext;
 
     public int listNext() {
         return listNextUpdater.get(this);
@@ -76,9 +76,9 @@ public class UFNode {
 
     public UFNode() {
         this.workerSet = new AtomicLong(0L);
-        this.parent = 0;
-        this.listNext = 0;
-        this.ufStatus = UFStatus.UFlive;
-        this.listStatus = ListStatus.listLive;
+        UFNode.parentUpdater.set(this, 0);
+        UFNode.listNextUpdater.set(this, 0);
+        UFNode.ufStatusUpdater.set(this, UFStatus.UFlive);
+        UFNode.listStatusUpdater.set(this, ListStatus.listLive);
     }
 }

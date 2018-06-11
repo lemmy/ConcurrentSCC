@@ -42,7 +42,7 @@ public class ConcurrentFastSCC {
             if (!result.containsKey(root)) {
                 result.put(root, new HashSet<GraphNode>());
             }
-            result.get(root).add(graph.get(root));
+            result.get(root).add(graph.get(i));
         }
         return result;
     }

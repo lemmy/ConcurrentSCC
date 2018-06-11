@@ -30,7 +30,8 @@ public class UF {
         this.list = new ArrayList<UFNode>(n);
         this.visited = new ArrayList<Boolean>(n);
         for (int i = 0; i < n; i++) {
-            this.visited.set(i, false);
+            this.visited.add(false);
+            this.list.add(new UFNode());
         }
     }
 
