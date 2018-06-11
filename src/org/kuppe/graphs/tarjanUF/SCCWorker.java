@@ -1,6 +1,8 @@
 package tarjanUF;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -44,6 +46,7 @@ public class SCCWorker implements Runnable {
 
         v = this.nodeId;
 
+        List<Integer> arcs = null;
         START: while (true) {
             if (!backtrack)
                 rootStack.push(v);
@@ -61,6 +64,8 @@ public class SCCWorker implements Runnable {
                     }
                     vp = p.getValue() - 1;
                     ei = 0;
+                    arcs = new ArrayList<Integer>(graph.get(vp).getArcs());
+                    Collections.shuffle(arcs);
                 } else {
                     v = recursionStack.pop();
                     ei = recursionStack.pop() + 1;
@@ -71,8 +76,7 @@ public class SCCWorker implements Runnable {
                         continue LOOP;
                     }
                 }
-                // @require: Random Order
-                List<Integer> arcs = graph.get(vp).getArcs();
+
                 for (; ei < arcs.size(); ei++) {
                     w = arcs.get(ei);
                     if (w == vp) {
