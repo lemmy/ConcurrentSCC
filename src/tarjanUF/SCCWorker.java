@@ -18,6 +18,7 @@ public class SCCWorker implements Runnable {
     private int nodeId;
     private UF unionfind;
     private Stack<Integer> recursionStack;
+    private Stack<List<Integer>> arcStack;
     private Stack<Integer> rootStack;
 
     public SCCWorker(final Graph graph,
@@ -34,6 +35,7 @@ public class SCCWorker implements Runnable {
         this.nodeId = nodeId;
         this.unionfind = unionfind;
         this.recursionStack = new Stack<Integer>();
+        this.arcStack = new Stack<List<Integer>>();
         this.rootStack = new Stack<Integer>();
     }
 
@@ -48,8 +50,9 @@ public class SCCWorker implements Runnable {
 
         List<Integer> arcs = null;
         START: while (true) {
-            if (!backtrack)
+            if (!backtrack) {
                 rootStack.push(v);
+            }
 
             LOOP: while (true) {
                 if (!backtrack) {
@@ -70,6 +73,7 @@ public class SCCWorker implements Runnable {
                     v = recursionStack.pop();
                     ei = recursionStack.pop() + 1;
                     vp = recursionStack.pop();
+                    arcs = arcStack.pop();
                     backtrack = false;
                     if (unionfind.isDead(v + 1)) {
                         unionfind.removeFromList(vp + 1);
@@ -90,10 +94,11 @@ public class SCCWorker implements Runnable {
                         recursionStack.push(vp);
                         recursionStack.push(ei);
                         recursionStack.push(v);
+                        arcStack.push(arcs);
                         v = w;
                         continue START;
                     } else {
-                        while (unionfind.sameSet(w + 1, v + 1)) {
+                        while (!unionfind.sameSet(w + 1, v + 1)) {
                             root = rootStack.pop();
                             unionfind.unite(rootStack.peek() + 1, root + 1);
                         }
@@ -103,14 +108,14 @@ public class SCCWorker implements Runnable {
                 unionfind.removeFromList(vp + 1);
             }
 
-            break;
-        }
-
-        if (rootStack.peek() == v) {
-            rootStack.pop();
-        }
-        if (!recursionStack.empty()) {
-            backtrack = true;
+            if (rootStack.peek() == v) {
+                rootStack.pop();
+            }
+            if (!recursionStack.empty()) {
+                backtrack = true;
+            } else {
+                break;
+            }
         }
     }
 

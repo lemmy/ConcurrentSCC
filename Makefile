@@ -1,3 +1,5 @@
+all: compile run
+
 compile:
 	javac -d bin/ -cp src src/tarjanUF/*.java
 
