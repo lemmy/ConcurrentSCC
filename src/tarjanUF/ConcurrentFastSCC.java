@@ -20,7 +20,7 @@ public class ConcurrentFastSCC {
         } else {
             availableProcessors = threads;
         }
-        System.out.println("Using " + availableProcessors + " processesors.\n");
+        System.err.println("Using " + availableProcessors + " processesors.\n");
         return searchSCCs(graph, unionfind, Integer.getInteger(ConcurrentFastSCC.class.getName() + ".numCores", availableProcessors));
     }
 
@@ -40,7 +40,7 @@ public class ConcurrentFastSCC {
         executor.shutdown();
 
         final long duration = System.nanoTime() - start;
-        System.out.println("Runtime for algorithm: " + duration);
+        System.err.println("Runtime for algorithm: " + duration);
 
         final Map<Integer, Set<GraphNode>> result = new HashMap<Integer, Set<GraphNode>>();
         for (int i = 0; i < graph.N(); i++) {

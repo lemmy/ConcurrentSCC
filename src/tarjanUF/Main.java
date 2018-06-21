@@ -32,7 +32,7 @@ public class Main {
         }
 
         final long duration = System.nanoTime() - start;
-        System.out.println("Runtime for input: " + duration);
+        System.err.println("Runtime for input: " + duration);
     }
 
     public static void printSCCs(Map<Integer, Set<GraphNode>> sccs) {
@@ -47,11 +47,12 @@ public class Main {
         }
 
         final long duration = System.nanoTime() - start;
-        System.out.println("Runtime for output: " + duration);
+        System.err.println("Runtime for output: " + duration);
     }
 
     public static void main(String[] args) {
-        System.out.println("Runtimes are in nanoseconds.");
+        System.err.println("Processing graph: " + args[0] + " with " + args[1] + " threads.");
+        System.err.println("Runtimes are in nanoseconds.");
         final long start = System.nanoTime();
 
         assert args.length == 1;
@@ -68,6 +69,6 @@ public class Main {
         printSCCs(sccs);
 
         final long duration = System.nanoTime() - start;
-        System.out.println("Total runtime: " + duration);
+        System.err.println("Total runtime: " + duration);
     }
 }
