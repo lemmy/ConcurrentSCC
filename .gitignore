@@ -2,3 +2,4 @@ bin
 doc/*.aux
 doc/*.log
 *.class
+err

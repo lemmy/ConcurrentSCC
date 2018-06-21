@@ -8,4 +8,4 @@ clean:
 	mkdir bin
 
 run:
-	java -cp bin tarjanUF.Main ./sample.txt
+	java -cp bin tarjanUF.Main ${ARG} ${THREADS}

@@ -63,7 +63,7 @@ public class Main {
         }
 
         final UF unionfind = new UF(graph.N() + 1);
-        final Map<Integer, Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph, unionfind);
+        final Map<Integer, Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph, unionfind, Integer.parseInt(args[1]));
 
         printSCCs(sccs);
 

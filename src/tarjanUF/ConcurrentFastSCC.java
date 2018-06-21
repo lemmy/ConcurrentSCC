@@ -13,8 +13,14 @@ import java.util.Set;
 
 public class ConcurrentFastSCC {
 
-    public Map<Integer, Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind) {
-        final int availableProcessors = Runtime.getRuntime().availableProcessors();
+    public Map<Integer, Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind, final Integer threads) {
+        final int availableProcessors;
+        if (threads == -1) {
+            availableProcessors = Runtime.getRuntime().availableProcessors();
+        } else {
+            availableProcessors = threads;
+        }
+        System.out.println("Using " + availableProcessors + " processesors.\n");
         return searchSCCs(graph, unionfind, Integer.getInteger(ConcurrentFastSCC.class.getName() + ".numCores", availableProcessors));
     }
 
