@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+set -e
+cd ..
+if [ ! -d sccs ]; then
+    mkdir sccs
+fi
+make compile
+for i in `ls /git/graphsFromDVE/*.dve.txt`; do
+    for j in 1 2 4 8 16 32; do
+        f1="${i%.dve.txt}"
+        f2="${f1#/git/graphsFromDVE/}"
+        if [ -f "sccs/${f2}.scc" ]; then
+            rm "sccs/${f2}.scc"
+            rm "sccs/${f2}.exec"
+        fi
+        make run ARG="${i}" THREADS="${j}" >"sccs/${f2}.scc" 2>"sccs/${f2}.exec"
+    done
+done
+cd benchmark
