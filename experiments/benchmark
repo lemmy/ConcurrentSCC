@@ -14,7 +14,7 @@ for i in `ls /git/graphsFromDVE/*.dve.txt`; do
             rm "sccs/${f2}.scc"
             rm "sccs/${f2}.exec"
         fi
-        make run ARG="${i}" THREADS="${j}" >"sccs/${f2}.scc" 2>"sccs/${f2}.exec"
+        make run ARG="${i}" THREADS="${j}" >>"sccs/${f2}.scc" 2>>"sccs/${f2}.exec"
     done
 done
 cd benchmark
