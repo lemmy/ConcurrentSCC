@@ -99,8 +99,16 @@ public class SCCWorker implements Runnable {
                         continue START;
                     } else {
                         while (!unionfind.sameSet(w + 1, v + 1)) {
-                            root = rootStack.pop();
-                            unionfind.unite(rootStack.peek() + 1, root + 1);
+                            if (!rootStack.empty()) {
+				root = rootStack.pop();
+                            } else {
+                                break;
+                            }
+                            if (!rootStack.empty()) {
+                                unionfind.unite(rootStack.peek() + 1, root + 1);
+                            } else {
+                                break;
+                            }
                         }
                     }
                 }
@@ -108,7 +116,7 @@ public class SCCWorker implements Runnable {
                 unionfind.removeFromList(vp + 1);
             }
 
-            if (rootStack.peek() == v) {
+            if (!rootStack.empty() && rootStack.peek() == v) {
                 rootStack.pop();
             }
             if (!recursionStack.empty()) {
