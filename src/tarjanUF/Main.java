@@ -55,7 +55,7 @@ public class Main {
         System.err.println("Runtimes are in nanoseconds.");
         final long start = System.nanoTime();
 
-        assert args.length == 1;
+        assert args.length == 2;
         final Graph graph = new Graph(args[0]);
         try {
             readFile(graph, args[0]);
