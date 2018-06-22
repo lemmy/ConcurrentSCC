@@ -11,9 +11,9 @@ for i in s2:
     i.sort()
 s1.sort()
 s2.sort()
-assert len(s1) == len(s2)
+#assert len(s1) == len(s2)
 for i in range(len(s1)):
     if s1[i] != s2[i]:
         print("-------")
-        print("1:", s1)
-        print("2:", s2)
+        print("1:", s1[i])
+        print("2:", s2[i])
