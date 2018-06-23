@@ -38,7 +38,7 @@ public class UF {
     /********* Union find Operations ****************/
 
     public int find(int nodeId) {
-        UFNode node = list.get(nodeId);
+        UFNode node = this.list.get(nodeId);
         int parent = node.parent();
         if (parent == 0) {
             return nodeId;
@@ -147,9 +147,9 @@ public class UF {
         }
 
         // Remove locks from everywhere.
-        unlockList(la);
-        unlockList(lb);
-        unlockUF(Q);
+        this.unlockList(la);
+        this.unlockList(lb);
+        this.unlockUF(Q);
 
         return;
     }
