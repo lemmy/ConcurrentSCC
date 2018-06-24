@@ -22,7 +22,7 @@ public class SCCWorker implements Runnable {
     private Stack<Integer> rootStack;
 
     public SCCWorker(final Graph graph,
-                     final Map<Integer, Integer> workerMap,
+                     final Map<Long, Integer> workerMap,
                      final AtomicInteger workerCount,
                      final int nodeId,
                      UF unionfind) {
@@ -31,6 +31,7 @@ public class SCCWorker implements Runnable {
             this.workerId = workerMap.get(Thread.currentThread().getId());
         } else {
             this.workerId = workerCount.incrementAndGet();
+            workerMap.put(Thread.currentThread().getId(), this.workerId);
         }
         this.nodeId = nodeId;
         this.unionfind = unionfind;
@@ -101,18 +102,8 @@ public class SCCWorker implements Runnable {
                         continue START;
                     } else {
                         while (!unionfind.sameSet(w + 1, v + 1)) {
-                            // if (!rootStack.empty()) {
-                            //     root = rootStack.pop();
-                            // } else {
-                            //     break;
-                            // }
                             root = rootStack.pop();
                             unionfind.unite(rootStack.peek() + 1, root + 1);
-                            // if (!rootStack.empty()) {
-                            //     unionfind.unite(rootStack.peek() + 1, root + 1);
-                            // } else {
-                            //     break;
-                            // }
                         }
                     }
                 }
@@ -120,7 +111,6 @@ public class SCCWorker implements Runnable {
                 unionfind.removeFromList(vp + 1);
             }
 
-            // if (!rootStack.empty() && rootStack.peek() == v)
             if (rootStack.peek() == v) {
                 rootStack.pop();
             }

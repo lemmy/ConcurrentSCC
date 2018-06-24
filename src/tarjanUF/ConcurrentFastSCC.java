@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class ConcurrentFastSCC {
 
-    public Map<Integer, Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind, final Integer threads) {
+    public Map<Integer, Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind, final int threads) {
         final int availableProcessors;
         if (threads == -1) {
             availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -21,12 +21,12 @@ public class ConcurrentFastSCC {
             availableProcessors = threads;
         }
         System.err.println("Using " + availableProcessors + " processesors.\n");
-        return searchSCCs(graph, unionfind, Integer.getInteger(ConcurrentFastSCC.class.getName() + ".numCores", availableProcessors));
+        return searchHelper(graph, unionfind, Integer.getInteger(ConcurrentFastSCC.class.getName() + ".numCores", availableProcessors));
     }
 
-    public Map<Integer, Set<GraphNode>> searchSCCs(final Graph graph, final UF unionfind, final int numCores) {
+    public Map<Integer, Set<GraphNode>> searchHelper(final Graph graph, final UF unionfind, final int numCores) {
         final ForkJoinPool executor = new ForkJoinPool(numCores);
-        final Map<Integer, Integer> workerMap = new ConcurrentHashMap<Integer, Integer>();
+        final Map<Long, Integer> workerMap = new ConcurrentHashMap<Long, Integer>();
         final AtomicInteger workerCount = new AtomicInteger(0);
 
         final long start = System.nanoTime();
