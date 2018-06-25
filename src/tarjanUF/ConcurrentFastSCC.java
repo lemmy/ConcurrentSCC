@@ -2,7 +2,8 @@ package tarjanUF;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class ConcurrentFastSCC {
     }
 
     public Map<Integer, Set<GraphNode>> searchHelper(final Graph graph, final UF unionfind, final int numCores) {
-        final ForkJoinPool executor = new ForkJoinPool(numCores);
+        final ExecutorService executor = Executors.newFixedThreadPool(numCores);
         final Map<Long, Integer> workerMap = new ConcurrentHashMap<Long, Integer>();
         final AtomicInteger workerCount = new AtomicInteger(0);
 
@@ -36,8 +37,12 @@ public class ConcurrentFastSCC {
                 executor.execute(new SCCWorker(graph, workerMap, workerCount, i, unionfind));
             }
         }
-        executor.awaitQuiescence(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         final long duration = System.nanoTime() - start;
         System.err.println("Runtime for algorithm: " + duration);

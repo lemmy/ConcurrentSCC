@@ -14,7 +14,9 @@ import tarjanUF.UF.ClaimStatus;
 public class SCCWorker implements Runnable {
 
     private final Graph graph;
-    private final int workerId;
+    private final Map<Long, Integer> workerMap;
+    private final AtomicInteger workerCount;
+    private int workerId;
     private int nodeId;
     private UF unionfind;
     private Stack<Integer> recursionStack;
@@ -27,12 +29,8 @@ public class SCCWorker implements Runnable {
                      final int nodeId,
                      UF unionfind) {
         this.graph = graph;
-        if (workerMap.containsKey(Thread.currentThread().getId())) {
-            this.workerId = workerMap.get(Thread.currentThread().getId());
-        } else {
-            this.workerId = workerCount.incrementAndGet();
-            workerMap.put(Thread.currentThread().getId(), this.workerId);
-        }
+        this.workerMap = workerMap;
+        this.workerCount = workerCount;
         this.nodeId = nodeId;
         this.unionfind = unionfind;
         this.recursionStack = new Stack<Integer>();
@@ -42,6 +40,12 @@ public class SCCWorker implements Runnable {
 
     @Override
     public void run() {
+        if (workerMap.containsKey(Thread.currentThread().getId())) {
+            this.workerId = workerMap.get(Thread.currentThread().getId());
+        } else {
+            this.workerId = workerCount.incrementAndGet();
+            workerMap.put(Thread.currentThread().getId(), this.workerId);
+        }
         unionfind.makeClaim(nodeId + 1, workerId);
 
         PickStatus picked;
