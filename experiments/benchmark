@@ -9,12 +9,18 @@ make compile
 for i in `ls /git/graphsFromDVE/*.dve.txt`; do
     f1="${i%.dve.txt}"
     f2="${f1#/git/graphsFromDVE/}"
-    if [ -f "sccs/${f2}.scc" ]; then
-        rm "sccs/${f2}.scc"
+    if [ -f "sccs/${f2}.exec" ]; then
         rm "sccs/${f2}.exec"
     fi
+    echo "Starting ${f2}"
+    parseGraphFromDVE "${f2}.dve" 2>/dev/null
     for j in 1 2 4 8 16 32; do
-        make run ARG="${i}" THREADS="${j}" >>"sccs/${f2}.scc" 2>>"sccs/${f2}.exec"
+        if [ -f "sccs/${f2}.scc.${j}" ]; then
+            rm "sccs/${f2}.scc.${j}"
+        fi
+        echo "Processing ${f2} with ${j} threads."
+        make run ARG="${i}" THREADS="${j}" >"sccs/${f2}.scc.${j}" 2>>"sccs/${f2}.exec"
+	echo >> "sccs/${f2}.exec"
     done
 done
 cd experiments

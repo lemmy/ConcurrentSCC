@@ -21,7 +21,7 @@ public class ConcurrentFastSCC {
         } else {
             availableProcessors = threads;
         }
-        System.err.println("Using " + availableProcessors + " processesors.\n");
+        System.err.println("Using " + availableProcessors + " processesors.");
         return searchHelper(graph, unionfind, Integer.getInteger(ConcurrentFastSCC.class.getName() + ".numCores", availableProcessors));
     }
 
