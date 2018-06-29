@@ -20,7 +20,6 @@ public class SCCWorker implements Runnable {
     private int nodeId;
     private UF unionfind;
     private Stack<Integer> recursionStack;
-    private Stack<List<Integer>> arcStack;
     private Stack<Integer> rootStack;
 
     public SCCWorker(final Graph graph,
@@ -34,7 +33,6 @@ public class SCCWorker implements Runnable {
         this.nodeId = nodeId;
         this.unionfind = unionfind;
         this.recursionStack = new Stack<Integer>();
-        this.arcStack = new Stack<List<Integer>>();
         this.rootStack = new Stack<Integer>();
     }
 
@@ -50,6 +48,7 @@ public class SCCWorker implements Runnable {
 
         PickStatus picked;
         int v, vp, w, ei, root;
+        int random_ei;
         ClaimStatus claimed;
         boolean backtrack = false;
 
@@ -74,13 +73,10 @@ public class SCCWorker implements Runnable {
                     }
                     vp = p.getValue() - 1;
                     ei = 0;
-                    arcs = new ArrayList<Integer>(graph.get(vp).getArcs());
-                    Collections.shuffle(arcs);
                 } else {
                     v = recursionStack.pop();
                     ei = recursionStack.pop() + 1;
                     vp = recursionStack.pop();
-                    arcs = arcStack.pop();
                     backtrack = false;
                     if (unionfind.isDead(v + 1)) {
                         unionfind.removeFromList(vp + 1);
@@ -88,8 +84,10 @@ public class SCCWorker implements Runnable {
                     }
                 }
 
+                arcs = graph.get(vp).getArcs();
                 for (; ei < arcs.size(); ei++) {
-                    w = arcs.get(ei);
+                    random_ei = (ei + workerId) % arcs.size();
+                    w = arcs.get(random_ei);
                     if (w == vp) {
                         continue;
                     }
@@ -101,7 +99,6 @@ public class SCCWorker implements Runnable {
                         recursionStack.push(vp);
                         recursionStack.push(ei);
                         recursionStack.push(v);
-                        arcStack.push(arcs);
                         v = w;
                         continue START;
                     } else {
