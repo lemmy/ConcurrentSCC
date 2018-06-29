@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/lamport_nonatomic.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6675840204
+Using 1 processesors.
+Runtime for algorithm: 5435030932
+Runtime for output: 8462199326
+Total runtime: 21649940306
+
+Processing graph: /git/graphsFromDVE/lamport_nonatomic.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7220766522
+Using 2 processesors.
+Runtime for algorithm: 3989336766
+Runtime for output: 8038030648
+Total runtime: 20263454746
+
+Processing graph: /git/graphsFromDVE/lamport_nonatomic.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 8915814278
+Using 4 processesors.
+Runtime for algorithm: 4734619474
+Runtime for output: 7580346673
+Total runtime: 22241876125
+
+Processing graph: /git/graphsFromDVE/lamport_nonatomic.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 10610471234
+Using 8 processesors.
+Runtime for algorithm: 3859829426
+Runtime for output: 8307266665
+Total runtime: 24174266514
+
+Processing graph: /git/graphsFromDVE/lamport_nonatomic.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 8989908554
+Using 16 processesors.
+Runtime for algorithm: 3673919170
+Runtime for output: 7551221208
+Total runtime: 21525861476
+
+Processing graph: /git/graphsFromDVE/lamport_nonatomic.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 9818903502
+Using 32 processesors.
+Runtime for algorithm: 12033779616
+Runtime for output: 8439753065
+Total runtime: 31198662520
+

@@ -1,0 +1,54 @@
+Processing graph: /git/graphsFromDVE/bopdp.3.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 2823992646
+1040953
+Using 1 processesors.
+Runtime for algorithm: 7366884338
+Runtime for output: 7715502892
+Total runtime: 18256307229
+
+Processing graph: /git/graphsFromDVE/bopdp.3.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3033497782
+1040953
+Using 2 processesors.
+Runtime for algorithm: 6819832062
+Runtime for output: 7181869647
+Total runtime: 17403262072
+
+Processing graph: /git/graphsFromDVE/bopdp.3.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3033862170
+1040953
+Using 4 processesors.
+Runtime for algorithm: 6403455458
+Runtime for output: 7177558084
+Total runtime: 16972517018
+
+Processing graph: /git/graphsFromDVE/bopdp.3.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 2960443624
+1040953
+Using 8 processesors.
+Runtime for algorithm: 5781298377
+Runtime for output: 7088598839
+Total runtime: 16209911422
+
+Processing graph: /git/graphsFromDVE/bopdp.3.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 2976072617
+1040953
+Using 16 processesors.
+Runtime for algorithm: 1996756722
+Runtime for output: 7847391129
+Total runtime: 13185001071
+
+Processing graph: /git/graphsFromDVE/bopdp.3.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3428750260
+1040953
+Using 32 processesors.
+Runtime for algorithm: 2255633795
+Runtime for output: 7408641693
+Total runtime: 13527311498
+

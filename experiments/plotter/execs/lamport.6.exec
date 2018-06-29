@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/lamport.6.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57711903746
+Using 1 processesors.
+Runtime for algorithm: 97985283212
+Runtime for output: 56871719426
+Total runtime: 219678950705
+
+Processing graph: /git/graphsFromDVE/lamport.6.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 64154775613
+Using 2 processesors.
+Runtime for algorithm: 62279528733
+Runtime for output: 58142690511
+Total runtime: 191972323309
+
+Processing graph: /git/graphsFromDVE/lamport.6.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 67935716569
+Using 4 processesors.
+Runtime for algorithm: 69651280171
+Runtime for output: 55851204166
+Total runtime: 201565724646
+
+Processing graph: /git/graphsFromDVE/lamport.6.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 67360100406
+Using 8 processesors.
+Runtime for algorithm: 83897010914
+Runtime for output: 63761641843
+Total runtime: 223319344882
+
+Processing graph: /git/graphsFromDVE/lamport.6.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 62154209964
+Using 16 processesors.
+Runtime for algorithm: 90380562965
+Runtime for output: 56675840873
+Total runtime: 218762240261
+
+Processing graph: /git/graphsFromDVE/lamport.6.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 66507368916
+Using 32 processesors.
+Runtime for algorithm: 65381424598
+Runtime for output: 56044203586
+Total runtime: 196399112030
+

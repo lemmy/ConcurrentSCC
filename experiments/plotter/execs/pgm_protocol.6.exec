@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/pgm_protocol.6.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7736639263
+Using 1 processesors.
+Runtime for algorithm: 4178582470
+Runtime for output: 17819878762
+Total runtime: 36774201900
+
+Processing graph: /git/graphsFromDVE/pgm_protocol.6.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7571024770
+Using 2 processesors.
+Runtime for algorithm: 3457891339
+Runtime for output: 17870172578
+Total runtime: 35728484853
+
+Processing graph: /git/graphsFromDVE/pgm_protocol.6.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7539433797
+Using 4 processesors.
+Runtime for algorithm: 2454016591
+Runtime for output: 18372059681
+Total runtime: 35635777408
+
+Processing graph: /git/graphsFromDVE/pgm_protocol.6.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7756154014
+Using 8 processesors.
+Runtime for algorithm: 1760472329
+Runtime for output: 17582253555
+Total runtime: 34247551347
+
+Processing graph: /git/graphsFromDVE/pgm_protocol.6.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7731665944
+Using 16 processesors.
+Runtime for algorithm: 10506951717
+Runtime for output: 17525019812
+Total runtime: 36615590563
+
+Processing graph: /git/graphsFromDVE/pgm_protocol.6.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7641645405
+Using 32 processesors.
+Runtime for algorithm: 2191187288
+Runtime for output: 25864683589
+Total runtime: 37018491053
+

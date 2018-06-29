@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/sorter.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57922361103
+Using 1 processesors.
+Runtime for algorithm: 76195284735
+Runtime for output: 86372081337
+Total runtime: 230141709733
+
+Processing graph: /git/graphsFromDVE/sorter.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 48951045498
+Using 2 processesors.
+Runtime for algorithm: 90866557713
+Runtime for output: 87473206775
+Total runtime: 237476414059
+
+Processing graph: /git/graphsFromDVE/sorter.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 58052715826
+Using 4 processesors.
+Runtime for algorithm: 63067340830
+Runtime for output: 88826816654
+Total runtime: 218967684289
+
+Processing graph: /git/graphsFromDVE/sorter.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57024955084
+Using 8 processesors.
+Runtime for algorithm: 59157143620
+Runtime for output: 86063825872
+Total runtime: 212221065531
+
+Processing graph: /git/graphsFromDVE/sorter.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 58816659010
+Using 16 processesors.
+Runtime for algorithm: 52639868562
+Runtime for output: 85656184765
+Total runtime: 206602201347
+
+Processing graph: /git/graphsFromDVE/sorter.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 48072513678
+Using 32 processesors.
+Runtime for algorithm: 85843562086
+Runtime for output: 85163975445
+Total runtime: 228397799104
+

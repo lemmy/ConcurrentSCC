@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/synapse.7.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 36352036471
+Using 1 processesors.
+Runtime for algorithm: 83669155980
+Runtime for output: 55317092312
+Total runtime: 182528828630
+
+Processing graph: /git/graphsFromDVE/synapse.7.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 34952700629
+Using 2 processesors.
+Runtime for algorithm: 57060372365
+Runtime for output: 60106672326
+Total runtime: 158516051256
+
+Processing graph: /git/graphsFromDVE/synapse.7.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 35689601821
+Using 4 processesors.
+Runtime for algorithm: 65732009353
+Runtime for output: 53445589963
+Total runtime: 161230099819
+
+Processing graph: /git/graphsFromDVE/synapse.7.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 36905026456
+Using 8 processesors.
+Runtime for algorithm: 49078327931
+Runtime for output: 53555170422
+Total runtime: 152803634029
+
+Processing graph: /git/graphsFromDVE/synapse.7.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 36086553958
+Using 16 processesors.
+Runtime for algorithm: 60355541629
+Runtime for output: 53848097565
+Total runtime: 156779145794
+
+Processing graph: /git/graphsFromDVE/synapse.7.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 36365491947
+Using 32 processesors.
+Runtime for algorithm: 56617618773
+Runtime for output: 55334040349
+Total runtime: 155037371220
+

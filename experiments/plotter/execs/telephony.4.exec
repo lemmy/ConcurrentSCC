@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/telephony.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 84840163243
+Using 1 processesors.
+Runtime for algorithm: 107421536252
+Runtime for output: 56020282273
+Total runtime: 259199183290
+
+Processing graph: /git/graphsFromDVE/telephony.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 86161998837
+Using 2 processesors.
+Runtime for algorithm: 87190767623
+Runtime for output: 59784461241
+Total runtime: 245634297310
+
+Processing graph: /git/graphsFromDVE/telephony.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 87497822224
+Using 4 processesors.
+Runtime for algorithm: 76908001027
+Runtime for output: 58096574188
+Total runtime: 233965571154
+
+Processing graph: /git/graphsFromDVE/telephony.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 85671714508
+Using 8 processesors.
+Runtime for algorithm: 78036953254
+Runtime for output: 56072265502
+Total runtime: 231055666121
+
+Processing graph: /git/graphsFromDVE/telephony.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 86253149666
+Using 16 processesors.
+Runtime for algorithm: 93868711006
+Runtime for output: 55843321046
+Total runtime: 248012244122
+
+Processing graph: /git/graphsFromDVE/telephony.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 86057512178
+Using 32 processesors.
+Runtime for algorithm: 98582234476
+Runtime for output: 55029505716
+Total runtime: 251910163351
+

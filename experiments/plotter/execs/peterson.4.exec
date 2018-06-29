@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/peterson.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3530021945
+Using 1 processesors.
+Runtime for algorithm: 4103763124
+Runtime for output: 5173772948
+Total runtime: 13596309198
+
+Processing graph: /git/graphsFromDVE/peterson.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3569996554
+Using 2 processesors.
+Runtime for algorithm: 3380585422
+Runtime for output: 5368416535
+Total runtime: 13085815692
+
+Processing graph: /git/graphsFromDVE/peterson.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3563802919
+Using 4 processesors.
+Runtime for algorithm: 2915391985
+Runtime for output: 5441889709
+Total runtime: 12680977897
+
+Processing graph: /git/graphsFromDVE/peterson.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3519174404
+Using 8 processesors.
+Runtime for algorithm: 2391207970
+Runtime for output: 5023474964
+Total runtime: 11654171248
+
+Processing graph: /git/graphsFromDVE/peterson.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3579920028
+Using 16 processesors.
+Runtime for algorithm: 2418115506
+Runtime for output: 5066637190
+Total runtime: 11954037749
+
+Processing graph: /git/graphsFromDVE/peterson.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3539836140
+Using 32 processesors.
+Runtime for algorithm: 2679484528
+Runtime for output: 5212234890
+Total runtime: 12133772899
+

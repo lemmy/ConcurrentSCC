@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/lifts.8.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 48612785378
+Using 1 processesors.
+Runtime for algorithm: 99124431077
+Runtime for output: 59812294394
+Total runtime: 235128646839
+
+Processing graph: /git/graphsFromDVE/lifts.8.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 47683784992
+Using 2 processesors.
+Runtime for algorithm: 80599559767
+Runtime for output: 64093526120
+Total runtime: 219951710582
+
+Processing graph: /git/graphsFromDVE/lifts.8.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 47738978923
+Using 4 processesors.
+Runtime for algorithm: 89390505722
+Runtime for output: 60830782037
+Total runtime: 226060847269
+
+Processing graph: /git/graphsFromDVE/lifts.8.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 47648875444
+Using 8 processesors.
+Runtime for algorithm: 74635738960
+Runtime for output: 58899733787
+Total runtime: 208281179254
+
+Processing graph: /git/graphsFromDVE/lifts.8.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 47876253413
+Using 16 processesors.
+Runtime for algorithm: 72838154854
+Runtime for output: 59895750935
+Total runtime: 207343881511
+
+Processing graph: /git/graphsFromDVE/lifts.8.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 47850694784
+Using 32 processesors.
+Runtime for algorithm: 72987127393
+Runtime for output: 68477547884
+Total runtime: 214027884100
+

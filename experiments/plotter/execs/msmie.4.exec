@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/msmie.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 22794007475
+Using 1 processesors.
+Runtime for algorithm: 44381691832
+Runtime for output: 35165074679
+Total runtime: 106650643738
+
+Processing graph: /git/graphsFromDVE/msmie.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 20562652009
+Using 2 processesors.
+Runtime for algorithm: 37240096497
+Runtime for output: 34349703651
+Total runtime: 97350748172
+
+Processing graph: /git/graphsFromDVE/msmie.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 17888828979
+Using 4 processesors.
+Runtime for algorithm: 34932055898
+Runtime for output: 34483069055
+Total runtime: 91791500755
+
+Processing graph: /git/graphsFromDVE/msmie.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 20171279765
+Using 8 processesors.
+Runtime for algorithm: 32813171643
+Runtime for output: 33055365906
+Total runtime: 90527263908
+
+Processing graph: /git/graphsFromDVE/msmie.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 20843898947
+Using 16 processesors.
+Runtime for algorithm: 52849456084
+Runtime for output: 32586194263
+Total runtime: 111393671693
+
+Processing graph: /git/graphsFromDVE/msmie.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 20580347791
+Using 32 processesors.
+Runtime for algorithm: 44805185318
+Runtime for output: 33023878928
+Total runtime: 102791097178
+

@@ -1,0 +1,54 @@
+Processing graph: /git/graphsFromDVE/at.3.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6133717172
+1711620
+Using 1 processesors.
+Runtime for algorithm: 13680487177
+Runtime for output: 7784182520
+Total runtime: 28938603257
+
+Processing graph: /git/graphsFromDVE/at.3.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6127203591
+1711620
+Using 2 processesors.
+Runtime for algorithm: 11960433059
+Runtime for output: 7751058118
+Total runtime: 27147237004
+
+Processing graph: /git/graphsFromDVE/at.3.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6160870724
+1711620
+Using 4 processesors.
+Runtime for algorithm: 11791379406
+Runtime for output: 7878032275
+Total runtime: 26942149121
+
+Processing graph: /git/graphsFromDVE/at.3.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6124352708
+1711620
+Using 8 processesors.
+Runtime for algorithm: 9621960466
+Runtime for output: 8052976822
+Total runtime: 24870147269
+
+Processing graph: /git/graphsFromDVE/at.3.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6119773188
+1711620
+Using 16 processesors.
+Runtime for algorithm: 4148131119
+Runtime for output: 7955674266
+Total runtime: 19548004744
+
+Processing graph: /git/graphsFromDVE/at.3.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6217158542
+1711620
+Using 32 processesors.
+Runtime for algorithm: 3705431816
+Runtime for output: 8023996482
+Total runtime: 19134602521
+

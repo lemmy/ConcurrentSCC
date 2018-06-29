@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/lup.3.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3864492387
+Using 1 processesors.
+Runtime for algorithm: 16014699540
+Runtime for output: 8578983035
+Total runtime: 29509322447
+
+Processing graph: /git/graphsFromDVE/lup.3.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 4050904887
+Using 2 processesors.
+Runtime for algorithm: 13242784529
+Runtime for output: 8833497594
+Total runtime: 27373349509
+
+Processing graph: /git/graphsFromDVE/lup.3.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3953766558
+Using 4 processesors.
+Runtime for algorithm: 13058371489
+Runtime for output: 8836420554
+Total runtime: 27137446088
+
+Processing graph: /git/graphsFromDVE/lup.3.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3982528154
+Using 8 processesors.
+Runtime for algorithm: 12207350506
+Runtime for output: 8770235729
+Total runtime: 26184611907
+
+Processing graph: /git/graphsFromDVE/lup.3.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 4001465837
+Using 16 processesors.
+Runtime for algorithm: 11275239578
+Runtime for output: 9138108686
+Total runtime: 25857846402
+
+Processing graph: /git/graphsFromDVE/lup.3.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3878839158
+Using 32 processesors.
+Runtime for algorithm: 3931648203
+Runtime for output: 9395951094
+Total runtime: 18450551942
+

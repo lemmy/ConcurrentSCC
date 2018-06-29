@@ -1,0 +1,54 @@
+Processing graph: /git/graphsFromDVE/fischer.6.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 58522964664
+8321728
+Using 1 processesors.
+Runtime for algorithm: 109485389859
+Runtime for output: 48175409407
+Total runtime: 223056418570
+
+Processing graph: /git/graphsFromDVE/fischer.6.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57815890378
+8321728
+Using 2 processesors.
+Runtime for algorithm: 86112488916
+Runtime for output: 50022002184
+Total runtime: 201187167717
+
+Processing graph: /git/graphsFromDVE/fischer.6.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 60008603501
+8321728
+Using 4 processesors.
+Runtime for algorithm: 79110495495
+Runtime for output: 52970483050
+Total runtime: 200919628035
+
+Processing graph: /git/graphsFromDVE/fischer.6.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 61270985501
+8321728
+Using 8 processesors.
+Runtime for algorithm: 75564327083
+Runtime for output: 50377613671
+Total runtime: 195955198810
+
+Processing graph: /git/graphsFromDVE/fischer.6.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 60226000089
+8321728
+Using 16 processesors.
+Runtime for algorithm: 65659511112
+Runtime for output: 49664526536
+Total runtime: 183686955329
+
+Processing graph: /git/graphsFromDVE/fischer.6.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 58245944387
+8321728
+Using 32 processesors.
+Runtime for algorithm: 62008661421
+Runtime for output: 48385778019
+Total runtime: 176269191304
+

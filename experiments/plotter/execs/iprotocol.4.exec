@@ -1,0 +1,54 @@
+Processing graph: /git/graphsFromDVE/iprotocol.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 20110164480
+3290916
+Using 1 processesors.
+Runtime for algorithm: 9818630701
+Runtime for output: 37348610730
+Total runtime: 70646548297
+
+Processing graph: /git/graphsFromDVE/iprotocol.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 19524633872
+3290916
+Using 2 processesors.
+Runtime for algorithm: 8396510991
+Runtime for output: 38265756116
+Total runtime: 69505896899
+
+Processing graph: /git/graphsFromDVE/iprotocol.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 18995772858
+3290916
+Using 4 processesors.
+Runtime for algorithm: 6568593900
+Runtime for output: 37696858546
+Total runtime: 67378585685
+
+Processing graph: /git/graphsFromDVE/iprotocol.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 21665521698
+3290916
+Using 8 processesors.
+Runtime for algorithm: 6516999814
+Runtime for output: 38460612572
+Total runtime: 69867753509
+
+Processing graph: /git/graphsFromDVE/iprotocol.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 20241934289
+3290916
+Using 16 processesors.
+Runtime for algorithm: 7055616267
+Runtime for output: 23507836381
+Total runtime: 63065194407
+
+Processing graph: /git/graphsFromDVE/iprotocol.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 14928737599
+3290916
+Using 32 processesors.
+Runtime for algorithm: 17795491090
+Runtime for output: 24463036111
+Total runtime: 60572817299
+

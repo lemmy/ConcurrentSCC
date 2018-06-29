@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/leader_election.5.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 44447355946
+Using 1 processesors.
+Runtime for algorithm: 11586086099
+Runtime for output: 42652542814
+Total runtime: 127077346861
+
+Processing graph: /git/graphsFromDVE/leader_election.5.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 41038070420
+Using 2 processesors.
+Runtime for algorithm: 7795626826
+Runtime for output: 42950693509
+Total runtime: 119959813469
+
+Processing graph: /git/graphsFromDVE/leader_election.5.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 43223607103
+Using 4 processesors.
+Runtime for algorithm: 4416803616
+Runtime for output: 41424453467
+Total runtime: 106868369997
+
+Processing graph: /git/graphsFromDVE/leader_election.5.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 40079912768
+Using 8 processesors.
+Runtime for algorithm: 3756938904
+Runtime for output: 41224945248
+Total runtime: 109533227981
+
+Processing graph: /git/graphsFromDVE/leader_election.5.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 44012146590
+Using 16 processesors.
+Runtime for algorithm: 3875316308
+Runtime for output: 42907737035
+Total runtime: 109440110632
+
+Processing graph: /git/graphsFromDVE/leader_election.5.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 40712741877
+Using 32 processesors.
+Runtime for algorithm: 37346390761
+Runtime for output: 54992272218
+Total runtime: 136544549523
+

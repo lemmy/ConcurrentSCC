@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/schedule_world.2.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13147369656
+Using 1 processesors.
+Runtime for algorithm: 11513217149
+Runtime for output: 7557602736
+Total runtime: 33203133637
+
+Processing graph: /git/graphsFromDVE/schedule_world.2.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13636684878
+Using 2 processesors.
+Runtime for algorithm: 5130102151
+Runtime for output: 7171294397
+Total runtime: 26960773135
+
+Processing graph: /git/graphsFromDVE/schedule_world.2.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13219248655
+Using 4 processesors.
+Runtime for algorithm: 4207062454
+Runtime for output: 7784838272
+Total runtime: 26242974606
+
+Processing graph: /git/graphsFromDVE/schedule_world.2.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13165679846
+Using 8 processesors.
+Runtime for algorithm: 3585766520
+Runtime for output: 7077244016
+Total runtime: 24850920560
+
+Processing graph: /git/graphsFromDVE/schedule_world.2.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13221281492
+Using 16 processesors.
+Runtime for algorithm: 3489291190
+Runtime for output: 7210525729
+Total runtime: 24934906536
+
+Processing graph: /git/graphsFromDVE/schedule_world.2.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13400110666
+Using 32 processesors.
+Runtime for algorithm: 3866908759
+Runtime for output: 11939779294
+Total runtime: 30407699233
+

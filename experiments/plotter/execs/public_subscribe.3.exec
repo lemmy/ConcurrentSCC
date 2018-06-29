@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/public_subscribe.3.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5949641291
+Using 1 processesors.
+Runtime for algorithm: 13365239506
+Runtime for output: 9215271169
+Total runtime: 29602203920
+
+Processing graph: /git/graphsFromDVE/public_subscribe.3.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5978797569
+Using 2 processesors.
+Runtime for algorithm: 12217442190
+Runtime for output: 9373859659
+Total runtime: 28900464093
+
+Processing graph: /git/graphsFromDVE/public_subscribe.3.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5943675043
+Using 4 processesors.
+Runtime for algorithm: 11835063909
+Runtime for output: 9475926784
+Total runtime: 28389573728
+
+Processing graph: /git/graphsFromDVE/public_subscribe.3.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6237998872
+Using 8 processesors.
+Runtime for algorithm: 9428120440
+Runtime for output: 9485045527
+Total runtime: 26375412198
+
+Processing graph: /git/graphsFromDVE/public_subscribe.3.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5912828799
+Using 16 processesors.
+Runtime for algorithm: 3683487753
+Runtime for output: 9157805405
+Total runtime: 20077966167
+
+Processing graph: /git/graphsFromDVE/public_subscribe.3.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6053514229
+Using 32 processesors.
+Runtime for algorithm: 3554533131
+Runtime for output: 9422713708
+Total runtime: 20339271768
+

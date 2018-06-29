@@ -1,0 +1,54 @@
+Processing graph: /git/graphsFromDVE/elevator_planning.2.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 153032394839
+11428767
+Using 1 processesors.
+Runtime for algorithm: 197808689106
+Runtime for output: 79902679094
+Total runtime: 441717670679
+
+Processing graph: /git/graphsFromDVE/elevator_planning.2.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 149920960186
+11428767
+Using 2 processesors.
+Runtime for algorithm: 157754273887
+Runtime for output: 74270017887
+Total runtime: 394129262924
+
+Processing graph: /git/graphsFromDVE/elevator_planning.2.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 162616762243
+11428767
+Using 4 processesors.
+Runtime for algorithm: 111180540851
+Runtime for output: 70403312026
+Total runtime: 352995838503
+
+Processing graph: /git/graphsFromDVE/elevator_planning.2.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 135581442542
+11428767
+Using 8 processesors.
+Runtime for algorithm: 161295238615
+Runtime for output: 72857391389
+Total runtime: 380787913662
+
+Processing graph: /git/graphsFromDVE/elevator_planning.2.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 151599774526
+11428767
+Using 16 processesors.
+Runtime for algorithm: 152753672357
+Runtime for output: 73539784294
+Total runtime: 387719475047
+
+Processing graph: /git/graphsFromDVE/elevator_planning.2.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 137980245285
+11428767
+Using 32 processesors.
+Runtime for algorithm: 123417634801
+Runtime for output: 76631543314
+Total runtime: 348463573540
+

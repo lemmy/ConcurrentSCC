@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/needham.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 27907502415
+Using 1 processesors.
+Runtime for algorithm: 29053133722
+Runtime for output: 43810289833
+Total runtime: 109364312484
+
+Processing graph: /git/graphsFromDVE/needham.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28078864203
+Using 2 processesors.
+Runtime for algorithm: 27474916532
+Runtime for output: 52414340945
+Total runtime: 116542879168
+
+Processing graph: /git/graphsFromDVE/needham.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 27828898845
+Using 4 processesors.
+Runtime for algorithm: 24831009060
+Runtime for output: 51435290252
+Total runtime: 112571501478
+
+Processing graph: /git/graphsFromDVE/needham.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28069485748
+Using 8 processesors.
+Runtime for algorithm: 26573486542
+Runtime for output: 55390488177
+Total runtime: 118974645182
+
+Processing graph: /git/graphsFromDVE/needham.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28177472632
+Using 16 processesors.
+Runtime for algorithm: 28663242507
+Runtime for output: 53181537206
+Total runtime: 118471066212
+
+Processing graph: /git/graphsFromDVE/needham.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28187069872
+Using 32 processesors.
+Runtime for algorithm: 21293815735
+Runtime for output: 47204180440
+Total runtime: 106867328959
+

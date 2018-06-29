@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/leader_filters.5.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6842830517
+Using 1 processesors.
+Runtime for algorithm: 8131769966
+Runtime for output: 13614176413
+Total runtime: 29178539467
+
+Processing graph: /git/graphsFromDVE/leader_filters.5.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5987823273
+Using 2 processesors.
+Runtime for algorithm: 3693341409
+Runtime for output: 14815601059
+Total runtime: 25213022231
+
+Processing graph: /git/graphsFromDVE/leader_filters.5.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6721035454
+Using 4 processesors.
+Runtime for algorithm: 1874512955
+Runtime for output: 14288165522
+Total runtime: 23760915943
+
+Processing graph: /git/graphsFromDVE/leader_filters.5.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 8827899201
+Using 8 processesors.
+Runtime for algorithm: 2959255741
+Runtime for output: 22399873851
+Total runtime: 35069117566
+
+Processing graph: /git/graphsFromDVE/leader_filters.5.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6121202888
+Using 16 processesors.
+Runtime for algorithm: 2072979909
+Runtime for output: 22520379839
+Total runtime: 31591948934
+
+Processing graph: /git/graphsFromDVE/leader_filters.5.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 8375887225
+Using 32 processesors.
+Runtime for algorithm: 2686991213
+Runtime for output: 21332236222
+Total runtime: 33373649029
+

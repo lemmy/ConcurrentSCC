@@ -1,0 +1,48 @@
+Processing graph: /git/graphsFromDVE/resistance.1.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 56564663591
+Using 1 processesors.
+Runtime for algorithm: 120861060012
+Runtime for output: 74074920730
+Total runtime: 260193850104
+
+Processing graph: /git/graphsFromDVE/resistance.1.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 56146234446
+Using 2 processesors.
+Runtime for algorithm: 106275668176
+Runtime for output: 73513618336
+Total runtime: 257326174231
+
+Processing graph: /git/graphsFromDVE/resistance.1.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 55845482380
+Using 4 processesors.
+Runtime for algorithm: 101453397583
+Runtime for output: 71828923976
+Total runtime: 239606106816
+
+Processing graph: /git/graphsFromDVE/resistance.1.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 55552708427
+Using 8 processesors.
+Runtime for algorithm: 102207860495
+Runtime for output: 72137307563
+Total runtime: 238938457083
+
+Processing graph: /git/graphsFromDVE/resistance.1.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57807392210
+Using 16 processesors.
+Runtime for algorithm: 88010021010
+Runtime for output: 63285771293
+Total runtime: 231348590907
+
+Processing graph: /git/graphsFromDVE/resistance.1.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 55705147696
+Using 32 processesors.
+Runtime for algorithm: 99042543795
+Runtime for output: 63452556203
+Total runtime: 228134006184
+

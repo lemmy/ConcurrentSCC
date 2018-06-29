@@ -1,0 +1,54 @@
+Processing graph: /git/graphsFromDVE/extinction.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 9106309439
+2001372
+Using 1 processesors.
+Runtime for algorithm: 3155984638
+Runtime for output: 16808314554
+Total runtime: 29974457581
+
+Processing graph: /git/graphsFromDVE/extinction.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 9364616074
+2001372
+Using 2 processesors.
+Runtime for algorithm: 3657263086
+Runtime for output: 19457495405
+Total runtime: 33454910183
+
+Processing graph: /git/graphsFromDVE/extinction.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 9044498924
+2001372
+Using 4 processesors.
+Runtime for algorithm: 1994157859
+Runtime for output: 16690069248
+Total runtime: 28774066524
+
+Processing graph: /git/graphsFromDVE/extinction.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 11746523647
+2001372
+Using 8 processesors.
+Runtime for algorithm: 2283049294
+Runtime for output: 17964592686
+Total runtime: 33117302585
+
+Processing graph: /git/graphsFromDVE/extinction.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 9867760529
+2001372
+Using 16 processesors.
+Runtime for algorithm: 2445806999
+Runtime for output: 17121575623
+Total runtime: 30511768296
+
+Processing graph: /git/graphsFromDVE/extinction.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 9540330072
+2001372
+Using 32 processesors.
+Runtime for algorithm: 2315328489
+Runtime for output: 16881838068
+Total runtime: 35498023170
+

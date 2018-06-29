@@ -1,0 +1,54 @@
+Processing graph: /git/graphsFromDVE/frogs.4.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 74471854441
+17443219
+Using 1 processesors.
+Runtime for algorithm: 152149573807
+Runtime for output: 157600000082
+Total runtime: 408088696480
+
+Processing graph: /git/graphsFromDVE/frogs.4.dve.txt with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 74826746804
+17443219
+Using 2 processesors.
+Runtime for algorithm: 157036066648
+Runtime for output: 121587817885
+Total runtime: 374911787505
+
+Processing graph: /git/graphsFromDVE/frogs.4.dve.txt with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 75465257853
+17443219
+Using 4 processesors.
+Runtime for algorithm: 127167675056
+Runtime for output: 169144436626
+Total runtime: 390281582931
+
+Processing graph: /git/graphsFromDVE/frogs.4.dve.txt with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 99927130735
+17443219
+Using 8 processesors.
+Runtime for algorithm: 144020631735
+Runtime for output: 189953733888
+Total runtime: 457435923027
+
+Processing graph: /git/graphsFromDVE/frogs.4.dve.txt with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 99171124876
+17443219
+Using 16 processesors.
+Runtime for algorithm: 155831637875
+Runtime for output: 184366958122
+Total runtime: 473844891902
+
+Processing graph: /git/graphsFromDVE/frogs.4.dve.txt with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 103923014828
+17443219
+Using 32 processesors.
+Runtime for algorithm: 133429375014
+Runtime for output: 171729045431
+Total runtime: 445212521390
+
