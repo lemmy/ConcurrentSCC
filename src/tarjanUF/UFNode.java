@@ -3,10 +3,6 @@ package tarjanUF;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-/**
- * @require: Confirm whether AtomicReferenceFieldUpdater
- * makes only one update of a field across various objects.
- */
 public class UFNode {
 
     // Denotes a bitmask of threads currently processing it.

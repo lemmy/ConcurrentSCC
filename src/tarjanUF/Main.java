@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +37,16 @@ public class Main {
         System.err.println("Runtime for input: " + duration);
     }
 
+    public static void readInits(List<Integer> initNodes, String filename) throws IOException {
+        final FileInputStream in = new FileInputStream(filename);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                line = line.trim();
+                initNodes.add(Integer.parseInt(line));
+            }
+        }
+    }
+
     public static void printSCCs(Map<Integer, Set<GraphNode>> sccs) {
         final long start = System.nanoTime();
 
@@ -51,20 +63,22 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.err.println("Processing graph: " + args[0] + " with " + args[1] + " threads.");
+        System.err.println("Processing graph: " + args[0] + " starting with initial nodes from " + args[2] + " with " + args[1] + " threads.");
         System.err.println("Runtimes are in nanoseconds.");
         final long start = System.nanoTime();
 
-        assert args.length == 2;
+        assert args.length == 3;
         final Graph graph = new Graph(args[0]);
+        final List<Integer> initNodes = new ArrayList<Integer>();
         try {
             readFile(graph, args[0]);
+            readInits(initNodes, args[2]);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         final UF unionfind = new UF(graph.N() + 1);
-        final Map<Integer, Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph, unionfind, Integer.parseInt(args[1]));
+        final Map<Integer, Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph, initNodes, unionfind, Integer.parseInt(args[1]));
 
         printSCCs(sccs);
 

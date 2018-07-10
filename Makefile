@@ -8,4 +8,4 @@ clean:
 	mkdir bin
 
 run:
-	java -ea -cp bin tarjanUF.Main ${ARG} ${THREADS}
+	java -ea -cp bin tarjanUF.Main ${GRAPH} ${THREADS} ${INIT}
