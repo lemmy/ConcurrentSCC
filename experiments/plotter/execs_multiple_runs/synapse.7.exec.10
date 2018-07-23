@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/synapse.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/synapse.7.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 35563012719
+Using 1 processesors.
+Runtime for algorithm: 22198100758
+Total runtime: 58038297344
+
+Processing graph: /git/graphsFromDVE/Remaining/synapse.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/synapse.7.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 35771811713
+Using 2 processesors.
+Runtime for algorithm: 16020273323
+Total runtime: 52070281886
+
+Processing graph: /git/graphsFromDVE/Remaining/synapse.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/synapse.7.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 35748401958
+Using 4 processesors.
+Runtime for algorithm: 10653172271
+Total runtime: 46685482900
+
+Processing graph: /git/graphsFromDVE/Remaining/synapse.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/synapse.7.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 35819649159
+Using 8 processesors.
+Runtime for algorithm: 8042980793
+Total runtime: 44140031616
+
+Processing graph: /git/graphsFromDVE/Remaining/synapse.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/synapse.7.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 35891525840
+Using 16 processesors.
+Runtime for algorithm: 6439863804
+Total runtime: 42608841750
+
+Processing graph: /git/graphsFromDVE/Remaining/synapse.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/synapse.7.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 35722312729
+Using 32 processesors.
+Runtime for algorithm: 20964766275
+Total runtime: 56965089484
+

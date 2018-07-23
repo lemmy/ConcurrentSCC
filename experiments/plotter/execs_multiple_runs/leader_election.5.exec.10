@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/leader_election.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/leader_election.5.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 32447971379
+Using 1 processesors.
+Runtime for algorithm: 8301662539
+Total runtime: 40897296394
+
+Processing graph: /git/graphsFromDVE/Remaining/leader_election.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/leader_election.5.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 31102230772
+Using 2 processesors.
+Runtime for algorithm: 3990317437
+Total runtime: 36384186932
+
+Processing graph: /git/graphsFromDVE/Remaining/leader_election.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/leader_election.5.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 31753163265
+Using 4 processesors.
+Runtime for algorithm: 2131810820
+Total runtime: 35198056174
+
+Processing graph: /git/graphsFromDVE/Remaining/leader_election.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/leader_election.5.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 33500429216
+Using 8 processesors.
+Runtime for algorithm: 1212506626
+Total runtime: 36158282246
+
+Processing graph: /git/graphsFromDVE/Remaining/leader_election.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/leader_election.5.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 31307702748
+Using 16 processesors.
+Runtime for algorithm: 834663168
+Total runtime: 33434088110
+
+Processing graph: /git/graphsFromDVE/Remaining/leader_election.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/leader_election.5.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 31364641383
+Using 32 processesors.
+Runtime for algorithm: 824416092
+Total runtime: 33417990027
+

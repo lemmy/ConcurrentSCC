@@ -1,0 +1,18 @@
+Processing graph: ../graphsFromDVE/iprotocol.5.dve.txt with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 194315920921
+Using 1 processesors.
+Exception in thread "main" java.lang.OutOfMemoryError: GC overhead limit exceeded
+	at tarjanUF.SCCWorker.<init>(SCCWorker.java:35)
+	at tarjanUF.ConcurrentFastSCC.searchHelper(ConcurrentFastSCC.java:37)
+	at tarjanUF.ConcurrentFastSCC.searchSCCs(ConcurrentFastSCC.java:25)
+	at tarjanUF.Main.main(Main.java:67)
+Exception in thread "pool-1-thread-1" java.lang.OutOfMemoryError: GC overhead limit exceeded
+	at tarjanUF.UF.pickFromList(UF.java:175)
+	at tarjanUF.UF.lockList(UF.java:293)
+	at tarjanUF.UF.unite(UF.java:107)
+	at tarjanUF.SCCWorker.run(SCCWorker.java:107)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Exception in thread "pool-1-thread-2" 

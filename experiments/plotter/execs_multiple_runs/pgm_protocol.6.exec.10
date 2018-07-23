@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7574781436
+Using 1 processesors.
+Runtime for algorithm: 3380208755
+Total runtime: 11043501567
+
+Processing graph: /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7661698701
+Using 2 processesors.
+Runtime for algorithm: 1989882894
+Total runtime: 9740405112
+
+Processing graph: /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7605494854
+Using 4 processesors.
+Runtime for algorithm: 1118910609
+Total runtime: 8813773570
+
+Processing graph: /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7754345153
+Using 8 processesors.
+Runtime for algorithm: 769423483
+Total runtime: 8613070416
+
+Processing graph: /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7579482818
+Using 16 processesors.
+Runtime for algorithm: 678597728
+Total runtime: 8347956936
+
+Processing graph: /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/pgm_protocol.6.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7686939788
+Using 32 processesors.
+Runtime for algorithm: 1112774148
+Total runtime: 8894917464
+

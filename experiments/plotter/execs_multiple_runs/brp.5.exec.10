@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/brp.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/brp.5.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 70615993849
+Using 1 processesors.
+Runtime for algorithm: 80497867000
+Total runtime: 151603299527
+
+Processing graph: /git/graphsFromDVE/Remaining/brp.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/brp.5.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 70216291162
+Using 2 processesors.
+Runtime for algorithm: 66688503427
+Total runtime: 137394077583
+
+Processing graph: /git/graphsFromDVE/Remaining/brp.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/brp.5.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 70733367929
+Using 4 processesors.
+Runtime for algorithm: 57479034413
+Total runtime: 128701760631
+
+Processing graph: /git/graphsFromDVE/Remaining/brp.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/brp.5.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 70463705790
+Using 8 processesors.
+Runtime for algorithm: 51559404214
+Total runtime: 122510699819
+
+Processing graph: /git/graphsFromDVE/Remaining/brp.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/brp.5.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 71767062170
+Using 16 processesors.
+Runtime for algorithm: 36282446984
+Total runtime: 108539366377
+
+Processing graph: /git/graphsFromDVE/Remaining/brp.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/brp.5.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 70542759141
+Using 32 processesors.
+Runtime for algorithm: 53529117465
+Total runtime: 124567057457
+

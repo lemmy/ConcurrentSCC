@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 105709888269
+Using 1 processesors.
+Runtime for algorithm: 66313060803
+Total runtime: 172329869515
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 105608552656
+Using 2 processesors.
+Runtime for algorithm: 46113003878
+Total runtime: 152027682461
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 105729528188
+Using 4 processesors.
+Runtime for algorithm: 37781000863
+Total runtime: 143819791266
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 104390300197
+Using 8 processesors.
+Runtime for algorithm: 35400717145
+Total runtime: 140098201268
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 105775021887
+Using 16 processesors.
+Runtime for algorithm: 32987083920
+Total runtime: 139075993412
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 105897364115
+Using 32 processesors.
+Runtime for algorithm: 32086876285
+Total runtime: 138307722539
+

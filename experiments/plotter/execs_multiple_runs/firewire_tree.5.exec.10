@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 17678659315
+Using 1 processesors.
+Runtime for algorithm: 12711865377
+Total runtime: 30512225101
+
+Processing graph: /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 16667279104
+Using 2 processesors.
+Runtime for algorithm: 11718816440
+Total runtime: 28506236471
+
+Processing graph: /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 17081371370
+Using 4 processesors.
+Runtime for algorithm: 11972312181
+Total runtime: 29173305013
+
+Processing graph: /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 17218782498
+Using 8 processesors.
+Runtime for algorithm: 9390525787
+Total runtime: 26729872327
+
+Processing graph: /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 17414383571
+Using 16 processesors.
+Runtime for algorithm: 9177667583
+Total runtime: 26712633960
+
+Processing graph: /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/firewire_tree.5.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 17480661915
+Using 32 processesors.
+Runtime for algorithm: 9975984173
+Total runtime: 27577837848
+

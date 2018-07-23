@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/krebs.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/krebs.4.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 4983647628
+Using 1 processesors.
+Runtime for algorithm: 1327981530
+Total runtime: 6359422107
+
+Processing graph: /git/graphsFromDVE/Remaining/krebs.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/krebs.4.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5007572056
+Using 2 processesors.
+Runtime for algorithm: 889416413
+Total runtime: 5944548661
+
+Processing graph: /git/graphsFromDVE/Remaining/krebs.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/krebs.4.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5010295017
+Using 4 processesors.
+Runtime for algorithm: 620336933
+Total runtime: 5678909171
+
+Processing graph: /git/graphsFromDVE/Remaining/krebs.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/krebs.4.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5045425633
+Using 8 processesors.
+Runtime for algorithm: 418855094
+Total runtime: 5511926085
+
+Processing graph: /git/graphsFromDVE/Remaining/krebs.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/krebs.4.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5044635113
+Using 16 processesors.
+Runtime for algorithm: 341982835
+Total runtime: 5434285481
+
+Processing graph: /git/graphsFromDVE/Remaining/krebs.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/krebs.4.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 4988932812
+Using 32 processesors.
+Runtime for algorithm: 593993151
+Total runtime: 5630875258
+

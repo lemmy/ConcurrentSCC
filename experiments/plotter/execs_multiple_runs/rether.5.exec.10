@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/rether.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/rether.5.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3675763567
+Using 1 processesors.
+Runtime for algorithm: 5795835218
+Total runtime: 9570099502
+
+Processing graph: /git/graphsFromDVE/Remaining/rether.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/rether.5.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3696410463
+Using 2 processesors.
+Runtime for algorithm: 4246098225
+Total runtime: 8047002799
+
+Processing graph: /git/graphsFromDVE/Remaining/rether.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/rether.5.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3615133371
+Using 4 processesors.
+Runtime for algorithm: 2822238962
+Total runtime: 6537004430
+
+Processing graph: /git/graphsFromDVE/Remaining/rether.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/rether.5.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3669266431
+Using 8 processesors.
+Runtime for algorithm: 7565400052
+Total runtime: 11340287639
+
+Processing graph: /git/graphsFromDVE/Remaining/rether.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/rether.5.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3678505687
+Using 16 processesors.
+Runtime for algorithm: 7434951278
+Total runtime: 11214412961
+
+Processing graph: /git/graphsFromDVE/Remaining/rether.5.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/rether.5.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3637725676
+Using 32 processesors.
+Runtime for algorithm: 6391012595
+Total runtime: 10127267533
+

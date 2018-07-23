@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 11222437622
+Using 1 processesors.
+Runtime for algorithm: 4647866704
+Total runtime: 15976552679
+
+Processing graph: /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 11169449073
+Using 2 processesors.
+Runtime for algorithm: 3250715152
+Total runtime: 14525485674
+
+Processing graph: /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 11094739323
+Using 4 processesors.
+Runtime for algorithm: 1986093155
+Total runtime: 13188487458
+
+Processing graph: /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 11049510443
+Using 8 processesors.
+Runtime for algorithm: 1351873970
+Total runtime: 12507548466
+
+Processing graph: /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 11226805646
+Using 16 processesors.
+Runtime for algorithm: 1364220100
+Total runtime: 12695738659
+
+Processing graph: /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/iprotocol.4.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 11134892605
+Using 32 processesors.
+Runtime for algorithm: 1464959849
+Total runtime: 12705486238
+

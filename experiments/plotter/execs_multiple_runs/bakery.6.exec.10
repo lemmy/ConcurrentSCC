@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/bakery.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/bakery.6.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 58692929820
+Using 1 processesors.
+Runtime for algorithm: 51452572903
+Total runtime: 110479510957
+
+Processing graph: /git/graphsFromDVE/Remaining/bakery.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/bakery.6.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 69416948086
+Using 2 processesors.
+Runtime for algorithm: 17581640190
+Total runtime: 87334340364
+
+Processing graph: /git/graphsFromDVE/Remaining/bakery.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/bakery.6.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 58540044436
+Using 4 processesors.
+Runtime for algorithm: 29592391413
+Total runtime: 88467547295
+
+Processing graph: /git/graphsFromDVE/Remaining/bakery.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/bakery.6.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 59612873436
+Using 8 processesors.
+Runtime for algorithm: 25736123556
+Total runtime: 85694557887
+
+Processing graph: /git/graphsFromDVE/Remaining/bakery.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/bakery.6.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 58257484056
+Using 16 processesors.
+Runtime for algorithm: 23621198437
+Total runtime: 82210684383
+
+Processing graph: /git/graphsFromDVE/Remaining/bakery.6.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/bakery.6.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 59160226913
+Using 32 processesors.
+Runtime for algorithm: 36984375728
+Total runtime: 96475292989
+
