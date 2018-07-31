@@ -1,18 +1,15 @@
 package tarjanUF;
 
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 public class UFNode {
 
+    public static int workerCount;
+
     // Denotes a bitmask of threads currently processing it.
     // Limits number of threads to 64.
     // To overcome implement a concurrent bitset.
-    public AtomicLong workerSet;
-
-    public long workerSet() {
-        return workerSet.get();
-    }
+    public ConcurrentBitSet workerSet;
 
     // Parent in the union find tree.
     private volatile Integer parent;
@@ -71,7 +68,7 @@ public class UFNode {
         AtomicReferenceFieldUpdater.newUpdater(UFNode.class, ListStatus.class, "listStatus");
 
     public UFNode() {
-        this.workerSet = new AtomicLong(0L);
+        this.workerSet = new ConcurrentBitSet(UFNode.workerCount);
         UFNode.parentUpdater.set(this, 0);
         UFNode.listNextUpdater.set(this, 0);
         UFNode.ufStatusUpdater.set(this, UFStatus.UFlive);

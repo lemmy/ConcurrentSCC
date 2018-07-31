@@ -77,8 +77,9 @@ public class Main {
             e.printStackTrace();
         }
 
+        UFNode.workerCount = ConcurrentFastSCC.requiredProcessors(Integer.parseInt(args[1]));
         final UF unionfind = new UF(graph.N() + 1);
-        final Map<Integer, Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph, initNodes, unionfind, Integer.parseInt(args[1]));
+        final Map<Integer, Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph, initNodes, unionfind, UFNode.workerCount);
 
         printSCCs(sccs);
 

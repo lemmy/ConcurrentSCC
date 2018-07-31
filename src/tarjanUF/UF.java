@@ -78,7 +78,7 @@ public class UF {
     public void unite(int a, int b) {
         int ra, rb, la, lb, na, nb;
         int Q, R;
-        long workerQ, workerR;
+        ConcurrentBitSet workerQ, workerR;
 
         while (true) {
             ra = this.find(a);
@@ -135,14 +135,14 @@ public class UF {
         UFNode.parentUpdater.set(this.list.get(Q), R);
 
         // Merge the worker sets.
-        workerQ = this.list.get(Q).workerSet();
-        workerR = this.list.get(R).workerSet();
+        workerQ = this.list.get(Q).workerSet;
+        workerR = this.list.get(R).workerSet;
 
-        if ((workerQ | workerR) != workerR) {
-            this.list.get(R).workerSet.accumulateAndGet(workerQ, (x, y) -> x | y);
+        if (!ConcurrentBitSet.equals(ConcurrentBitSet.getOr(workerQ, workerR), workerR)) {
+            this.list.get(R).workerSet.or(workerQ);
             while (this.list.get(R).parent() != 0) {
                 R = this.find(R);
-                this.list.get(R).workerSet.accumulateAndGet(workerQ, (x, y) -> x | y);
+                this.list.get(R).workerSet.or(workerQ);
             }
         }
 
@@ -225,7 +225,7 @@ public class UF {
     /*************** Obtain the colour of node *************/
 
     public ClaimStatus makeClaim(int nodeId, int worker) {
-        long workerId = 1L << ((long) worker);
+        ConcurrentBitSet workerId = new ConcurrentBitSet(UFNode.workerCount);
         int rootId = this.find(nodeId);
         UFNode root = this.list.get(rootId);
 
@@ -233,14 +233,14 @@ public class UF {
             return ClaimStatus.claimDead;
         }
 
-        if ((root.workerSet() & workerId) != 0L) {
+        if (ConcurrentBitSet.getAnd(root.workerSet, workerId).isEmpty()) {
             return ClaimStatus.claimFound;
         }
 
-        root.workerSet.accumulateAndGet(workerId, (x, y) -> x | y);
+        root.workerSet.or(workerId);
         while (root.parent() != 0) {
             root = this.list.get(this.find(rootId));
-            root.workerSet.accumulateAndGet(workerId, (x, y) -> x | y);
+            root.workerSet.or(workerId);
         }
         return ClaimStatus.claimSuccess;
     }
