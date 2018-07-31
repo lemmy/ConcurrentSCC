@@ -226,6 +226,7 @@ public class UF {
 
     public ClaimStatus makeClaim(int nodeId, int worker) {
         ConcurrentBitSet workerId = new ConcurrentBitSet(UFNode.workerCount);
+        workerId.set(worker - 1, true);
         int rootId = this.find(nodeId);
         UFNode root = this.list.get(rootId);
 
@@ -233,7 +234,7 @@ public class UF {
             return ClaimStatus.claimDead;
         }
 
-        if (ConcurrentBitSet.getAnd(root.workerSet, workerId).isEmpty()) {
+        if (!ConcurrentBitSet.getAnd(root.workerSet, workerId).isEmpty()) {
             return ClaimStatus.claimFound;
         }
 
