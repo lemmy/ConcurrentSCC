@@ -2,7 +2,6 @@ package tarjanUF;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.util.Pair;
 
 import tarjanUF.UFNode.ListStatus;
 import tarjanUF.UFNode.UFStatus;
