@@ -217,16 +217,23 @@ public class UF {
 
     /*************** Cyclic List Operations *****************/
 
+    // inList returns true if node a is to be/has been removed from its list.
     public boolean inList(int a) {
         return (this.list.get(a).listStatus() != ListStatus.listTomb);
     }
 
+    // pickFromList returns the index of the first live element in the cyclic list
+    // of node state. returns -1 if the entire list is dead.
+    // Also if a node in the traversal of list is set listTomb then removes it to shorten
+    // the length of the list.
     public Pair<PickStatus, Integer> pickFromList(int state) {
         int a, b, c;
         int ret;
         ListStatus statusA, statusB;
         a = state;
 
+        // This loop will terminate as either the length of list is reduced in each iteration
+        // or an listLive element is returned from the list.
         while(true) {
             // Loop until state of `a` is not locked.
             while (true) {
@@ -241,6 +248,7 @@ public class UF {
 
             b = this.list.get(a).listNext();
             if (a == b || b == 0) {
+                // Mark the SCC to be dead if a is a listTomb and SCC is dead.
                 markDead(a);
                 return (new Pair<PickStatus, Integer>(PickStatus.pickDead, -1));
             }
@@ -255,25 +263,31 @@ public class UF {
                     break;
                 }
             }
-
+            // a and b are both listTomb here on.
             c = this.list.get(b).listNext();
 
+            // Shorten the list by removing b from the list.
             if (this.list.get(a).listNext() == b) {
-                // Shorten the list.
                 UFNode.listNextUpdater.set(this.list.get(a), c);
             }
 
+            // Now iterate for c to get a listLive element/shorten the list.
             a = c;
         }
     }
 
+    // removeFromList basically marks the "node a" to be a listTomb.
     public boolean removeFromList(int a) {
         ListStatus statusA;
 
+        // Loop until this worker changes the "node a" to be a listTomb
+        // or is changed by some other node.
         while (true) {
             statusA = this.list.get(a).listStatus();
             if (statusA == ListStatus.listLive) {
                 if (UFNode.listStatusUpdater.compareAndSet(this.list.get(a), ListStatus.listLive, ListStatus.listTomb)) {
+                    // Once "node a" is dead it can be visited globally so no other
+                    // DFS routine is started from this node.
                     this.visited.set(a - 1, true);
                     return true;
                 }
@@ -285,40 +299,55 @@ public class UF {
 
     /*************** Obtain the colour of node *************/
 
+    // makeClaim tries to make worker get a claim on nodeId.
     public ClaimStatus makeClaim(int nodeId, int worker) {
         ConcurrentBitSet workerId = new ConcurrentBitSet(UFNode.workerCount);
+        // Find the bitmask of the worker.
         workerId.set(worker - 1, true);
+        // root contains the latests workerSet of the tree.
         int rootId = this.find(nodeId);
         UFNode root = this.list.get(rootId);
 
+        // If root is dead then tree is dead and hence
+        // no claim is required.
         if (root.ufStatus() == UFStatus.UFdead) {
             return ClaimStatus.claimDead;
         }
 
+        // Check if the root is already present in the worker's tarjanStack.
+        // This can be checked by a simple "and".
         if (!ConcurrentBitSet.getAnd(root.workerSet, workerId).isEmpty()) {
             return ClaimStatus.claimFound;
         }
 
+        // Else worker makes a claim on the node.
         root.workerSet.or(workerId);
+        // Handle the race conditions, i.e., root of the tree might have changed.
         while (root.parent() != 0) {
             root = this.list.get(this.find(rootId));
             root.workerSet.or(workerId);
         }
+        // A successful claim is now obtained.
         return ClaimStatus.claimSuccess;
     }
 
     /************** Check whether(or Mark) node is(or as) dead **************/
 
+    // isDead returns true if the tree of "node a" is dead.
     public boolean isDead(int a) {
         int ra = this.find(a);
         return (this.list.get(ra).ufStatus() == UFStatus.UFdead);
     }
 
+    // markDead makes the "ndoe a" UFdead.
     public boolean markDead(int a) {
+        // Was this worker successful in making "node a" dead?
         boolean result = false;
         int ra = this.find(a);
         UFStatus stat = this.list.get(ra).ufStatus();
 
+        // Loop until this worker makes the node dead
+        // or some other worker marks it to be dead.
         while (stat != UFStatus.UFdead) {
             if (stat == UFStatus.UFlive) {
                 result = UFNode.ufStatusUpdater.compareAndSet(this.list.get(ra), UFStatus.UFlive, UFStatus.UFdead);
@@ -330,6 +359,8 @@ public class UF {
 
     /************** Locking Operations ***************/
 
+    // lockUF obtains a lock on the "node a" so that
+    // no other worker modifies the node.
     public boolean lockUF(int a) {
         if (this.list.get(a).ufStatus() == UFStatus.UFlive) {
             if (UFNode.ufStatusUpdater.compareAndSet(this.list.get(a), UFStatus.UFlive, UFStatus.UFlock)) {
@@ -337,16 +368,21 @@ public class UF {
                     return true;
                 }
 
+                // Undo compareAndSet
                 UFNode.ufStatusUpdater.set(this.list.get(a), UFStatus.UFlive);
             }
         }
         return false;
     }
 
+    // unlockUF make the "node a" live again atomically.
     public void unlockUF(int a) {
         UFNode.ufStatusUpdater.set(this.list.get(a), UFStatus.UFlive);
     }
 
+    // lockList obtains a lock on the list of "node a"
+    // and returns the first live element with the help of
+    // pickFromList. Returns -1 if the list is dead.
     public int lockList(int a) {
         PickStatus picked;
         int la;
@@ -364,6 +400,7 @@ public class UF {
         }
     }
 
+    // unlockList make the "node a"'s list live again atomically.
     public void unlockList(int la) {
         UFNode.listStatusUpdater.set(this.list.get(la), ListStatus.listLive);
     }
