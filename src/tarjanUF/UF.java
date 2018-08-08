@@ -42,12 +42,27 @@ public class UF {
         if (parent == 0) {
             return nodeId;
         }
-
-        int root = this.find(parent);
-        if (root != parent) {
-            UFNode.parentUpdater.set(node, root);
+        int grandparent = this.list.get(parent).parent();
+        if (grandparent == 0) {
+            return parent;
         }
-        return root;
+
+        while (grandparent != 0) {
+            UFNode.parentUpdater.set(node, grandparent);
+            nodeId = parent;
+            node = this.list.get(nodeId);
+            parent = node.parent();
+            if (parent == 0) {
+                return nodeId;
+            }
+            grandparent = this.list.get(parent).parent();
+            if (grandparent == 0) {
+                return parent;
+            }
+        }
+
+        assert grandparent == 0;
+        return parent;
     }
 
     public boolean sameSet(int a, int b) {
