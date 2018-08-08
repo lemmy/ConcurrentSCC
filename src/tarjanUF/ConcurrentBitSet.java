@@ -38,10 +38,12 @@ import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicLongArray;
 
 public class ConcurrentBitSet {
+    // We use an array of long. So number of bit per unit is 64.
     private static final int BITS_PER_UNIT = 64;
 
     private volatile AtomicLongArray units;
 
+    // Some constructors.
     public ConcurrentBitSet() {
         this(BITS_PER_UNIT);
     }
@@ -61,33 +63,51 @@ public class ConcurrentBitSet {
         units = array;
     }
 
+    // set changes the value at `bit` in the bitset to be `value`.
     public void set(int bit, boolean value) {
         if (value) {
+            // set changes the value at `bit` to be 1.
             set(bit);
         } else {
+            // clear changes the value at `bit` to be 0.
             clear(bit);
         }
     }
 
+    // set changes the value at `bit` to be 1.
     public void set(int bit) {
+        // The unit to which this bit belongs.
         final int unit = bit / BITS_PER_UNIT;
+        // The index of the bit in the unit.
         final int index = bit % BITS_PER_UNIT;
+        // A bitmask of the bit in the unit.
         final long mask = 1L << index;
 
+        // Run until the `unit`s value is it's old bitwised or with mask
         long old = units.get(unit);
         while (!units.compareAndSet(unit, old, old | mask)) {
             old = units.get(unit);
         }
     }
 
+    // compareAndSet atomically sets the value of `bit` to be `update` given
+    // earlier value is `expect`. Returns false if fails to update.
     public boolean compareAndSet(int bit, boolean expect, boolean update) {
+        // The unit to which this bit belongs.
         final int unit = bit / BITS_PER_UNIT;
+        // The index of the bit in the unit.
         final int index = bit % BITS_PER_UNIT;
+        // A bitmask of the bit in the unit.
         final long mask = 1L << index;
 
         long old = units.get(unit);
+        // If we need to make `bit` to be 1 then we should do a bitwise or
+        // else we should do a bitwise and with the negation of mask.
         long upd = (update) ? (old | mask) : (old & ~mask);
+        // This is used to check if curent value is same as the old one.
         boolean cur = 0L != (old & mask);
+        // Interate until new value at `bit` is `update` given that update operation
+        // is successful.
         while (cur == expect && !units.compareAndSet(unit, old, upd)) {
             old = units.get(unit);
             upd = (update) ? (old | mask) : (old & ~mask);
@@ -96,31 +116,43 @@ public class ConcurrentBitSet {
         return cur == expect;
     }
 
+    // clear changes the value at `bit` to be 1.
     public void clear(int bit) {
-        int unit = bit / BITS_PER_UNIT;
-        int index = bit % BITS_PER_UNIT;
-        long mask = 1L << index;
+        // The unit to which this bit belongs.
+        final int unit = bit / BITS_PER_UNIT;
+        // The index of the bit in the unit.
+        final int index = bit % BITS_PER_UNIT;
+        // A bitmask of the bit in the unit.
+        final long mask = 1L << index;
 
+        // Iterate until the new value is cleared.
         long old = units.get(unit);
         while (!units.compareAndSet(unit, old, old & ~mask)) {
             old = units.get(unit);
         }
     }
 
+    // clear is used to make the bitset to be 0s.
     public void clear() {
         for (int i = 0; i < units.length(); i++) {
             units.set(i, 0);
         }
     }
 
+    // get returns the value at `bit`.
     public boolean get(int bit) {
+        // The unit to which this bit belongs.
         final int unit = bit / BITS_PER_UNIT;
+        // The index of the bit in the unit.
         final int index = bit % BITS_PER_UNIT;
+        // A bitmask of the bit in the unit.
         final long mask = 1L << index;
 
         return 0 != (units.get(unit) & mask);
     }
 
+    // and changes the value of this bitset to be
+    // this `bitwise and` with
     public void and(ConcurrentBitSet with) {
         if (this == with) {
             return;
@@ -136,6 +168,8 @@ public class ConcurrentBitSet {
         }
     }
 
+    // or changes the value of this bitset to be
+    // this `bitwise or` with
     public void or(ConcurrentBitSet with) {
         if (this == with) {
             return;
@@ -151,6 +185,8 @@ public class ConcurrentBitSet {
         }
     }
 
+    // getOr returns a new instance with value being bitwise or of A and B.
+    // As static makes no changes to any instance.
     public static ConcurrentBitSet getOr(ConcurrentBitSet A, ConcurrentBitSet B) {
         assert A.units.length() == B.units.length();
         final int len = A.units.length();
@@ -163,6 +199,8 @@ public class ConcurrentBitSet {
         return new ConcurrentBitSet(C);
     }
 
+    // getAnd returns a new instance with value being bitwise and of A and B.
+    // As static makes no changes to any instance.
     public static ConcurrentBitSet getAnd(ConcurrentBitSet A, ConcurrentBitSet B) {
         assert A.units.length() == B.units.length();
         final int len = A.units.length();
@@ -175,6 +213,7 @@ public class ConcurrentBitSet {
         return new ConcurrentBitSet(C);
     }
 
+    // equals checks if the two bitsets A and B are equal.
     public static boolean equals(ConcurrentBitSet A, ConcurrentBitSet B) {
         assert A.units.length() == B.units.length();
         final int len = A.units.length();
@@ -188,6 +227,7 @@ public class ConcurrentBitSet {
         return true;
     }
 
+    // isEmpty checks if the bitset is all zeros or not.
     public boolean isEmpty() {
         final int len = this.units.length();
 
