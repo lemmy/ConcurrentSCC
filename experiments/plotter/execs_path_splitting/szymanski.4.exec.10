@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/szymanski.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/szymanski.4.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7977513811
+Using 1 processesors.
+Runtime for algorithm: 6932584591
+Total runtime: 15029895170
+
+Processing graph: /git/graphsFromDVE/Remaining/szymanski.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/szymanski.4.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 8116927024
+Using 2 processesors.
+Runtime for algorithm: 4114412367
+Total runtime: 12350129149
+
+Processing graph: /git/graphsFromDVE/Remaining/szymanski.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/szymanski.4.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7902820240
+Using 4 processesors.
+Runtime for algorithm: 2559771444
+Total runtime: 10584104176
+
+Processing graph: /git/graphsFromDVE/Remaining/szymanski.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/szymanski.4.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7955161567
+Using 8 processesors.
+Runtime for algorithm: 1561990135
+Total runtime: 9637756995
+
+Processing graph: /git/graphsFromDVE/Remaining/szymanski.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/szymanski.4.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 7889600946
+Using 16 processesors.
+Runtime for algorithm: 6653617198
+Total runtime: 14664530793
+
+Processing graph: /git/graphsFromDVE/Remaining/szymanski.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/szymanski.4.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 8205093800
+Using 32 processesors.
+Runtime for algorithm: 1249884863
+Total runtime: 9577938558
+

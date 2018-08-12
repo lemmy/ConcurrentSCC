@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/elevator2.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator2.3.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 59149868349
+Using 1 processesors.
+Runtime for algorithm: 46079216067
+Total runtime: 105568977551
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator2.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator2.3.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 63636117147
+Using 2 processesors.
+Runtime for algorithm: 30166293068
+Total runtime: 94164693246
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator2.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator2.3.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 60058120378
+Using 4 processesors.
+Runtime for algorithm: 25256654948
+Total runtime: 85661781205
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator2.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator2.3.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 60758362034
+Using 8 processesors.
+Runtime for algorithm: 18525464654
+Total runtime: 79627152461
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator2.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator2.3.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 60704696908
+Using 16 processesors.
+Runtime for algorithm: 17111778906
+Total runtime: 78162643145
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator2.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator2.3.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 60806218690
+Using 32 processesors.
+Runtime for algorithm: 28171010657
+Total runtime: 89318527777
+

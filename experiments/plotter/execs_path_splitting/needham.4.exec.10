@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/needham.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/needham.4.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28379082967
+Using 1 processesors.
+Runtime for algorithm: 10178198073
+Total runtime: 45207756743
+
+Processing graph: /git/graphsFromDVE/Remaining/needham.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/needham.4.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28119739222
+Using 2 processesors.
+Runtime for algorithm: 6621900395
+Total runtime: 41311984541
+
+Processing graph: /git/graphsFromDVE/Remaining/needham.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/needham.4.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28155409171
+Using 4 processesors.
+Runtime for algorithm: 3228020153
+Total runtime: 37824663373
+
+Processing graph: /git/graphsFromDVE/Remaining/needham.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/needham.4.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28068714381
+Using 8 processesors.
+Runtime for algorithm: 1796473353
+Total runtime: 36377213942
+
+Processing graph: /git/graphsFromDVE/Remaining/needham.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/needham.4.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 27965062778
+Using 16 processesors.
+Runtime for algorithm: 1277826429
+Total runtime: 35490349213
+
+Processing graph: /git/graphsFromDVE/Remaining/needham.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/needham.4.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 28145961478
+Using 32 processesors.
+Runtime for algorithm: 769221595
+Total runtime: 35283276710
+

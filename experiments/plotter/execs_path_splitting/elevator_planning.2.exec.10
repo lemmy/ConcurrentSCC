@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 106734473032
+Using 1 processesors.
+Runtime for algorithm: 80112555478
+Total runtime: 187349978139
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 107013654046
+Using 2 processesors.
+Runtime for algorithm: 55551169210
+Total runtime: 163068118848
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 103840474469
+Using 4 processesors.
+Runtime for algorithm: 42591326261
+Total runtime: 146943580913
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 107954253243
+Using 8 processesors.
+Runtime for algorithm: 38436413839
+Total runtime: 146925582530
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 104933869289
+Using 16 processesors.
+Runtime for algorithm: 37127383421
+Total runtime: 142562173532
+
+Processing graph: /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/elevator_planning.2.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 105533629995
+Using 32 processesors.
+Runtime for algorithm: 32834938898
+Total runtime: 138871494680
+

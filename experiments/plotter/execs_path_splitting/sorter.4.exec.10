@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/sorter.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/sorter.4.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57730439044
+Using 1 processesors.
+Runtime for algorithm: 35235939604
+Total runtime: 94230573634
+
+Processing graph: /git/graphsFromDVE/Remaining/sorter.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/sorter.4.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 56981259321
+Using 2 processesors.
+Runtime for algorithm: 25428834416
+Total runtime: 83668757280
+
+Processing graph: /git/graphsFromDVE/Remaining/sorter.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/sorter.4.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 47472798576
+Using 4 processesors.
+Runtime for algorithm: 19243685603
+Total runtime: 79354559201
+
+Processing graph: /git/graphsFromDVE/Remaining/sorter.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/sorter.4.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57834728992
+Using 8 processesors.
+Runtime for algorithm: 16418181708
+Total runtime: 75514470013
+
+Processing graph: /git/graphsFromDVE/Remaining/sorter.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/sorter.4.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 59042552672
+Using 16 processesors.
+Runtime for algorithm: 15532423593
+Total runtime: 75853816572
+
+Processing graph: /git/graphsFromDVE/Remaining/sorter.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/sorter.4.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 57219212317
+Using 32 processesors.
+Runtime for algorithm: 16050071842
+Total runtime: 74538785600
+

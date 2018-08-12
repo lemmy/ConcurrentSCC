@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/adding.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/adding.3.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3157497735
+Using 1 processesors.
+Runtime for algorithm: 2737890797
+Total runtime: 6124169190
+
+Processing graph: /git/graphsFromDVE/Remaining/adding.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/adding.3.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3174435700
+Using 2 processesors.
+Runtime for algorithm: 1413383584
+Total runtime: 4812769457
+
+Processing graph: /git/graphsFromDVE/Remaining/adding.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/adding.3.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3166838160
+Using 4 processesors.
+Runtime for algorithm: 1728049028
+Total runtime: 5128418976
+
+Processing graph: /git/graphsFromDVE/Remaining/adding.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/adding.3.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3120254407
+Using 8 processesors.
+Runtime for algorithm: 1598877995
+Total runtime: 4947309379
+
+Processing graph: /git/graphsFromDVE/Remaining/adding.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/adding.3.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3107412995
+Using 16 processesors.
+Runtime for algorithm: 1997698480
+Total runtime: 5331701173
+
+Processing graph: /git/graphsFromDVE/Remaining/adding.3.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/adding.3.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 3118727410
+Using 32 processesors.
+Runtime for algorithm: 2606723946
+Total runtime: 5825195440
+

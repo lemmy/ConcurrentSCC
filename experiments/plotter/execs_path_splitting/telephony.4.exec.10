@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/telephony.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/telephony.4.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 87861269804
+Using 1 processesors.
+Runtime for algorithm: 69327212780
+Total runtime: 159919944974
+
+Processing graph: /git/graphsFromDVE/Remaining/telephony.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/telephony.4.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 87986191414
+Using 2 processesors.
+Runtime for algorithm: 53939907700
+Total runtime: 145089016802
+
+Processing graph: /git/graphsFromDVE/Remaining/telephony.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/telephony.4.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 86664615425
+Using 4 processesors.
+Runtime for algorithm: 45603565300
+Total runtime: 135170851826
+
+Processing graph: /git/graphsFromDVE/Remaining/telephony.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/telephony.4.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 88735438112
+Using 8 processesors.
+Runtime for algorithm: 39177534079
+Total runtime: 130852285076
+
+Processing graph: /git/graphsFromDVE/Remaining/telephony.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/telephony.4.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 88379366589
+Using 16 processesors.
+Runtime for algorithm: 32367284708
+Total runtime: 123539479495
+
+Processing graph: /git/graphsFromDVE/Remaining/telephony.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/telephony.4.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 87767902152
+Using 32 processesors.
+Runtime for algorithm: 34785900143
+Total runtime: 125621770076
+

@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/cambridge.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/cambridge.7.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 80093691406
+Using 1 processesors.
+Runtime for algorithm: 62441725875
+Total runtime: 143833897229
+
+Processing graph: /git/graphsFromDVE/Remaining/cambridge.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/cambridge.7.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 83876558775
+Using 2 processesors.
+Runtime for algorithm: 38066090780
+Total runtime: 122475762446
+
+Processing graph: /git/graphsFromDVE/Remaining/cambridge.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/cambridge.7.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 81468418247
+Using 4 processesors.
+Runtime for algorithm: 34707105189
+Total runtime: 117549179279
+
+Processing graph: /git/graphsFromDVE/Remaining/cambridge.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/cambridge.7.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 83475440454
+Using 8 processesors.
+Runtime for algorithm: 28752037716
+Total runtime: 113537904877
+
+Processing graph: /git/graphsFromDVE/Remaining/cambridge.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/cambridge.7.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 83201253681
+Using 16 processesors.
+Runtime for algorithm: 27407137002
+Total runtime: 111960452466
+
+Processing graph: /git/graphsFromDVE/Remaining/cambridge.7.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/cambridge.7.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 80160149749
+Using 32 processesors.
+Runtime for algorithm: 26059930467
+Total runtime: 107505909240
+

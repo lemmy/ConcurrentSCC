@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13577478171
+Using 1 processesors.
+Runtime for algorithm: 6195012756
+Total runtime: 19860080898
+
+Processing graph: /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13218051586
+Using 2 processesors.
+Runtime for algorithm: 3786129011
+Total runtime: 17092013424
+
+Processing graph: /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13426321351
+Using 4 processesors.
+Runtime for algorithm: 2193824489
+Total runtime: 15706777179
+
+Processing graph: /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13313975860
+Using 8 processesors.
+Runtime for algorithm: 1706929685
+Total runtime: 15106957912
+
+Processing graph: /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13210012229
+Using 16 processesors.
+Runtime for algorithm: 1215190788
+Total runtime: 14518129087
+
+Processing graph: /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/schedule_world.2.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 13347553973
+Using 32 processesors.
+Runtime for algorithm: 1345108941
+Total runtime: 14779231662
+

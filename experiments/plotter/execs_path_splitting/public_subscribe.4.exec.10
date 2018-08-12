@@ -1,0 +1,42 @@
+Processing graph: /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt.init with 1 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5886307589
+Using 1 processesors.
+Runtime for algorithm: 4686671185
+Total runtime: 10671954512
+
+Processing graph: /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt.init with 2 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6058171565
+Using 2 processesors.
+Runtime for algorithm: 2813509736
+Total runtime: 8971809606
+
+Processing graph: /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt.init with 4 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5970831273
+Using 4 processesors.
+Runtime for algorithm: 1807993842
+Total runtime: 7878407947
+
+Processing graph: /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt.init with 8 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5980453270
+Using 8 processesors.
+Runtime for algorithm: 1243762336
+Total runtime: 7323083614
+
+Processing graph: /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt.init with 16 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 5987813972
+Using 16 processesors.
+Runtime for algorithm: 875032960
+Total runtime: 6962851916
+
+Processing graph: /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt starting with initial nodes from /git/graphsFromDVE/Remaining/public_subscribe.4.dve.txt.init with 32 threads.
+Runtimes are in nanoseconds.
+Runtime for input: 6006786775
+Using 32 processesors.
+Runtime for algorithm: 1025890731
+Total runtime: 7134222625
+
