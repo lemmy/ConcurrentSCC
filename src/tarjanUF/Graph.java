@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public class Graph {
 
-    // A HahsMap is required to access the GraphNode object given the unique id.
+    // A HashMap is required to access the GraphNode object given the unique id.
     // This Map is precisely the set of nodes in the graph.
     private final Map<Integer, GraphNode> nodePtrTable;
     // Name associated with the graph.

@@ -8,6 +8,8 @@ public class UFNode {
     public static int workerCount;
 
     // workerSet is the bitmask of workers currently have this node on their tarjanStack.
+    // A concurrent bitset is required to counter the race conditions. If an non atomic
+    // operation is done two workers might read the same value and output will be undefined.
     public ConcurrentBitSet workerSet;
 
     // parent denotes the parent of a node in the union find tree.
