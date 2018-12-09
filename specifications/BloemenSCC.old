@@ -8,6 +8,7 @@ ASSUME Edges \subseteq Nodes \X Nodes
 OutgoingEdges(node) ==
   { e \in Edges : e[1] = node }
 
+(*******
 --algorithm BloemenSCC {
   variables ufStatus = [node \in Nodes |-> "uf-live"],
             parent = [node \in Nodes |-> node],
@@ -22,6 +23,7 @@ OutgoingEdges(node) ==
       LET RECURSIVE PF(_)
           PF(x) == IF parent[x] = x THEN x
                                     ELSE PF(parent[x])
+      IN PF(node)
     sameSet(x, y) == find(x) = find(y)
 
     isDead(node) == ufStatus[find(node)] = "uf-dead"
@@ -181,6 +183,7 @@ OutgoingEdges(node) ==
     };
   }
 }
+******)
 
 \* BEGIN TRANSLATION
 CONSTANT defaultInitValue

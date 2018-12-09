@@ -23,6 +23,7 @@ OutgoingEdges(node) ==
       LET RECURSIVE PF(_)
           PF(x) == IF parent[x] = x THEN x
                                     ELSE PF(parent[x])
+      IN PF(node)
     sameSet(x, y) == find(x) = find(y)
 
     isDead(node) == ufStatus[find(node)] = "uf-dead"
@@ -196,6 +197,7 @@ find(node) ==
   LET RECURSIVE PF(_)
       PF(x) == IF parent[x] = x THEN x
                                 ELSE PF(parent[x])
+  IN PF(node)
 sameSet(x, y) == find(x) = find(y)
 
 isDead(node) == ufStatus[find(node)] = "uf-dead"
