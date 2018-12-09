@@ -194,7 +194,7 @@ statement
   }
  ***************************************************************************)
 \* BEGIN TRANSLATION
-VARIABLES index, edgesUnexplored, nodeStatus, nodeLowlink, nodeIndex, SCCset,
+VARIABLES index, edgesUnexplored, nodeStatus, nodeLowlink, nodeIndex, SCCset, 
           pc
 
 (* define statement *)
@@ -202,7 +202,7 @@ unseenNodes == {n \in Nodes : nodeStatus[n] = "unseen"}
 
 VARIABLES controlStack, tarjanStack, newSCC, node, w, child
 
-vars == << index, edgesUnexplored, nodeStatus, nodeLowlink, nodeIndex, SCCset,
+vars == << index, edgesUnexplored, nodeStatus, nodeLowlink, nodeIndex, SCCset, 
            pc, controlStack, tarjanStack, newSCC, node, w, child >>
 
 ProcSet == (Threads)
@@ -234,7 +234,7 @@ a(self) == /\ pc[self] = "a"
                            /\ tarjanStack' = [tarjanStack EXCEPT ![self] = <<startNode>> \o tarjanStack[self]]
                       /\ pc' = [pc EXCEPT ![self] = "a"]
                  ELSE /\ pc' = [pc EXCEPT ![self] = "b"]
-                      /\ UNCHANGED << index, nodeStatus, nodeLowlink,
+                      /\ UNCHANGED << index, nodeStatus, nodeLowlink, 
                                       nodeIndex, controlStack, tarjanStack >>
            /\ UNCHANGED << edgesUnexplored, SCCset, newSCC, node, w, child >>
 
@@ -259,9 +259,9 @@ b(self) == /\ pc[self] = "b"
                                                        /\ pc' = [pc EXCEPT ![self] = "b"]
                                                   ELSE /\ pc' = [pc EXCEPT ![self] = "e"]
                                                        /\ UNCHANGED nodeLowlink
-                                            /\ UNCHANGED << index, nodeStatus,
-                                                            nodeIndex,
-                                                            controlStack,
+                                            /\ UNCHANGED << index, nodeStatus, 
+                                                            nodeIndex, 
+                                                            controlStack, 
                                                             tarjanStack >>
                             ELSE /\ controlStack' = [controlStack EXCEPT ![self] = Tail(controlStack[self])]
                                  /\ IF controlStack'[self] # << >>
@@ -271,20 +271,20 @@ b(self) == /\ pc[self] = "b"
                                  /\ IF nodeLowlink'[node'[self]] = nodeIndex[node'[self]]
                                        THEN /\ pc' = [pc EXCEPT ![self] = "c"]
                                        ELSE /\ pc' = [pc EXCEPT ![self] = "b"]
-                                 /\ UNCHANGED << index, edgesUnexplored,
-                                                 nodeStatus, nodeIndex,
+                                 /\ UNCHANGED << index, edgesUnexplored, 
+                                                 nodeStatus, nodeIndex, 
                                                  tarjanStack, child >>
                  ELSE /\ pc' = [pc EXCEPT ![self] = "Done"]
-                      /\ UNCHANGED << index, edgesUnexplored, nodeStatus,
-                                      nodeLowlink, nodeIndex, controlStack,
+                      /\ UNCHANGED << index, edgesUnexplored, nodeStatus, 
+                                      nodeLowlink, nodeIndex, controlStack, 
                                       tarjanStack, node, child >>
            /\ UNCHANGED << SCCset, newSCC, w >>
 
 e(self) == /\ pc[self] = "e"
            /\ TRUE
            /\ pc' = [pc EXCEPT ![self] = "b"]
-           /\ UNCHANGED << index, edgesUnexplored, nodeStatus, nodeLowlink,
-                           nodeIndex, SCCset, controlStack, tarjanStack,
+           /\ UNCHANGED << index, edgesUnexplored, nodeStatus, nodeLowlink, 
+                           nodeIndex, SCCset, controlStack, tarjanStack, 
                            newSCC, node, w, child >>
 
 c(self) == /\ pc[self] = "c"
@@ -295,14 +295,14 @@ c(self) == /\ pc[self] = "c"
            /\ IF w'[self] # node[self]
                  THEN /\ pc' = [pc EXCEPT ![self] = "c"]
                  ELSE /\ pc' = [pc EXCEPT ![self] = "d"]
-           /\ UNCHANGED << index, edgesUnexplored, nodeLowlink, nodeIndex,
+           /\ UNCHANGED << index, edgesUnexplored, nodeLowlink, nodeIndex, 
                            SCCset, controlStack, node, child >>
 
 d(self) == /\ pc[self] = "d"
            /\ SCCset' = (SCCset \cup {newSCC[self]})
            /\ pc' = [pc EXCEPT ![self] = "b"]
-           /\ UNCHANGED << index, edgesUnexplored, nodeStatus, nodeLowlink,
-                           nodeIndex, controlStack, tarjanStack, newSCC, node,
+           /\ UNCHANGED << index, edgesUnexplored, nodeStatus, nodeLowlink, 
+                           nodeIndex, controlStack, tarjanStack, newSCC, node, 
                            w, child >>
 
 T(self) == a(self) \/ b(self) \/ e(self) \/ c(self) \/ d(self)
