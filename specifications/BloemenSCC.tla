@@ -459,11 +459,11 @@ SCCsFromAlgo == { ufSet(node) : node \in Nodes }
 \* SCCs by definition
 
 OutgoingNodes(S) ==
-  UNION { { e[2] \in OutgoingEdges(node) : e[2] \notin S } : node \in S }
+  UNION { { y \in Nodes \ S : << x, y >> \in Edges } : x \in S }
 
 Reachable(x, y) ==
   LET RECURSIVE RF(_)
-      RF(S) == LET NS == OutgoingEdgesSet(S)
+      RF(S) == LET NS == OutgoingNodes(S)
                IN IF y \in S THEN TRUE
                              ELSE IF NS = {} THEN FALSE
                                               ELSE RF(S \cup NS)
