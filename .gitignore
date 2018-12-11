@@ -4,3 +4,5 @@ doc/*.log
 *.class
 err
 sccs
+specifications/states
+specifications/*.out

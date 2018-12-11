@@ -98,6 +98,7 @@ OutgoingEdges(node) ==
       with (node \in undeadNodes) {
         v := node;
       };
+      makeClaim(v);
 
       label2:
       if (backtrack = FALSE) {
@@ -107,7 +108,7 @@ OutgoingEdges(node) ==
       label3:
       if (backtrack = FALSE) {
         label4:
-        if (Len(recursionStack) # 0 /\ sameSet(Head(recursionStack), v)) {
+        if (Len(recursionStack) # 0 /\ sameSet(Head(recursionStack)[2], v)) {
           goto label6;
         } else {
           \* pickFromList
@@ -153,7 +154,7 @@ OutgoingEdges(node) ==
           } else {
             \* claim-found
             label11:
-            if (sameSet(w, v) # FALSE) {
+            if (sameSet(w, v) = FALSE) {
               root := Head(rootStack);
               pop(rootStack);
               call unite(Head(rootStack), root);
@@ -266,13 +267,21 @@ label1(self) == /\ pc[self] = "label1"
                 /\ IF undeadNodes # {}
                       THEN /\ \E node \in undeadNodes:
                                 v' = [v EXCEPT ![self] = node]
+                           /\ root' = [root EXCEPT ![self] = find(v'[self])]
+                           /\ IF isDead(root'[self])
+                                 THEN /\ claimed' = [claimed EXCEPT ![self] = "claim-dead"]
+                                      /\ UNCHANGED workerSet
+                                 ELSE /\ IF self \in workerSet[root'[self]]
+                                            THEN /\ claimed' = [claimed EXCEPT ![self] = "claim-found"]
+                                                 /\ UNCHANGED workerSet
+                                            ELSE /\ workerSet' = [workerSet EXCEPT ![root'[self]] = workerSet[root'[self]] \cup {self}]
+                                                 /\ claimed' = [claimed EXCEPT ![self] = "claim-success"]
                            /\ pc' = [pc EXCEPT ![self] = "label2"]
                       ELSE /\ pc' = [pc EXCEPT ![self] = "Done"]
-                           /\ v' = v
-                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                stack, a, b, ra, rb, recursionStack, rootStack,
-                                backtrack, w, vp, root, edgesUnexplored,
-                                claimed >>
+                           /\ UNCHANGED << workerSet, v, root, claimed >>
+                /\ UNCHANGED << ufStatus, parent, liveElements, stack, a, b,
+                                ra, rb, recursionStack, rootStack, backtrack,
+                                w, vp, edgesUnexplored >>
 
 label2(self) == /\ pc[self] = "label2"
                 /\ IF backtrack[self] = FALSE
@@ -294,7 +303,7 @@ label3(self) == /\ pc[self] = "label3"
                                 claimed >>
 
 label4(self) == /\ pc[self] = "label4"
-                /\ IF Len(recursionStack[self]) # 0 /\ sameSet(Head(recursionStack[self]), v[self])
+                /\ IF Len(recursionStack[self]) # 0 /\ sameSet(Head(recursionStack[self])[2], v[self])
                       THEN /\ pc' = [pc EXCEPT ![self] = "label6"]
                            /\ UNCHANGED << ufStatus, vp, root >>
                       ELSE /\ root' = [root EXCEPT ![self] = find(v[self])]
@@ -383,7 +392,7 @@ label14(self) == /\ pc[self] = "label14"
                                  edgesUnexplored, claimed >>
 
 label11(self) == /\ pc[self] = "label11"
-                 /\ IF sameSet(w[self], v[self]) # FALSE
+                 /\ IF sameSet(w[self], v[self]) = FALSE
                        THEN /\ root' = [root EXCEPT ![self] = Head(rootStack[self])]
                             /\ rootStack' = [rootStack EXCEPT ![self] = Tail(rootStack[self])]
                             /\ /\ a' = [a EXCEPT ![self] = Head(rootStack'[self])]
