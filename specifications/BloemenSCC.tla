@@ -16,9 +16,6 @@ OutgoingEdges(node) ==
             liveElements = [node \in Nodes |-> {node}]
 
   define {
-    undeadNodes == { node \in Nodes : ufStatus[node] # "uf-dead" }
-    liveNodes   == { node \in Nodes : ufStatus[node] = "uf-live" }
-
     find(node) ==
       LET RECURSIVE PF(_)
           PF(x) == IF parent[x] = x THEN x
@@ -28,6 +25,8 @@ OutgoingEdges(node) ==
 
     isDead(node) == ufStatus[find(node)] = "uf-dead"
     ufSet(x) == { node \in Nodes : sameSet(node, x) }
+
+    undeadNodes == { node \in Nodes : ufStatus[find(node)] # "uf-dead" }
   }
 
   macro push(x, stack) {
@@ -191,9 +190,6 @@ CONSTANT defaultInitValue
 VARIABLES ufStatus, parent, workerSet, liveElements, pc, stack
 
 (* define statement *)
-undeadNodes == { node \in Nodes : ufStatus[node] # "uf-dead" }
-liveNodes   == { node \in Nodes : ufStatus[node] = "uf-live" }
-
 find(node) ==
   LET RECURSIVE PF(_)
       PF(x) == IF parent[x] = x THEN x
@@ -204,11 +200,13 @@ sameSet(x, y) == find(x) = find(y)
 isDead(node) == ufStatus[find(node)] = "uf-dead"
 ufSet(x) == { node \in Nodes : sameSet(node, x) }
 
-VARIABLES a, b, ra, rb, recursionStack, rootStack, backtrack, v, w, vp, root,
+undeadNodes == { node \in Nodes : ufStatus[find(node)] # "uf-dead" }
+
+VARIABLES a, b, ra, rb, recursionStack, rootStack, backtrack, v, w, vp, root, 
           edgesUnexplored, claimed
 
-vars == << ufStatus, parent, workerSet, liveElements, pc, stack, a, b, ra, rb,
-           recursionStack, rootStack, backtrack, v, w, vp, root,
+vars == << ufStatus, parent, workerSet, liveElements, pc, stack, a, b, ra, rb, 
+           recursionStack, rootStack, backtrack, v, w, vp, root, 
            edgesUnexplored, claimed >>
 
 ProcSet == (Threads)
@@ -246,8 +244,8 @@ label13(self) == /\ pc[self] = "label13"
                        ELSE /\ TRUE
                             /\ UNCHANGED << parent, workerSet, liveElements >>
                  /\ pc' = [pc EXCEPT ![self] = "label15"]
-                 /\ UNCHANGED << ufStatus, stack, a, b, recursionStack,
-                                 rootStack, backtrack, v, w, vp, root,
+                 /\ UNCHANGED << ufStatus, stack, a, b, recursionStack, 
+                                 rootStack, backtrack, v, w, vp, root, 
                                  edgesUnexplored, claimed >>
 
 label15(self) == /\ pc[self] = "label15"
@@ -257,8 +255,8 @@ label15(self) == /\ pc[self] = "label15"
                  /\ a' = [a EXCEPT ![self] = Head(stack[self]).a]
                  /\ b' = [b EXCEPT ![self] = Head(stack[self]).b]
                  /\ stack' = [stack EXCEPT ![self] = Tail(stack[self])]
-                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                 recursionStack, rootStack, backtrack, v, w,
+                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                 recursionStack, rootStack, backtrack, v, w, 
                                  vp, root, edgesUnexplored, claimed >>
 
 unite(self) == label13(self) \/ label15(self)
@@ -279,8 +277,8 @@ label1(self) == /\ pc[self] = "label1"
                            /\ pc' = [pc EXCEPT ![self] = "label2"]
                       ELSE /\ pc' = [pc EXCEPT ![self] = "Done"]
                            /\ UNCHANGED << workerSet, v, root, claimed >>
-                /\ UNCHANGED << ufStatus, parent, liveElements, stack, a, b,
-                                ra, rb, recursionStack, rootStack, backtrack,
+                /\ UNCHANGED << ufStatus, parent, liveElements, stack, a, b, 
+                                ra, rb, recursionStack, rootStack, backtrack, 
                                 w, vp, edgesUnexplored >>
 
 label2(self) == /\ pc[self] = "label2"
@@ -289,17 +287,17 @@ label2(self) == /\ pc[self] = "label2"
                       ELSE /\ TRUE
                            /\ UNCHANGED rootStack
                 /\ pc' = [pc EXCEPT ![self] = "label3"]
-                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                stack, a, b, ra, rb, recursionStack, backtrack,
+                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                stack, a, b, ra, rb, recursionStack, backtrack, 
                                 v, w, vp, root, edgesUnexplored, claimed >>
 
 label3(self) == /\ pc[self] = "label3"
                 /\ IF backtrack[self] = FALSE
                       THEN /\ pc' = [pc EXCEPT ![self] = "label4"]
                       ELSE /\ pc' = [pc EXCEPT ![self] = "label5"]
-                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                stack, a, b, ra, rb, recursionStack, rootStack,
-                                backtrack, v, w, vp, root, edgesUnexplored,
+                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                stack, a, b, ra, rb, recursionStack, rootStack, 
+                                backtrack, v, w, vp, root, edgesUnexplored, 
                                 claimed >>
 
 label4(self) == /\ pc[self] = "label4"
@@ -316,8 +314,8 @@ label4(self) == /\ pc[self] = "label4"
                            /\ IF isDead(v[self])
                                  THEN /\ pc' = [pc EXCEPT ![self] = "label6"]
                                  ELSE /\ pc' = [pc EXCEPT ![self] = "label8"]
-                /\ UNCHANGED << parent, workerSet, liveElements, stack, a, b,
-                                ra, rb, recursionStack, rootStack, backtrack,
+                /\ UNCHANGED << parent, workerSet, liveElements, stack, a, b, 
+                                ra, rb, recursionStack, rootStack, backtrack, 
                                 v, w, edgesUnexplored, claimed >>
 
 label5(self) == /\ pc[self] = "label5"
@@ -326,8 +324,8 @@ label5(self) == /\ pc[self] = "label5"
                 /\ recursionStack' = [recursionStack EXCEPT ![self] = Tail(recursionStack[self])]
                 /\ backtrack' = [backtrack EXCEPT ![self] = FALSE]
                 /\ pc' = [pc EXCEPT ![self] = "label7"]
-                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                stack, a, b, ra, rb, rootStack, w, root,
+                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                stack, a, b, ra, rb, rootStack, w, root, 
                                 edgesUnexplored, claimed >>
 
 label7(self) == /\ pc[self] = "label7"
@@ -340,8 +338,8 @@ label7(self) == /\ pc[self] = "label7"
                            /\ pc' = [pc EXCEPT ![self] = "label3"]
                       ELSE /\ pc' = [pc EXCEPT ![self] = "label8"]
                            /\ UNCHANGED << liveElements, root >>
-                /\ UNCHANGED << ufStatus, parent, workerSet, stack, a, b, ra,
-                                rb, recursionStack, rootStack, backtrack, v, w,
+                /\ UNCHANGED << ufStatus, parent, workerSet, stack, a, b, ra, 
+                                rb, recursionStack, rootStack, backtrack, v, w, 
                                 vp, edgesUnexplored, claimed >>
 
 label8(self) == /\ pc[self] = "label8"
@@ -352,14 +350,14 @@ label8(self) == /\ pc[self] = "label8"
                            /\ pc' = [pc EXCEPT ![self] = "label10"]
                       ELSE /\ pc' = [pc EXCEPT ![self] = "label12"]
                            /\ UNCHANGED << w, edgesUnexplored >>
-                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                stack, a, b, ra, rb, recursionStack, rootStack,
+                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                stack, a, b, ra, rb, recursionStack, rootStack, 
                                 backtrack, v, vp, root, claimed >>
 
 label10(self) == /\ pc[self] = "label10"
                  /\ IF w[self] = vp[self]
                        THEN /\ pc' = [pc EXCEPT ![self] = "label8"]
-                            /\ UNCHANGED << workerSet, recursionStack, v, root,
+                            /\ UNCHANGED << workerSet, recursionStack, v, root, 
                                             claimed >>
                        ELSE /\ root' = [root EXCEPT ![self] = find(w[self])]
                             /\ IF isDead(root'[self])
@@ -378,17 +376,17 @@ label10(self) == /\ pc[self] = "label10"
                                                   /\ v' = [v EXCEPT ![self] = w[self]]
                                                   /\ pc' = [pc EXCEPT ![self] = "label2"]
                                              ELSE /\ pc' = [pc EXCEPT ![self] = "label11"]
-                                                  /\ UNCHANGED << recursionStack,
+                                                  /\ UNCHANGED << recursionStack, 
                                                                   v >>
-                 /\ UNCHANGED << ufStatus, parent, liveElements, stack, a, b,
-                                 ra, rb, rootStack, backtrack, w, vp,
+                 /\ UNCHANGED << ufStatus, parent, liveElements, stack, a, b, 
+                                 ra, rb, rootStack, backtrack, w, vp, 
                                  edgesUnexplored >>
 
 label14(self) == /\ pc[self] = "label14"
                  /\ pc' = [pc EXCEPT ![self] = "label8"]
-                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                 stack, a, b, ra, rb, recursionStack,
-                                 rootStack, backtrack, v, w, vp, root,
+                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                 stack, a, b, ra, rb, recursionStack, 
+                                 rootStack, backtrack, v, w, vp, root, 
                                  edgesUnexplored, claimed >>
 
 label11(self) == /\ pc[self] = "label11"
@@ -408,17 +406,17 @@ label11(self) == /\ pc[self] = "label11"
                             /\ rb' = [rb EXCEPT ![self] = defaultInitValue]
                             /\ pc' = [pc EXCEPT ![self] = "label13"]
                        ELSE /\ pc' = [pc EXCEPT ![self] = "label14"]
-                            /\ UNCHANGED << stack, a, b, ra, rb, rootStack,
+                            /\ UNCHANGED << stack, a, b, ra, rb, rootStack, 
                                             root >>
-                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                 recursionStack, backtrack, v, w, vp,
+                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                 recursionStack, backtrack, v, w, vp, 
                                  edgesUnexplored, claimed >>
 
 label16(self) == /\ pc[self] = "label16"
                  /\ pc' = [pc EXCEPT ![self] = "label11"]
-                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                 stack, a, b, ra, rb, recursionStack,
-                                 rootStack, backtrack, v, w, vp, root,
+                 /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                 stack, a, b, ra, rb, recursionStack, 
+                                 rootStack, backtrack, v, w, vp, root, 
                                  edgesUnexplored, claimed >>
 
 label12(self) == /\ pc[self] = "label12"
@@ -428,8 +426,8 @@ label12(self) == /\ pc[self] = "label12"
                        ELSE /\ TRUE
                             /\ UNCHANGED liveElements
                  /\ pc' = [pc EXCEPT ![self] = "label3"]
-                 /\ UNCHANGED << ufStatus, parent, workerSet, stack, a, b, ra,
-                                 rb, recursionStack, rootStack, backtrack, v,
+                 /\ UNCHANGED << ufStatus, parent, workerSet, stack, a, b, ra, 
+                                 rb, recursionStack, rootStack, backtrack, v, 
                                  w, vp, edgesUnexplored, claimed >>
 
 label6(self) == /\ pc[self] = "label6"
@@ -442,8 +440,8 @@ label6(self) == /\ pc[self] = "label6"
                            /\ pc' = [pc EXCEPT ![self] = "label2"]
                       ELSE /\ pc' = [pc EXCEPT ![self] = "label1"]
                            /\ UNCHANGED backtrack
-                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements,
-                                stack, a, b, ra, rb, recursionStack, v, w, vp,
+                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                stack, a, b, ra, rb, recursionStack, v, w, vp, 
                                 root, edgesUnexplored, claimed >>
 
 T(self) == label1(self) \/ label2(self) \/ label3(self) \/ label4(self)

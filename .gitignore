@@ -6,3 +6,6 @@ err
 sccs
 specifications/states
 specifications/*.out
+specifications/*.toolbox
+specifications/*.temp
+specifications/*.old
