@@ -5,38 +5,66 @@ EXTENDS Integers, Sequences, TLC
 CONSTANTS Nodes, Edges, Threads
 ASSUME Edges \subseteq Nodes \X Nodes
 
+\* The set of edges that are outgoing from the node.
 OutgoingEdges(node) ==
   { e \in Edges : e[1] = node }
 
 (*******
+\* The algorith maintains partially computed SCCs using union find
+\* data structure. Each set a has a representative node (root).
+\* The root contains all threads processing any node in the set.
+\* Also a set of live elements is maintained for every set which can
+\* be used to keep track of all nodes that are not dead.
 --algorithm BloemenSCC {
+  \* Shared variables of the algorithm
+  \* 1) ufStatus     : Denotes the status of a set. Can be either
+  \*                   uf-live or uf-dead.
+  \* 2) parent       : Used to find root of a set from a node in the set.
+  \* 3) workerSet    : Keeps track of all threads processing a node in set.
+  \* 4) liveElements : Set of all live elements in a set.
   variables ufStatus = [node \in Nodes |-> "uf-live"],
             parent = [node \in Nodes |-> node],
             workerSet = [node \in Nodes |-> {}],
             liveElements = [node \in Nodes |-> {node}]
 
   define {
+    \* Find the root/representative of the set.
     find(node) ==
       LET RECURSIVE PF(_)
           PF(x) == IF parent[x] = x THEN x
                                     ELSE PF(parent[x])
       IN PF(node)
+    \* Find if x and y are in the same set.
     sameSet(x, y) == find(x) = find(y)
 
+    \* Checks if a node in the set is dead.
     isDead(node) == ufStatus[find(node)] = "uf-dead"
+    \* Set of all nodes in set of x.
     ufSet(x) == { node \in Nodes : sameSet(node, x) }
 
+    \* Set of all nodes whose set is not dead.
     undeadNodes == { node \in Nodes : ufStatus[find(node)] # "uf-dead" }
   }
 
+ \* push x onto the stack.
   macro push(x, stack) {
     stack := << x >> \o stack;
   }
 
+  \* pop an element from the stack.
   macro pop(stack) {
     stack := Tail(stack);
   }
 
+  \* makeClaim decides what a thread should do
+  \* with a newly discovered node.
+  \* Post macro results are:
+  \* 1) claim-dead    : The set of node is dead and
+  \*                    hence no point in processing it.
+  \* 2) claim-found   : The thread has previously discovered this set
+  \*                    and hence a cycle is found.
+  \* 3) claim-success : The node/node's set is new to the thread and
+  \*                    do a search on this node.
   macro makeClaim(node) {
     root := find(node);
     if (isDead(root)) {
@@ -51,6 +79,8 @@ OutgoingEdges(node) ==
     }
   }
 
+  \* The node has been completely explored by a thread.
+  \* So remove it from set of live elements.
   macro remove(node) {
     root := find(node);
     if (node \in liveElements[root]) {
@@ -58,6 +88,8 @@ OutgoingEdges(node) ==
     }
   }
 
+  \* Picks a live node from the set of given node.
+  \* If no node found then declare the set as dead.
   macro pickFromSet(node) {
     root := find(node);
     if (liveElements[root] = {}) {
@@ -69,6 +101,8 @@ OutgoingEdges(node) ==
     }
   }
 
+  \* Merge the sets of a and b along with
+  \* the worker sets and live elements.
   procedure unite(a, b)
     variables ra, rb {
     label13:
@@ -83,6 +117,10 @@ OutgoingEdges(node) ==
   }
 
   fair process (T \in Threads)
+    \* Local variables of the thread.
+    \* 1) recursionStack  : Simulates recursion.
+    \* 2) rootStack       : Simulates the stack from Naive Tarjan algorithm.
+    \* 3) edgesUnexplored : Map from nodes to set of unexplored edges by this thread.
     variables recursionStack = << >>,
               rootStack = << >>,
               backtrack = FALSE,
@@ -100,6 +138,7 @@ OutgoingEdges(node) ==
       makeClaim(v);
 
       label2:
+      \* Start a new DFS call if we are not backtracking
       if (backtrack = FALSE) {
         push(v, rootStack);
       };
@@ -107,13 +146,13 @@ OutgoingEdges(node) ==
       label3:
       if (backtrack = FALSE) {
         label4:
+        \* The new and old root might be in same set.
         if (Len(recursionStack) # 0 /\ sameSet(Head(recursionStack)[2], v)) {
           goto label6;
         } else {
-          \* pickFromList
-          \* Obtain a live element from the list of v
-          \* If not able to pick then enitre list dead and the SCC is completely explored
-          \* Else found a new element to start exploring from
+          \* Obtain a live element from set of v.
+          \* If not able to pick then set is dead.
+          \* Else found a new element to start exploring it.
           pickFromSet(v);
           if (isDead(v)) {
             goto label6;
@@ -121,10 +160,12 @@ OutgoingEdges(node) ==
         }
       } else {
         label5:
+        \* Restore the state back while backtracking.
         vp := Head(recursionStack)[1] || v := Head(recursionStack)[2];
         pop(recursionStack);
         backtrack := FALSE;
         label7:
+        \* Check if the set is dead.
         if (isDead(v)) {
           remove(vp);
           goto label3;
@@ -143,6 +184,7 @@ OutgoingEdges(node) ==
         if (w = vp) {
           goto label8;
         } else {
+          \* Decide what to do with node w.
           makeClaim(w);
           if (claimed = "claim-dead") {
             goto label8;
@@ -151,7 +193,7 @@ OutgoingEdges(node) ==
             v := w;
             goto label2;
           } else {
-            \* claim-found
+            \* claim-found and hence unite nodes in the cycle.
             label11:
             if (sameSet(w, v) = FALSE) {
               root := Head(rootStack);
@@ -168,6 +210,7 @@ OutgoingEdges(node) ==
       };
 
       label12:
+      \* Node vp is processed and hence can be removed from live elements.
       remove(vp);
       goto label3;
 
@@ -195,10 +238,14 @@ find(node) ==
       PF(x) == IF parent[x] = x THEN x
                                 ELSE PF(parent[x])
   IN PF(node)
+
 sameSet(x, y) == find(x) = find(y)
 
+
 isDead(node) == ufStatus[find(node)] = "uf-dead"
+
 ufSet(x) == { node \in Nodes : sameSet(node, x) }
+
 
 undeadNodes == { node \in Nodes : ufStatus[find(node)] # "uf-dead" }
 
@@ -461,13 +508,18 @@ Termination == <>(\A self \in ProcSet: pc[self] = "Done")
 
 \* END TRANSLATION
 
+\* Set of SCCs found by the pluscal algorithm.
 SCCsFromAlgo == { ufSet(node) : node \in Nodes }
 
 \* SCCs by definition
 
+\* Set of outgoing nodes from given set S via an edge.
+\* Excludes the nodes from S.
 OutgoingNodes(S) ==
   UNION { { y \in Nodes \ S : << x, y >> \in Edges } : x \in S }
 
+\* Denotes whether x is reachable from y.
+\* Defined recursively using a BFS approach.
 Reachable(x, y) ==
   LET RECURSIVE RF(_)
       RF(S) == LET NS == OutgoingNodes(S)
@@ -476,6 +528,7 @@ Reachable(x, y) ==
                                               ELSE RF(S \cup NS)
   IN RF({x})
 
+\* Set of SCCs of the graph generated by the definition of SCCs.
 SCCsByDef ==
   LET RECURSIVE M(_, _)
       M(Partial, Rest) ==
@@ -486,7 +539,12 @@ SCCsByDef ==
                           IN M(Partial \cup{C}, Rest \ C)
   IN M({}, Nodes)
 
+\* Algorithm terminates iff program counter is every thread is Done.
 Terminated == \A self \in ProcSet: pc[self] = "Done"
+\* A safety property of the algorithm that establishes the correctness.
+\* Note that this does not gaurantees termination.
+\* For termination we need to check a liveness property:
+\* <> \forall self \in ProcSet: pc[self] = "Done"
 Correct == Terminated => SCCsFromAlgo = SCCsByDef
 
 ================================================================================
