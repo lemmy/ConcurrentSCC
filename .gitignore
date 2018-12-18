@@ -9,3 +9,4 @@ specifications/*.out
 specifications/*.toolbox
 specifications/*.temp
 specifications/*.old
+*.txt

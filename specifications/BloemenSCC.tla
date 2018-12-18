@@ -154,6 +154,7 @@ OutgoingEdges(node) ==
           \* If not able to pick then set is dead.
           \* Else found a new element to start exploring it.
           pickFromSet(v);
+          label9:
           if (isDead(v)) {
             goto label6;
           }
@@ -358,12 +359,19 @@ label4(self) == /\ pc[self] = "label4"
                                  ELSE /\ \E node \in liveElements[root'[self]]:
                                            vp' = [vp EXCEPT ![self] = v[self]]
                                       /\ UNCHANGED ufStatus
-                           /\ IF isDead(v[self])
-                                 THEN /\ pc' = [pc EXCEPT ![self] = "label6"]
-                                 ELSE /\ pc' = [pc EXCEPT ![self] = "label8"]
+                           /\ pc' = [pc EXCEPT ![self] = "label9"]
                 /\ UNCHANGED << parent, workerSet, liveElements, stack, a, b, 
                                 ra, rb, recursionStack, rootStack, backtrack, 
                                 v, w, edgesUnexplored, claimed >>
+
+label9(self) == /\ pc[self] = "label9"
+                /\ IF isDead(v[self])
+                      THEN /\ pc' = [pc EXCEPT ![self] = "label6"]
+                      ELSE /\ pc' = [pc EXCEPT ![self] = "label8"]
+                /\ UNCHANGED << ufStatus, parent, workerSet, liveElements, 
+                                stack, a, b, ra, rb, recursionStack, rootStack, 
+                                backtrack, v, w, vp, root, edgesUnexplored, 
+                                claimed >>
 
 label5(self) == /\ pc[self] = "label5"
                 /\ /\ v' = [v EXCEPT ![self] = Head(recursionStack[self])[2]]
@@ -492,9 +500,10 @@ label6(self) == /\ pc[self] = "label6"
                                 root, edgesUnexplored, claimed >>
 
 T(self) == label1(self) \/ label2(self) \/ label3(self) \/ label4(self)
-              \/ label5(self) \/ label7(self) \/ label8(self)
-              \/ label10(self) \/ label14(self) \/ label11(self)
-              \/ label16(self) \/ label12(self) \/ label6(self)
+              \/ label9(self) \/ label5(self) \/ label7(self)
+              \/ label8(self) \/ label10(self) \/ label14(self)
+              \/ label11(self) \/ label16(self) \/ label12(self)
+              \/ label6(self)
 
 Next == (\E self \in ProcSet: unite(self))
            \/ (\E self \in Threads: T(self))
