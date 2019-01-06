@@ -72,13 +72,13 @@ public class ConcurrentFastSCC {
         // Organise the SCCs found in a Map of Sets. Map is required to keep track
         // of roots of a union find tree.
         final Map<Integer, Set<GraphNode>> result = new HashMap<Integer, Set<GraphNode>>();
-        for (int i = 0; i < graph.N(); i++) {
-            int root = unionfind.find(i + 1) - 1;
-            if (!result.containsKey(root)) {
-                result.put(root, new HashSet<GraphNode>());
-            }
-            result.get(root).add(graph.get(i));
-        }
+        // for (int i = 0; i < graph.N(); i++) {
+        //     int root = unionfind.find(i + 1) - 1;
+        //     if (!result.containsKey(root)) {
+        //         result.put(root, new HashSet<GraphNode>());
+        //     }
+        //     result.get(root).add(graph.get(i));
+        // }
         return result;
     }
 

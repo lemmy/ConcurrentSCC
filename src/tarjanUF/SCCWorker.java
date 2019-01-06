@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Stack;
 
 import tarjanUF.UF.PickStatus;
@@ -12,12 +13,16 @@ import tarjanUF.UF.ClaimStatus;
 
 public class SCCWorker implements Runnable {
 
+    static private Random rand = new Random();
+
     private final Graph graph;
     private final Map<Long, Integer> workerMap;
     private final AtomicInteger workerCount;
     // workerId will be assigned in the `run` method since
     // the worker executing can be known only from there.
     private int workerId;
+    // use a random id to explore the nodes in random order
+    private int randomId;
     // nodeId denotes the node from where the DFS is to be started.
     private int nodeId;
     private UF unionfind;
@@ -42,6 +47,7 @@ public class SCCWorker implements Runnable {
 
     @Override
     public void run() {
+        this.randomId = rand.nextInt();
         // Assign a unique integer to this worker or if already assigned set workerId to that.
         if (workerMap.containsKey(Thread.currentThread().getId())) {
             this.workerId = workerMap.get(Thread.currentThread().getId());
@@ -106,7 +112,9 @@ public class SCCWorker implements Runnable {
                 arcs = graph.get(vp).getArcs();
                 for (; ei < arcs.size(); ei++) {
                     // Randomized the exploration of node `vp` for different workers.
-                    random_ei = (ei + workerId) % arcs.size();
+                    random_ei = (ei + randomId) % arcs.size();
+                    // To prevent negative indices.
+                    random_ei = (random_ei + arcs.size()) % arcs.size();
                     w = arcs.get(random_ei);
                     // Self loop.
                     if (w == vp) {

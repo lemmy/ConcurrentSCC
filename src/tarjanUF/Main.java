@@ -99,7 +99,7 @@ public class Main {
         // Run the aglorithm.
         final Map<Integer, Set<GraphNode>> sccs = new ConcurrentFastSCC().searchSCCs(graph, initNodes, unionfind, UFNode.workerCount);
 
-        printSCCs(sccs);
+        //printSCCs(sccs);
 
         final long duration = System.nanoTime() - start;
         System.err.println("Total runtime: " + duration);
