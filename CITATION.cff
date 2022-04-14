@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+title: Concurrent SCC TLC
+message: Please cite this software using these metadata.
+type: software
+authors:
+  - given-names: Robert
+    name-particle: E.
+    family-names: Tarjan
+    affiliation: Princeton University
+  - given-names: Leslie
+    affiliation: Microsoft
+    family-names: Lamport
+  - given-names: Stephan
+    family-names: Merz
+    affiliation: Inria
+  - given-names: Markus
+    name-particle: A.
+    family-names: Kuppe
+    affiliation: Microsoft
+  - given-names: Parv 
+    family-names: Mor
+version: 1.0.0
+url: "https://github.com/lemmy/ConcurrentSCC"
